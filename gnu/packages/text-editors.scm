@@ -445,6 +445,11 @@ based command language.")
          (delete 'configure))))            ; no configure script
     (native-inputs (list pkg-config))
     (inputs (list perl))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "KAKOUNE_RUNTIME")
+            (separator #f)
+            (files (list "share/kak")))))
     (synopsis "Vim-inspired code editor")
     (description
      "Kakoune is a code editor heavily inspired by Vim, as such most of its
