@@ -111,7 +111,7 @@
 ;;; Copyright © 2021 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2021, 2022, 2023 Daniel Meißner <daniel.meissner-i4k@ruhr-uni-bochum.de>
 ;;; Copyright © 2021, 2022 Pradana Aumars <paumars@courrier.dev>
-;;; Copyright © 2021–2024 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2021–2024, 2026 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2021 Sébastien Lerique <sl@eauchat.org>
 ;;; Copyright © 2021 Raphaël Mélotte <raphael.melotte@mind.be>
 ;;; Copyright © 2021 ZmnSCPxj <ZmnSCPxj@protonmail.com>
@@ -20610,7 +20610,7 @@ encoding algorithms to do fuzzy string matching.")
 (define-public python-pdfminer-six
   (package
     (name "python-pdfminer-six")
-    (version "20240706")
+    (version "20260107")
     ;; There are no tests in the PyPI tarball.
     (source
      (origin
@@ -20620,7 +20620,7 @@ encoding algorithms to do fuzzy string matching.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0vdwps38q2414lwjz266rabxrcw2a5s1pgxyjsffiifi010cd3k9"))))
+        (base32 "10f0g1zwbahfc5lrg84c8fiav184h0jr86y6ra9dqb81zb0875dj"))))
     (build-system pyproject-build-system)
     (arguments
      (list #:phases
@@ -20632,7 +20632,7 @@ encoding algorithms to do fuzzy string matching.")
     (propagated-inputs
      (list python-charset-normalizer python-cryptography))
     (native-inputs
-     (list python-pytest python-setuptools python-wheel))
+     (list python-pytest python-setuptools python-setuptools-scm))
     (home-page "https://github.com/pdfminer/pdfminer.six")
     (synopsis "PDF parser and analyzer")
     (description "@code{pdfminer.six} is a community maintained fork of
