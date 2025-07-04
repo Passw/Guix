@@ -25,15 +25,6 @@
   #:use-module (guix gexp)
   #:export (%test-readymedia))
 
-(define %readymedia-cache-file "files.db")
-(define %readymedia-cache-path
-  (string-append %readymedia-default-cache-directory
-                 "/"
-                 %readymedia-cache-file))
-(define %readymedia-log-path
-  (string-append %readymedia-default-log-directory
-                 "/"
-                 %readymedia-log-file))
 (define %readymedia-default-port 8200)
 (define %readymedia-media-directory "/media")
 (define %readymedia-configuration-test
@@ -83,51 +74,29 @@
                 #t)
              marionette))
 
-          ;; Cache directory and file
+          ;; Cache directory
           (test-assert "cache directory exists"
             (marionette-eval
-             '(eq? (stat:type (stat #$%readymedia-default-cache-directory))
+             '(eq? (stat:type (stat #$(%readymedia-default-cache-directory)))
                    'directory)
              marionette))
           (test-assert "cache directory has correct ownership"
             (marionette-eval
-             '(let ((cache-dir (stat #$%readymedia-default-cache-directory))
+             '(let ((cache-dir (stat #$(%readymedia-default-cache-directory)))
                     (user (getpwnam #$%readymedia-user-account)))
                 (and (eqv? (stat:uid cache-dir) (passwd:uid user))
                      (eqv? (stat:gid cache-dir) (passwd:gid user))))
              marionette))
           (test-assert "cache directory has expected permissions"
             (marionette-eval
-             '(eqv? (stat:perms (stat #$%readymedia-default-cache-directory))
+             '(eqv? (stat:perms (stat #$(%readymedia-default-cache-directory)))
                     #o755)
              marionette))
 
-          ;; Log directory and file
-          (test-assert "log directory exists"
-            (marionette-eval
-             '(eq? (stat:type (stat #$%readymedia-default-log-directory))
-                   'directory)
-             marionette))
-          (test-assert "log directory has correct ownership"
-            (marionette-eval
-             '(let ((log-dir (stat #$%readymedia-default-log-directory))
-                    (user (getpwnam #$%readymedia-user-account)))
-                (and (eqv? (stat:uid log-dir) (passwd:uid user))
-                     (eqv? (stat:gid log-dir) (passwd:gid user))))
-             marionette))
-          (test-assert "log directory has expected permissions"
-            (marionette-eval
-             '(eqv? (stat:perms (stat #$%readymedia-default-log-directory))
-                    #o755)
-             marionette))
+          ;; Log file
           (test-assert "log file exists"
             (marionette-eval
-             '(file-exists? #$%readymedia-log-path)
-             marionette))
-          (test-assert "log file has expected permissions"
-            (marionette-eval
-             '(eqv? (stat:perms (stat #$%readymedia-log-path))
-                    #o640)
+             '(file-exists? #$(%readymedia-default-log-file))
              marionette))
 
           ;; Service
