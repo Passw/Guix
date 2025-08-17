@@ -13,6 +13,7 @@
 ;;; Copyright © 2022, 2024 Maxim Cournoyer <maxim@guixotic.coop>
 ;;; Copyright © 2022 Imran Iqbal <imran@imraniqbal.org>
 ;;; Copyright © 2025 Ashish SHUKLA <ashish.is@lostca.se>
+;;; Copyright © 2025 firefly707 <firejet707@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,10 +37,13 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system ruby)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dbm)
@@ -49,7 +53,9 @@
   #:use-module (gnu packages groff)
   #:use-module (gnu packages less)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages web-browsers)
   #:use-module (gnu packages xml))
@@ -440,6 +446,64 @@ on any distribution, and the nroff source is included."))))
 \"--help\" and \"--version\" command-line arguments into a manual page
 automatically.")
     (license license:gpl3+)))
+
+(define-public qman
+  (package
+    (name "qman")
+    (version "1.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/plp13/qman")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0q1g1fvipfk8vw432xiwm12rjb1hlyhmb6x6y99qc28wpinhnwng"))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:out-of-source? #t
+      #:configure-flags
+      #~(list "-Dconfigdir=etc/xdg/qman")))
+    (native-inputs
+     (list cmake-minimal
+           pkg-config))
+    (inputs
+     (list cunit
+           ncurses
+           python-cogapp
+           zlib))
+    (home-page "https://github.com/plp13/qman")
+    (synopsis "Modern man page viewer for terminals")
+    (description
+     "@code{qman} is a modern, full-featured manual page viewer featuring
+hyperlinks,web browser like navigation, a table of contents for each page,
+incremental search, on-line help, and more.  It also strives to be fast and
+tiny, so that it can be used everywhere.
+
+Features:
+@itemize
+@item Index page that displays all manual pages available on the system,
+sorted alphabetically and organised by section
+@item Pages for apropos and whatis results
+@item Hyperlinks to other manual pages
+@item Hyperlinks for URLs and email addresses
+@item Hyperlinks to files or directories in the local filesystem
+@item In-page hyperlinks
+@item A table of contents for each manual page
+@item Incremental search for manual pages
+@item Incremental free page text search
+@item Command-line options similar to those of man (most importantly, -k and
+-f)
+@item Keyboard mappings similar to those of less
+@item Mouse support
+@item Navigation history
+@item On-line help
+@item Fully configurable using INI-style config files
+@item Manual page
+@end itemize")
+    (license license:bsd-2)))
 
 (define-public scdoc
   (package
