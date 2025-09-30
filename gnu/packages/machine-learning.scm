@@ -6979,6 +6979,83 @@ easily extensible.")
 Brian 2 simulator.")
     (license license:cecill)))
 
+(define-public mnn
+  (package
+    (name "mnn")
+    (version "3.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/alibaba/MNN/")
+              (commit version)))
+       (snippet
+        #~(begin
+            (use-modules (guix build utils))
+            ;; Remove external libraries.  Almost all of them are
+            ;; available in Guix.
+            (with-directory-excursion "3rd_party"
+              (for-each delete-file-recursively
+                        '(;;"OpenCLHeaders"; for now does not build if in tree copy removed
+                          ;; "flatbuffers"  ; for now does not build if in tree copy removed
+                          ;; "protobuf"   ; for now does not build if in tree copy removed
+                          "rapidjson")))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "073cdbcazxjzffajmn1w28jcaavann0c55fnm7cf7b0azj5vnhg6"))))
+    (build-system cmake-build-system)
+    (native-inputs (list googletest pkg-config python-minimal-wrapper))
+    (inputs (list flatbuffers
+                  fp16
+                  glew
+                  glslang
+                  glu
+                  mesa
+                  mesa-headers
+                  mesa-opencl
+                  opencl-headers
+                  opencl-clhpp
+                  opencl-icd-loader
+                  opencv
+                  protobuf
+                  pthreadpool
+                  rapidjson
+                  shaderc
+                  vulkan-headers
+                  vulkan-loader))
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "-DMNN_USE_SYSTEM_LIB=ON"
+              "-DMNN_OPENMP=ON"
+              ;; "-DMNN_OPENGL=ON"  ; TO DO
+              "-DMNN_OPENCL=ON"
+              "-DMNN_VULKAN=ON"
+              "-DMNN_SUPPORT_BF16=ON"
+              "-DMNN_BUILD_TEST=ON"
+              "-DMNN_BUILD_AUDIO=ON"
+              "-DMNN_BUILD_OPENCV=ON"
+              "-DMNN_IMGCODECS=ON"
+              ;; "-DMNN_AUDIO_TEST=ON"
+              ;; tests trying to fetch googletest and cannot build
+              ;; "-DMNN_OPENCV_TEST=ON"
+              ;; TO DO: remove the fetch in cmake and use system googletest
+              "-DMNN_OPENCV_BENCH=ON"
+              "-DMNN_BUILD_QUANTOOLS=ON"
+              "-DMNN_EVALUATION=ON"
+              "-DMNN_BUILD_BENCHMARK=ON"
+              "-DMNN_BUILD_TOOLS=ON"
+              "-DMNN_BUILD_CONVERTER=ON"
+              "-DMNN_USE_SSE=ON"
+              "-DMNN_AVX512=ON") ;TO DO: add Pytorch support
+      #:tests? #f)) ;tests not building yet, cannot run
+    (home-page "http://www.mnn.zone/")
+    (synopsis "Fast, lightweight deep learning framework")
+    (description
+     "MNN is a deep learning framework.  It supports inference and
+training of deep learning models for inference and training on-device.")
+    (license license:asl2.0)))
+
 (define-public python-gguf
   (package
     (name "python-gguf")
