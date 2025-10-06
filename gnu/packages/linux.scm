@@ -3395,28 +3395,6 @@ such as @command{grep}, @command{cp}, @command{vi}, etc. and can be used as an
 alternative to the corresponding implementations from the GNU project.")
     (license license:bsd-2)))
 
-(define-public ddate
-  (package
-    (name "ddate")
-    (version "0.2.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/bo0ts/ddate")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32 "1qchxnxvghbma6gp1g78wnjxsri0b72ha9axyk31cplssl7yn73f"))))
-    (build-system cmake-build-system)
-    (arguments '(#:tests? #f))
-    (home-page "https://github.com/bo0ts/ddate")
-    (synopsis "PERPETUAL DATE CONVERTER FROM GREGORIAN TO POEE CALENDAR")
-    (description
-     "ddate displays the Discordian date and holidays of a given date.
-The Discordian calendar was made popular by the \"Illuminatus!\" trilogy
-by Robert Shea and Robert Anton Wilson.")
-    (license license:public-domain)))
-
 (define-public dislocker
   (package
     (name "dislocker")
