@@ -207,9 +207,9 @@ algorithms library for calendar dates and durations.  It also provides the
               (sha256
                (base32 "1qchxnxvghbma6gp1g78wnjxsri0b72ha9axyk31cplssl7yn73f"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f))
+    (arguments '(#:tests? #f)) ; no tests
     (home-page "https://github.com/bo0ts/ddate")
-    (synopsis "PERPETUAL DATE CONVERTER FROM GREGORIAN TO POEE CALENDAR")
+    (synopsis "Convert Gregorian dates to Discordian dates")
     (description
      "ddate displays the Discordian date and holidays of a given date.
 The Discordian calendar was made popular by the \"Illuminatus!\" trilogy
