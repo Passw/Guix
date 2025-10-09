@@ -371,12 +371,11 @@ This package includes the following programs:
     (build-system glib-or-gtk-build-system)
     (arguments
      (list
-      #:configure-flags '(list "--disable-static"
-                               "--with-gtk=auto"
-                               "--with-python=auto"
-                               (string-append "--with-dbusconfdir="
-                                              (assoc-ref %outputs "out")
-                                              "/etc"))))
+      #:configure-flags
+      #~(list "--disable-static"
+              "--without-dbus" ;See <https://github.com/mchehab/zbar/issues/104>
+              "--with-gtk=auto"
+              "--with-python=auto")))
     (native-inputs
      (list autoconf
            automake
@@ -388,8 +387,7 @@ This package includes the following programs:
            pkg-config
            python-wrapper))
     (inputs
-     (list dbus
-           imagemagick
+     (list imagemagick
            libjpeg-turbo
            perl
            python
