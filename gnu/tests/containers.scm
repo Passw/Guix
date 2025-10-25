@@ -351,7 +351,22 @@ standard output device and then enters a new line.")
    (description "Test rootless Podman service.")
    (value (build-tarball&run-rootless-podman-test))))
 
-
+(define %guile-oci-image
+  (oci-image
+    (repository "guile")
+    (value
+     (specifications->manifest '("guile")))
+    (pack-options
+     '(#:symlinks (("/bin" -> "bin"))))))
+
+(define %guile-bash-oci-image
+  (oci-image
+    (repository "guile-bash")
+    (value
+     (specifications->manifest '("guile" "bash-minimal")))
+    (pack-options
+     '(#:symlinks (("/bin" -> "bin"))))))
+
 (define %oci-network
   (oci-network-configuration (name "my-network")))
 
@@ -465,48 +480,42 @@ standard output device and then enters a new line.")
                     (containers
                      (list
                       (oci-container-configuration
-                       (provision "first")
-                       (image
-                        (oci-image
-                         (repository "guile")
-                         (value
-                          (specifications->manifest '("guile")))
-                         (pack-options
-                          '(#:symlinks (("/bin" -> "bin"))))))
-                       (entrypoint "/bin/guile")
-                       (network "my-network")
-                       (command
-                        '("-c" "(use-modules (web server))
+                        (provision "first")
+                        (image %guile-oci-image)
+                        (entrypoint "/bin/guile")
+                        (network "my-network")
+                        (command
+                         '("-c" "(use-modules (web server))
 (define (handler request request-body)
   (values '((content-type . (text/plain))) \"out of office\"))
 (run-server handler 'http `(#:addr ,(inet-pton AF_INET \"0.0.0.0\")))"))
-                       (host-environment
-                        '(("VARIABLE" . "value")))
-                       (volumes
-                        '(("my-volume" . "/my-volume")))
-                       (extra-arguments
-                        '("--env" "VARIABLE")))
+                        (host-environment
+                         '(("VARIABLE" . "value")))
+                        (volumes
+                         '(("my-volume" . "/my-volume")))
+                        (extra-arguments
+                         '("--env" "VARIABLE")))
                       (oci-container-configuration
-                       (provision "second")
-                       (image
-                        (oci-image
-                         (repository "guile")
-                         (value
-                          (specifications->manifest '("guile")))
-                         (pack-options
-                          '(#:symlinks (("/bin" -> "bin"))))))
-                       (entrypoint "/bin/guile")
-                       (network "my-network")
-                       (command
-                        '("-c" "(let l ((c 300))
+                        (provision "second")
+                        (image
+                          (oci-image
+                            (repository "guile-bash")
+                            (value
+                             (computed-file "guile-oci.tar.gz"
+                               #~(begin
+                                   (symlink #$%guile-bash-oci-image #$output))))))
+                        (entrypoint "/bin/guile")
+                        (network "my-network")
+                        (command
+                         '("-c" "(let l ((c 300))
 (display c)
 (newline)
 (sleep 1)
 (when (positive? c)
   (l (- c 1))))"))
-                       (volumes
-                        '(("my-volume" . "/my-volume")
-                          ("/shared.txt" . "/shared.txt:ro"))))))))))
+                        (volumes
+                         '(("my-volume" . "/my-volume")
+                           ("/shared.txt" . "/shared.txt:ro"))))))))))
 
 (define (run-rootless-podman-oci-service-test)
   (define os
@@ -597,7 +606,7 @@ standard output device and then enters a new line.")
                              #:verbose? #t))))
                   marionette)))
               ;; Allow services to come up on slower machines.
-              (with-retries 80 1
+              (with-retries 120 1
                             (equal?
                              '("localhost/guile:latest")
                              (run-test)))))
@@ -720,48 +729,42 @@ standard output device and then enters a new line.")
                     (containers
                      (list
                       (oci-container-configuration
-                       (provision "first")
-                       (image
-                        (oci-image
-                         (repository "guile")
-                         (value
-                          (specifications->manifest '("guile")))
-                         (pack-options
-                          '(#:symlinks (("/bin" -> "bin"))))))
-                       (entrypoint "/bin/guile")
-                       (network "my-network")
-                       (command
-                        '("-c" "(use-modules (web server))
+                        (provision "first")
+                        (image %guile-oci-image)
+                        (entrypoint "/bin/guile")
+                        (network "my-network")
+                        (command
+                         '("-c" "(use-modules (web server))
 (define (handler request request-body)
   (values '((content-type . (text/plain))) \"out of office\"))
 (run-server handler 'http `(#:addr ,(inet-pton AF_INET \"0.0.0.0\")))"))
-                       (host-environment
-                        '(("VARIABLE" . "value")))
-                       (volumes
-                        '(("my-volume" . "/my-volume")))
-                       (extra-arguments
-                        '("--env" "VARIABLE")))
+                        (host-environment
+                         '(("VARIABLE" . "value")))
+                        (volumes
+                         '(("my-volume" . "/my-volume")))
+                        (extra-arguments
+                         '("--env" "VARIABLE")))
                       (oci-container-configuration
-                       (provision "second")
-                       (image
-                        (oci-image
-                         (repository "guile")
-                         (value
-                          (specifications->manifest '("guile")))
-                         (pack-options
-                          '(#:symlinks (("/bin" -> "bin"))))))
-                       (entrypoint "/bin/guile")
-                       (network "my-network")
-                       (command
-                        '("-c" "(let l ((c 300))
+                        (provision "second")
+                        (image
+                          (oci-image
+                            (repository "guile-bash")
+                            (value
+                             (computed-file "guile-oci.tar.gz"
+                               #~(begin
+                                   (symlink #$%guile-bash-oci-image #$output))))))
+                        (entrypoint "/bin/guile")
+                        (network "my-network")
+                        (command
+                         '("-c" "(let l ((c 300))
 (display c)
 (newline)
 (sleep 1)
 (when (positive? c)
   (l (- c 1))))"))
-                       (volumes
-                        '(("my-volume" . "/my-volume")
-                          ("/shared.txt" . "/shared.txt:ro"))))))))))
+                        (volumes
+                         '(("my-volume" . "/my-volume")
+                           ("/shared.txt" . "/shared.txt:ro"))))))))))
 
 (define (run-docker-oci-service-test)
   (define os
