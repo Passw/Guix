@@ -45659,8 +45659,9 @@ The group under whose authority docker commands will be run.
 @item @code{command} (default: @code{'()}) (type: list-of-strings)
 Overwrite the default command (@code{CMD}) of the image.
 
-@item @code{entrypoint} (default: @code{""}) (type: string)
-Overwrite the default entrypoint (@code{ENTRYPOINT}) of the image.
+@item @code{entrypoint} (default: @code{""}) (type: string-or-list-of-strings)
+Overwrite the default entrypoint (@code{ENTRYPOINT}) of the image.  It can
+be either a string, or a list of strings.
 
 @item @code{host-environment} (default: @code{'()}) (type: list)
 Set environment variables in the host environment where @samp{docker run}

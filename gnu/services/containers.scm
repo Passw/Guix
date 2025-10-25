@@ -521,6 +521,15 @@ but ~a was found") el))))
         reference
         (string-append "localhost/" reference)))
 
+(define (string-or-list-of-strings? value)
+  (if (or (string? value)
+          ((list-of string) value))
+      value
+      (raise
+       (formatted-message
+        (G_ "entrypoint may only be a single string or a list of strings
+but ~a was found") value))))
+
 (define (oci-lowerable-image? image)
   (or (manifest? image)
       (operating-system? image)
@@ -544,6 +553,7 @@ but ~a was found") el))))
    value))
 
 (define-maybe/no-serialization string)
+(define-maybe/no-serialization string-or-list-of-strings)
 (define-maybe/no-serialization package)
 (define-maybe/no-serialization subid-range)
 
@@ -603,8 +613,9 @@ This field will override the @code{group} field of @code{oci-configuration}.")
    (list-of-strings '())
    "Overwrite the default command (@code{CMD}) of the image.")
   (entrypoint
-   (maybe-string)
-   "Overwrite the default entrypoint (@code{ENTRYPOINT}) of the image.")
+   (maybe-string-or-list-of-strings)
+   "Overwrite the default entrypoint (@code{ENTRYPOINT}) of the image.  It can
+be either a string, or a list of strings.")
   (host-environment
    (oci-container-host-environment '())
    "Set environment variables in the host environment where @command{docker run}
@@ -962,7 +973,10 @@ for the OCI runtime run command."
     (apply append
            (filter (compose not unspecified?)
                    (list (if (maybe-value-set? entrypoint)
-                             `("--entrypoint" ,entrypoint)
+                             `("--entrypoint"
+                               ,(if (list? entrypoint)
+                                    (string-join entrypoint " ")
+                                    entrypoint))
                              '())
                          (append-map
                           (lambda (spec)
