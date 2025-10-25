@@ -1044,63 +1044,64 @@ for the OCI runtime volume create command."
          #:target target)))
     (return tarball)))
 
-(define (lower-manifest name value options image-reference
+(define (lower-manifest value options image-reference
                         target system grafts?)
   "Lower VALUE, a manifest record, into a tarball containing an OCI image."
+  (define (format reference)
+    ;; Remove from REFERENCE characters that cannot be used in the store.
+    (string-map (lambda (chr)
+                  (if (and (char-set-contains? char-set:ascii chr)
+                           (char-set-contains? char-set:graphic chr)
+                           (not (memv chr '(#\. #\/ #\: #\space))))
+                      chr
+                      #\-))
+                reference))
   (mlet* %store-monad
       ((_ (set-grafting grafts?))
        (guile (set-guile-for-build (default-guile)))
        (profile
-        (profile-derivation value
-                            #:target target
-                            #:system system
-                            #:hooks '()
-                            #:locales? #f))
+         (profile-derivation value
+                             #:target target
+                             #:system system
+                             #:hooks '()
+                             #:locales? #f))
        (tarball (apply pack:docker-image
-                       `(,name ,profile
+                       `(,(format image-reference)
+                         ,profile
                          ,@options
                          #:localstatedir? #t))))
     (return tarball)))
 
-(define (lower-oci-image-state name value options reference
-                               image-target image-system grafts?)
-  (define target
-    (if (maybe-value-set? image-target)
-        image-target
-        (%current-target-system)))
-  (define system
-    (if (maybe-value-set? image-system)
-        image-system
-        (%current-system)))
-  (with-store store
-   (run-with-store store
-     (match value
-       ((? manifest? value)
-        (lower-manifest name value options reference
-                        target system grafts?))
-       ((? operating-system? value)
-        (lower-operating-system value target system))
-       ((? file-like? value)
-        (lower-object value))
-       (_
-        (raise
-         (formatted-message
-          (G_ "oci-image value must contain only manifest,
-operating-system, or file-like records but ~a was found")
-          value))))
-     #:target target
-     #:system system)))
-
-(define (lower-oci-image name image)
+(define (lower-oci-image image)
   "Lower IMAGE, a oci-image record, into a tarball containing an OCI image."
-  (lower-oci-image-state
-   name
-   (oci-image-value image)
-   (oci-image-pack-options image)
-   (oci-image-reference image)
-   (oci-image-target image)
-   (oci-image-system image)
-   (oci-image-grafts? image)))
+  (match-record image <oci-image>
+                (value pack-options target system grafts?)
+    (define image-target
+      (if (maybe-value-set? target)
+          target
+          (%current-target-system)))
+    (define image-system
+      (if (maybe-value-set? system)
+          system
+          (%current-system)))
+    (match value
+      ((? manifest? value)
+       (lower-manifest value pack-options
+                       (oci-image-reference image)
+                       image-target image-system grafts?))
+      ((? operating-system? value)
+       (lower-operating-system value image-target image-system))
+      ((? file-like? value)
+       (lower-object value))
+      (_
+       (raise
+        (formatted-message
+         (G_ "oci-image value must contain only manifest,
+operating-system, or file-like records but ~a was found")
+         value))))))
+
+(define-gexp-compiler (oci-image-compiler (image <oci-image>) system target)
+  (lower-oci-image image))
 
 (define-record-type* <oci-runtime-state>
   oci-runtime-state
@@ -1181,16 +1182,15 @@ operating-system, or file-like records but ~a was found")
 (define* (oci-image-loader runtime-state name image tag #:key verbose?)
   "Return a file-like object that, once lowered, will evaluate to a program able
 to load IMAGE through RUNTIME-CLI and to tag it with TAG afterwards."
-  (let ((tarball (lower-oci-image name image)))
-    (with-imported-modules (source-module-closure '((gnu build oci-containers)))
-      (program-file
-       (format #f "~a-image-loader" name)
-       #~(begin
-           (use-modules (gnu build oci-containers))
-           (oci-image-load '#$(oci-runtime-state-runtime runtime-state)
-                           #$(oci-runtime-state-runtime-cli runtime-state)
-                           #$tarball #$name #$tag
-                           #:verbose? #$verbose?))))))
+  (with-imported-modules (source-module-closure '((gnu build oci-containers)))
+    (program-file
+     (format #f "~a-image-loader" name)
+     #~(begin
+         (use-modules (gnu build oci-containers))
+         (oci-image-load '#$(oci-runtime-state-runtime runtime-state)
+                         #$(oci-runtime-state-runtime-cli runtime-state)
+                         #$image #$name #$tag
+                         #:verbose? #$verbose?)))))
 
 (define (oci-container-run-invocation container-invocation)
   "Return a list representing the OCI runtime
