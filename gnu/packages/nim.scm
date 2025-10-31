@@ -45,8 +45,8 @@
      (git-reference
       (url "https://github.com/nim-lang/atlas.git")
       ;; referenced in koch.nim
-      (commit "26cecf4d0cc038d5422fc1aa737eec9c8803a82b")))
-    (sha256 (base32 "0wbgxvgxqmla70hsy1ra85l27s100yllrwan5ycca833f7czi7wk"))))
+      (commit "2aa62121b40d580aa2fb27920a37b938d36c5f57")))
+    (sha256 (base32 "1vzy2aask25snbh178x3d7392cd1zs8mzrjma9isp61ilddchgig"))))
 
 (define sat
   (origin
@@ -62,14 +62,14 @@
 (define-public nim
   (package
     (name "nim")
-    (version "2.2.4")
+    (version "2.2.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://nim-lang.org/download/"
                           name "-" version ".tar.xz"))
       (sha256
-       (base32 "1iw9h486dqcc4jgxkdbgsx2nh640n6308yl97wgmdkpwa2bl2azq"))))
+       (base32 "12sjhlbla7i6zmhfycdd5kcv4md77w9aczx8s9482y7gblyhwyv5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f          ; TODO: Investigate tests failures.
@@ -197,7 +197,7 @@
 
                  (for-each (lambda (f)
                              (with-atomic-file-replacement f fixup-bin-sh-references))
-                           (find-files "c_code" "@m\\.\\.@slib@spure@sosproc\\.nim\\.c"))))
+                           (find-files "c_code" "@posproc\\.nim\\.c"))))
              (replace 'build
                (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
                  (setenv "XDG_CACHE_HOME" "./cache-home")
