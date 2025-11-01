@@ -55,6 +55,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system asdf)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
@@ -87,6 +88,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp-check)
   #:use-module (gnu packages lisp-xyz)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages multiprecision)
@@ -666,6 +668,74 @@ first expanding them into a minimal dialect of R7RS (small) without any
 syntactic extensions.  The resulting expression or program is then evaluated
 by an existing Scheme implementation.")
       (license license:expat))))
+
+(define-public ypsilon
+  (let ((commit "9982a834cd08bfa45e7db33b6a7b7d39c03f5632")
+        (revision "0"))
+  (package
+    (name "ypsilon")
+    (version "2.0.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fujita-y/ypsilon")
+             (commit commit)))
+       (sha256
+        (base32 "199bggcdgww2c3r5fzlhzx7mdwl3l579skraar09bpjzp6kcxk1n"))
+       (patches (search-patches "ypsilon-Use-GNU-toolchain-as-default.patch"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (inputs (list llvm-15 libffi))
+    (arguments
+     (list
+      #:out-of-source? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'disable-asan
+            (lambda _
+              (substitute* "CMakeLists.txt"
+                ;; TODO: Fix reported memory leak when rebuilding heap files
+                (("-fsanitize=address") ""))))
+          (add-after 'disable-asan 'disable-march
+            (lambda _
+              (substitute* "Makefile"
+                (("-march=x86") "")
+                (("-march=x86-64") ""))))
+          (add-after 'disable-march 'fix-test-sitelib
+            (lambda _
+              (substitute* "CMakeLists.txt"
+                (("--sitelib=./test:./sitelib")
+                 "--sitelib=./source/test:./source/sitelib"))
+              (substitute* '("CMakeLists.txt" "test/r6rs-lib.scm")
+                (("./test/") "./source/test/"))
+              (substitute* "test/r4rstest.scm"
+                (("(current-directory )\"test\"" all _)
+                 (string-append _ "\"source/test\"")))))
+          (add-before 'configure 'set-home
+            (lambda _
+              (setenv "HOME"
+                      (getcwd))))
+          (add-after 'build 'rebuild-heap-files
+            (lambda _
+              (substitute* "src/core.h"
+                (("(#define UNBOUND_GLOC_RETURN_UNSPEC )0" all _)
+                 (string-append _ "1")))
+              (with-directory-excursion "heap"
+                (invoke "make"))
+              (invoke "make")
+              (with-directory-excursion "heap"
+                (invoke "make"))
+              (substitute* "src/core.h"
+                (("(#define UNBOUND_GLOC_RETURN_UNSPEC )1" all _)
+                 (string-append _ "0")))
+              (invoke "make"))))))
+    (synopsis "R7RS/R6RS Scheme Implementation")
+    (description
+     "Ypsilon Scheme is an R7RS/R6RS Scheme implementation with
+on-the-fly FFI and native stub code generation, making use of the LLVM.")
+    (home-page "https://github.com/fujita-y/ypsilon")
+    (license license:bsd-2))))
 
 (define-public scheme48-rx
   (let* ((commit "dd9037f6f9ea01019390614f6b126b7dd293798d")
