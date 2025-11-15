@@ -3,6 +3,7 @@
 ;;; Copyright © 2021 Xinglu Chen <public@yoctocell.xyz>
 ;;; Copyright © 2022-2023, 2025 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2023 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2025 Giacomo Leidi <therewasa@fishinthecalculator.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
             home-activation-service-type
             home-run-on-change-service-type
             home-provenance-service-type
+            home-gc-root-service-type
 
             literal-string
             literal-string?
@@ -756,6 +758,14 @@ environment, and its configuration file, when available.")))
 
 (define sexp->home-provenance sexp->system-provenance)
 (define home-provenance system-provenance)
+
+
+;;;
+;;; Garbage collector roots.
+;;;
+
+(define home-gc-root-service-type
+  (system->home-service-type gc-root-service-type))
 
 
 ;;;
