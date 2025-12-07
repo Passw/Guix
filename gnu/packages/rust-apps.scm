@@ -4067,14 +4067,14 @@ advanced keybindings, word-level diff highlighting, syntax highlighting for
 (define-public wallust
   (package
     (name "wallust")
-    (version "3.3.0")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "wallust" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "08k593k7ixddf5z98drhzg2a858gal15dc8ih3gpsszz5q73y2ly"))))
+        (base32 "1yh55l0pqmg0wciji6nlgvmpcfpi8kd7r3ay02gpi2vbhyhch3mx"))))
     (build-system cargo-build-system)
     (arguments
      (list
