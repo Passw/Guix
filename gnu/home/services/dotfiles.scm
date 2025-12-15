@@ -45,7 +45,7 @@
 (define %home-dotfiles-excluded
   '(".*~"
     ".*\\.swp"
-    "\\.git"
+    "\\.git/.*"
     "\\.gitignore"))
 
 (define %home-dotfiles-layouts
@@ -135,8 +135,7 @@ value, excluding files that match any of the patterns configured."
     (define (filter-files directory)
       (find-files directory
                   (lambda (file stat)
-                    (not (regexp-exec exclusion-rx
-                                      (basename file))))))
+                    (not (regexp-exec exclusion-rx file)))))
     (if (and stow? packages (maybe-value-set? packages))
         (append-map filter-files
                     (map (lambda (pkg)
