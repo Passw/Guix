@@ -9139,7 +9139,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
 (define-public tlp
   (package
     (name "tlp")
-    (version "1.8.0")
+    (version "1.9.0")
     (source
      (origin
        (method git-fetch)
@@ -9148,7 +9148,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0r8r95wjb1sl5v8mli7kba2py9hc0ps915fx4lap5pg108ik9a06"))))
+        (base32 "0msskz42yy0ddq6gqak0dsl77wsym24ly3bkpymfwl9dr3wzikv8"))))
     (native-inputs
      (list shellcheck))
     (inputs
