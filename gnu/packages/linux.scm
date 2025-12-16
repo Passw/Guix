@@ -9264,7 +9264,7 @@ every time the power supply source is changed.")
 (define-public tlpui
   (package
     (name "tlpui")
-    (version "1.8.0")
+    (version "1.9.0")
     (source
      (origin
        (method git-fetch)
@@ -9273,7 +9273,7 @@ every time the power supply source is changed.")
              (commit (string-append "tlpui-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1q33p4gf5ii53wlgs61gghqxp3js5c45pn5nlibg2ygw069225r5"))))
+        (base32 "00rkq389zs525s7ckjj6cm34s25rsrgz47p28pp43ld35i538g9w"))))
     (build-system pyproject-build-system)
     (arguments
      (list
