@@ -810,6 +810,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/vm.scm				\
 						\
   %D%/system/images/a20-olinuxino-lime2.scm			\
+  %D%/system/images/am335x-evm.scm		\
   %D%/system/images/hurd.scm			\
   %D%/system/images/novena.scm			\
   %D%/system/images/orangepi-r1-plus-lts-rk3328.scm	\
