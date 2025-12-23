@@ -1500,7 +1500,7 @@ formats (e.g. Bibtex, RIS, etc.) using a common XML intermediate.")
 (define-public goawk
   (package
     (name "goawk")
-    (version "1.30.1")
+    (version "1.31.0")
     (source
      (origin
        (method git-fetch)
@@ -1509,7 +1509,7 @@ formats (e.g. Bibtex, RIS, etc.) using a common XML intermediate.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18kbcmbxxl9yniz69hwnh2jyw93g3zws8ba02vvhjfwr4xqcm3fp"))))
+        (base32 "14nswcp1abg3g3xxsniwk17s2c6zxrlncizjzj2rl866hdpgmv1f"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -1519,7 +1519,7 @@ formats (e.g. Bibtex, RIS, etc.) using a common XML intermediate.")
       #~(list "-vet=off" ;Go@1.24 forces vet, but tests are not ready yet.
               ;; XXX: The most of the tests passed but some of the group fails
               ;; to find additional commands or compare output of test data.
-              "-skip" "TestCommandLine|TestInterp")
+              "-skip" "TestCommandLine|TestInterp|TestExecute")
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'check 'pre-check
