@@ -1390,7 +1390,7 @@ libraries providing most of the functionality of the original.")
 (define-public schemesh
   (package
     (name "schemesh")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method git-fetch)
@@ -1398,7 +1398,7 @@ libraries providing most of the functionality of the original.")
               (url "https://github.com/cosmos72/schemesh")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
-       (sha256 (base32 "0rnd2mz3vnsxdac5q7i625mkmfc1znp865wxdqqx1c6dqb26bqrv"))))
+       (sha256 (base32 "1dki6qa2ws5gjqnmp8ldl4g2lg739i1r0cqflwavlyipb1f2j51s"))))
     (build-system gnu-build-system)
     (arguments
      (list #:tests? #f
