@@ -19,6 +19,7 @@
 ;;; Copyright © 2025 Rutherther <rutherther@ditigal.xyz>
 ;;; Copyright © 2025 Jordan Moore <lockbox@struct.foo>
 ;;; Copyright © 2025 Artyom V. Poptsov <poptsov.artyom@gmail.com>
+;;; Copyright © 2025 Laura Kirsch <laurakirsch240406@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -129,6 +130,37 @@
   #:use-module (guix build-system pyproject)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt))
+
+(define-public acarsdec
+  (package
+    (name "acarsdec")
+    (version "4.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/f00b4r0/acarsdec")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wxb6gldhn11ans36hxw8n0v610v2fyq5m9p1n6d2fpwhn7m93ks"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:tests? #f                 ;no tests
+      #:build-type "Release"))
+    (native-inputs
+     (list pkg-config))
+    (inputs
+     (list libacars
+           rtl-sdr alsa-lib))
+    (home-page "https://github.com/TLeconte/acarsdec")
+    (synopsis "ACARS SDR decoder")
+    (description
+     "Acarsdec is a multi-channels acars decoder with built-in rtl_sdr,
+airspy front end or sdrplay device.  Since 3.0, it comes with acarsserv to
+store received acars messages.")
+    (license license:gpl2)))
 
 (define-public libfec
   ;; Use commit to get compilation fixes that are not in a release yet.
