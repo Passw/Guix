@@ -5769,15 +5769,16 @@ many codecs and formats supported by libmediainfo.")
   (package
     (name "atomicparsley")
     (version "20200701.154658.b0d6223")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/wez/atomicparsley")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1kym2l5y34nmbrrlkfmxsf1cwrvch64kb34jp0hpa0b89idbhwqh"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/wez/atomicparsley")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1kym2l5y34nmbrrlkfmxsf1cwrvch64kb34jp0hpa0b89idbhwqh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;; no tests included
