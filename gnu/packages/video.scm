@@ -5784,14 +5784,6 @@ many codecs and formats supported by libmediainfo.")
      `(#:tests? #f ;; no tests included
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'set-cmake-version
-           (lambda* _
-             (substitute* "CMakeLists.txt"
-               ;; At the time of writing, Guix has CMake at 3.16, but
-               ;; AtomicParsley uses 3.17.  This brings the required CMake
-               ;; version down to what Guix can afford.
-               (("VERSION 3.17") "VERSION 3.16"))
-             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
