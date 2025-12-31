@@ -5781,15 +5781,15 @@ many codecs and formats supported by libmediainfo.")
          "1kym2l5y34nmbrrlkfmxsf1cwrvch64kb34jp0hpa0b89idbhwqh"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;; no tests included
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
-               (install-file "AtomicParsley" bin))
-             #t)))))
+     (list
+      #:tests? #f                       ; Tests not implemented in cmake yet.
+      #:phases
+      #~(modify-phases %standard-phases
+          (replace 'install
+            (lambda _
+              (mkdir-p (string-append #$output "/bin"))
+              (install-file "AtomicParsley"
+                            (string-append #$output "/bin")))))))
     (inputs
      (list zlib))
     (synopsis "Metadata editor for MPEG-4 files")
