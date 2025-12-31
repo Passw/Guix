@@ -5768,7 +5768,7 @@ many codecs and formats supported by libmediainfo.")
 (define-public atomicparsley
   (package
     (name "atomicparsley")
-    (version "20200701.154658.b0d6223")
+    (version "20240608.083822.1ed9031")
     (source
      (origin
        (method git-fetch)
@@ -5778,7 +5778,7 @@ many codecs and formats supported by libmediainfo.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1kym2l5y34nmbrrlkfmxsf1cwrvch64kb34jp0hpa0b89idbhwqh"))))
+         "1y2p6al47w0hfdnkimdbjl11vj138ylhl7rpc96l6cldj4rcw6jn"))))
     (build-system cmake-build-system)
     (arguments
      (list
