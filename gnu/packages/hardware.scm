@@ -221,7 +221,7 @@ Notable features include:
 (define-public deskflow
   (package
     (name "deskflow")
-    (version "1.23.0")
+    (version "1.25.0")
     (source
      (origin
        (method git-fetch)
@@ -230,7 +230,7 @@ Notable features include:
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wgj0sjnxkfplpq05q2lqgag29l7bf4cqdw0xmr89ayrh1nyjxa1"))))
+        (base32 "1fd2pasc8l0rb9k2f97ip69h4y8gppz1v7jik46476h477ykz7p7"))))
     (build-system cmake-build-system)
     (arguments
      (list
