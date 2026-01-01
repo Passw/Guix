@@ -140,7 +140,7 @@
 (define-public atf
   (package
     (name "atf")
-    (version "0.21")
+    (version "0.23")
     (source
      (origin
        (method git-fetch)
@@ -150,9 +150,7 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0jwzz6g9jdi5f8v10y0wf3hq73vxyv5qqhkh832ddsj36gn8rlcz"))
-       (patches
-        (search-patches "atf-execute-with-shell.patch"))))
+         "12hcvclzphgkhmp226abhn9nl2j5vcm7nfnqbs8232ws41x1gmw3"))))
     (build-system gnu-build-system)
     (arguments
      (list
