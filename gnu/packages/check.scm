@@ -169,18 +169,18 @@
     (home-page "https://github.com/freebsd/atf")
     (synopsis "C/C++ Automated Testing Framework libraries")
     (description
-     "ATF, or Automated Testing Framework, is a collection of libraries to
-write test programs in C, C++ and POSIX shell.
+     "@acronym{ATF, Automated Testing Framework}, is a collection of libraries
+to write test programs in C, C++ and POSIX shell.
 
-The ATF libraries offer a simple API.  The API is orthogonal through the
-various bindings, allowing developers to quickly learn how to write test
-programs in different languages.
+The ATF libraries offer a simple API orthogonal through the various bindings,
+allowing developers to quickly learn how to write test programs in different
+languages.
 
-ATF-based test programs offer a consistent end-user command-line interface to
-allow both humans and automation to run the tests.
+ATF-based test programs offer a consistent end-user command-line interface,
+allowing execution to both humans and automation.
 
-ATF-based test programs rely on an execution engine to be run and this
-execution engine is not shipped with ATF.  Kyua is the engine of choice.")
+ATF-based test programs rely on a third-party execution engine to be run,
+shipped separatedly.  @command{Kyua} is the engine of choice.")
     (license
      (list license:bsd-2
            license:bsd-3))))
