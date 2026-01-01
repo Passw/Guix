@@ -4257,6 +4257,42 @@ ECMA-48} specs.")
      "Package conpty implements Windows Console Pseudo-terminal support.")
     (license license:expat)))
 
+(define-public go-github-com-charmbracelet-x-errors
+  (package
+    (name "go-github-com-charmbracelet-x-errors")
+    (version "0.0.0-20251028133951-21a390f3cede")
+    (source
+     (origin
+       (method git-fetch/lfs)
+       (uri (git-reference
+              (url "https://github.com/charmbracelet/x")
+              (commit (go-version->git-ref version #:subdir "errors"))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "088786ak8jsgvssbb5y16z066vfq9f6078sjc7iv766knfr2i0x2"))
+       (modules '((guix build utils)
+                  (ice-9 ftw)
+                  (srfi srfi-26)))
+       (snippet
+        #~(begin
+            (define (delete-all-but directory . preserve)
+              (with-directory-excursion directory
+                (let* ((pred (negate (cut member <>
+                                          (cons* "." ".." preserve))))
+                       (items (scandir "." pred)))
+                  (for-each (cut delete-file-recursively <>) items))))
+            (delete-all-but "." "errors")))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/charmbracelet/x/errors"
+      #:unpack-path "github.com/charmbracelet/x"))
+    (home-page "https://github.com/charmbracelet/x")
+    (synopsis "Error handling utilities for Go")
+    (description
+     "This package provides error handling utilities for Go applications.")
+    (license license:expat)))
+
 (define-public go-github-com-charmbracelet-x-exp-golden
   (package
     (name "go-github-com-charmbracelet-x-exp-golden")
