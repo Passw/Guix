@@ -18927,6 +18927,31 @@ Go @code{time.Time} values.  Julian days are used by SQLite and other
 databases for date/time storage.")
     (license license:unlicense)))
 
+(define-public go-github-com-ncruces-sort
+  (package
+    (name "go-github-com-ncruces-sort")
+    (version "0.1.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ncruces/sort")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "07kamgkqhhn1klybx9z11a5pznra89pk1316b5x53jvj3116qjyn"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:skip-build? #t
+      #:import-path "github.com/ncruces/sort"))
+    (home-page "https://github.com/ncruces/sort")
+    (synopsis "Additional sorting algorithms for Go")
+    (description
+     "This package provides additional sorting algorithms for Go, including a
+stable natural sort and other utilities.")
+    (license license:expat)))
+
 (define-public go-github-com-netflix-go-expect
   (package
     (name "go-github-com-netflix-go-expect")
