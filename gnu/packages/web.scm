@@ -9213,7 +9213,7 @@ HTTrack is fully configurable, and has an integrated help system.")
 (define-public binaryen
   (package
     (name "binaryen")
-    (version "112")
+    (version "125")
     (source
      (origin
        (method git-fetch)
@@ -9222,21 +9222,28 @@ HTTrack is fully configurable, and has an integrated help system.")
              (commit (string-append "version_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0970iz22yjxgi27d67kwmrx4zq7hig3i6b92vmlp4c4bd1bacny5"))))
+        (base32 "1hgwgl7kwsxg7cihzz46lvsfzpkpy6w7w5c9gm4bhkfwz231jvs0"))))
     (build-system cmake-build-system)
     (arguments
      (list
       #:tests? #f
       #:phases
-      '(modify-phases %standard-phases
-         (add-after 'unpack 'use-system-googletest
-           (lambda _
-             (substitute* "third_party/CMakeLists.txt"
-               (("  googletest/.*") "")
-               (("add_library\\(gtest.*") ""))
-             (substitute* "CMakeLists.txt"
-               (("add_subdirectory\\(test/gtest\\)")
-                "find_package(GTest REQUIRED)")))))))
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'use-system-googletest
+            (lambda _
+              (substitute* "third_party/CMakeLists.txt"
+                (("  googletest/.*") "")
+                (("add_library\\(gtest.*") "")
+                (("target_compile_options\\(gtest.*") "")
+                (("target_compile_options\\(gtest_main.*") ""))
+              (substitute* "CMakeLists.txt"
+                (("add_subdirectory\\(test/gtest\\)")
+                 "find_package(GTest REQUIRED)"))))
+          (add-after 'unpack 'fix-gcc14-compatibility
+            (lambda _
+              ;; Disable -Werror to fix GCC 14 build failure.
+              (substitute* "CMakeLists.txt"
+                (("-Werror") "")))))))
     (native-inputs (list googletest))
     (home-page "https://github.com/WebAssembly/binaryen")
     (synopsis "Optimizer and compiler/toolchain library for WebAssembly")
