@@ -18902,6 +18902,31 @@ very fast, and tries to be entropy pool friendly.")
 and parsing.")
     (license license:expat)))
 
+(define-public go-github-com-ncruces-julianday
+  (package
+    (name "go-github-com-ncruces-julianday")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/ncruces/julianday")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12zg7hwbhvw2ns2qnf86d4nk0vkbklvp3h49ins7qb43iqw73s8i"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/ncruces/julianday"))
+    (home-page "https://github.com/ncruces/julianday")
+    (synopsis "Julian day conversions for Go")
+    (description
+     "This package provides functions for converting between Julian days and
+Go @code{time.Time} values.  Julian days are used by SQLite and other
+databases for date/time storage.")
+    (license license:unlicense)))
+
 (define-public go-github-com-netflix-go-expect
   (package
     (name "go-github-com-netflix-go-expect")
