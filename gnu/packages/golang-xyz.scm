@@ -9132,7 +9132,7 @@ quoting, commenting, and escaping.")
 (define-public go-github-com-fsnotify-fsnotify
   (package
     (name "go-github-com-fsnotify-fsnotify")
-    (version "1.8.0")
+    (version "1.9.0")
     (source
      (origin
        (method git-fetch)
@@ -9141,7 +9141,7 @@ quoting, commenting, and escaping.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1wr3695yb7hl405h6pzkbdkkxpdbmc5kwjjwaf9almbvmpk6077r"))))
+        (base32 "0s575f75f3qf5367wgbsyz8sdd8agxxfv6wbph27r94xvva49njs"))))
     (build-system go-build-system)
     (arguments
      (list
