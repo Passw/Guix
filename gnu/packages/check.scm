@@ -1032,15 +1032,16 @@ has been designed to be fast, light and unintrusive.")
   (package
     (name "kyua")
     (version "0.14.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/freebsd/kyua")
-                    (commit (string-append name "-" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0w238ynhnjz7p2v8fbgxv35kl1x7a4vs86227qhb4gxncr75nsbl"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/freebsd/kyua")
+              (commit (string-append name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0w238ynhnjz7p2v8fbgxv35kl1x7a4vs86227qhb4gxncr75nsbl"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -1074,8 +1075,16 @@ has been designed to be fast, light and unintrusive.")
               (substitute* "utils/Kyuafile"
                 ((".*atf_test_program.*stacktrace_test.*")
                  "")))))))
-    (native-inputs (list autoconf automake gdb-minimal libtool pkg-config))
-    (inputs (list atf lutok sqlite))
+    (native-inputs
+     (list autoconf
+           automake
+           gdb-minimal
+           libtool
+           pkg-config))
+    (inputs
+     (list atf
+           lutok
+           sqlite))
     (home-page "https://github.com/freebsd/kyua")
     (synopsis "Testing framework for infrastructure software")
     (description "Kyua is a testing framework for infrastructure software.
