@@ -1087,11 +1087,18 @@ has been designed to be fast, light and unintrusive.")
            sqlite))
     (home-page "https://github.com/freebsd/kyua")
     (synopsis "Testing framework for infrastructure software")
-    (description "Kyua is a testing framework for infrastructure software.
-Kyua is lightweight and simple, and integrates well with various build systems
-and continuous integration frameworks.  Kyua features an expressive test suite
-definition language, a safe runtime engine for test suites and a powerful
-report generation engine.")
+    (description
+     "Kyua is a lightweight and simple testing framework for infrastructure
+software., integrating well with various build systems and continuous
+integration frameworks.
+
+Kyua features an expressive test suite definition language, a safe runtime
+engine for test suites and a powerful report generation engine.
+
+Kyua is able to execute test programs written with a plethora of testing
+libraries and languages.  The library of choice is @code{atf}, for which Kyua
+was originally designed, but simple, framework-less and @acronym{TAP, Test
+Anything Protocol} compliant programs can also be executed through Kyua.")
     (license license:bsd-3)))
 
 (define-public googletest
