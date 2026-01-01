@@ -190,6 +190,7 @@
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages logging)
@@ -2065,6 +2066,87 @@ header file.
 These tools are intended for use in (or for development of) toolchains or
 other systems that want to manipulate WebAssembly files.")
     (license license:asl2.0)))
+
+(define-public wasi-libc
+  (package
+    (name "wasi-libc")
+    (version "28")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/WebAssembly/wasi-libc")
+              (commit (string-append "wasi-sdk-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1zgl5kyz4r6zxsmi3ihx1wyakhpp1dknzplbj4jb6bvnj1rzn1gg"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:tests? #f                       ;tests require a WASM runtime
+      #:make-flags
+      #~(list (string-append "CC="
+                             #$(this-package-native-input "clang")
+                             "/bin/clang")
+              (string-append "AR="
+                             #$(this-package-native-input "llvm")
+                             "/bin/llvm-ar")
+              (string-append "NM="
+                             #$(this-package-native-input "llvm")
+                             "/bin/llvm-nm")
+              (string-append "SYSROOT=" #$output "/share/wasi-sysroot")
+              (string-append "INSTALL_DIR=" #$output "/share/wasi-sysroot")
+              ;; Provide an empty builtins library to avoid network download.
+              ;; The real compiler-rt builtins will be provided by
+              ;; wasi-compiler-rt.
+              "BUILTINS_LIB=/tmp/dummy-builtins.a")
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'configure)
+          (add-before 'build 'create-dummy-builtins
+            (lambda _
+              ;; Create an empty archive to satisfy the BUILTINS_LIB
+              ;; requirement.  This prevents the Makefile from trying to
+              ;; download builtins via curl.
+              (invoke (string-append #$(this-package-native-input "llvm")
+                                     "/bin/llvm-ar")
+                      "crs" "/tmp/dummy-builtins.a")))
+          (replace 'build
+            (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+              (let ((targets '("wasm32-wasi"
+                               "wasm32-wasip1-threads"
+                               "wasm32-wasip2")))
+                (for-each
+                 (lambda (target)
+                   (format #t "Building for target: ~a~%" target)
+                   (apply invoke "make"
+                          "-j" (if parallel-build?
+                                   (number->string (parallel-job-count))
+                                   "1")
+                          (string-append "TARGET_TRIPLE=" target)
+                          (if (string=? target "wasm32-wasip1-threads")
+                              (cons "THREAD_MODEL=posix" make-flags)
+                              (if (string=? target "wasm32-wasip2")
+                                  (cons "WASI_SNAPSHOT=p2" make-flags)
+                                  make-flags))))
+                 targets))))
+          (delete 'install))))
+    (native-inputs (list clang-21 llvm-21 lld-21))
+    (native-search-paths
+     (list (search-path-specification
+             (variable "WASI_SYSROOT")
+             (files '("share/wasi-sysroot")))))
+    (home-page "https://github.com/WebAssembly/wasi-libc")
+    (synopsis "WASI C library for WebAssembly")
+    (description
+     "WASI Libc is a libc implementation for WebAssembly programs using the
+WebAssembly System Interface (WASI).  It provides C library functionality for
+compiling C and C++ programs to WebAssembly that can run outside the browser.
+The library supports multiple WASI targets including @code{wasm32-wasi},
+@code{wasm32-wasip1-threads}, and @code{wasm32-wasip2}.")
+    (license (list license:asl2.0         ;most files
+                   license:expat          ;dlmalloc
+                   license:bsd-2))))      ;cloudlibc
 
 (define-public wasm3
   ;; Use an unreleased version with 'm3_GetTableFunction' for tic80.
