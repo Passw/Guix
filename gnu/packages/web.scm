@@ -2067,6 +2067,95 @@ These tools are intended for use in (or for development of) toolchains or
 other systems that want to manipulate WebAssembly files.")
     (license license:asl2.0)))
 
+(define-public wasi-compiler-rt
+  (package
+    (name "wasi-compiler-rt")
+    (version "21.1.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/llvm/llvm-project")
+             (commit (string-append "llvmorg-" version))))
+       (file-name (string-append "llvm-project-" version "-checkout"))
+       (sha256
+        (base32 "0v99a90546lrd3cxgam32c0jcnwzi0ljk0ihdvd9xghzss1pq1x6"))
+       (patches (search-patches "clang-18.0-libc-search-path.patch"
+                                "clang-17.0-link-dsymutil-latomic.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:tests? #f                       ;requires WASM runtime to run tests
+      #:build-type "Release"
+      #:configure-flags
+      #~(list (string-append "-DCMAKE_INSTALL_PREFIX=" #$output)
+              "-DCMAKE_C_COMPILER_WORKS=ON"
+              "-DCMAKE_CXX_COMPILER_WORKS=ON"
+              "-DCOMPILER_RT_BAREMETAL_BUILD=ON"
+              ;; Use the normalized target triple so clang finds the builtins
+              ;; at lib/<target>/libclang_rt.builtins.a
+              "-DCOMPILER_RT_OS_DIR=wasm32-unknown-wasi"
+              "-DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON"
+              "-DCOMPILER_RT_INCLUDE_TESTS=OFF"
+              "-DCOMPILER_RT_HAS_FPIC_FLAG=OFF"
+              (string-append "-DCMAKE_SYSROOT="
+                             #$(this-package-input "wasi-libc")
+                             "/share/wasi-sysroot")
+              (string-append "-DCMAKE_C_FLAGS=-fno-exceptions --target=wasm32-wasi "
+                             "-isystem "
+                             #$(this-package-input "wasi-libc")
+                             "/share/wasi-sysroot/include/wasm32-wasi")
+              (string-append "-DCMAKE_C_COMPILER="
+                             #$(this-package-native-input "clang")
+                             "/bin/clang")
+              (string-append "-DCMAKE_CXX_COMPILER="
+                             #$(this-package-native-input "clang")
+                             "/bin/clang++")
+              (string-append "-DCMAKE_AR="
+                             #$(this-package-native-input "llvm")
+                             "/bin/llvm-ar")
+              (string-append "-DCMAKE_RANLIB="
+                             #$(this-package-native-input "llvm")
+                             "/bin/llvm-ranlib")
+              "-DCMAKE_SYSTEM_NAME=WASI"
+              "-DCMAKE_SYSTEM_PROCESSOR=wasm32"
+              "-DCMAKE_C_COMPILER_TARGET=wasm32-wasi"
+              "-DCMAKE_CXX_COMPILER_TARGET=wasm32-wasi"
+              "-DCMAKE_ASM_COMPILER_TARGET=wasm32-wasi")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'change-directory
+            (lambda _
+              ;; Build only the builtins library from compiler-rt
+              (chdir "compiler-rt/lib/builtins")))
+          (add-after 'install 'create-target-symlinks
+            (lambda _
+              ;; Create symlinks for wasip1 and wasip2 targets
+              (let* ((lib-dir (string-append #$output "/lib"))
+                     (wasi-dir (string-append lib-dir "/wasm32-unknown-wasi")))
+                (symlink "wasm32-unknown-wasi"
+                         (string-append lib-dir "/wasm32-unknown-wasip1"))
+                (symlink "wasm32-unknown-wasi"
+                         (string-append lib-dir "/wasm32-unknown-wasip2"))
+                ;; Clang looks for libclang_rt.builtins.a but we have
+                ;; libclang_rt.builtins-wasm32.a, so create a symlink
+                (symlink "libclang_rt.builtins-wasm32.a"
+                         (string-append wasi-dir "/libclang_rt.builtins.a"))))))))
+    (native-inputs
+     (list clang-21
+           llvm-21
+           lld-21))
+    (inputs
+     (list wasi-libc))
+    (home-page "https://compiler-rt.llvm.org")
+    (synopsis "LLVM compiler runtime builtins for WASI")
+    (description
+     "This package provides the LLVM compiler runtime builtins library for the
+WebAssembly System Interface (WASI) target.  It includes software
+implementations of arithmetic operations that are not directly supported by
+the WebAssembly instruction set.")
+    (license license:asl2.0)))          ;with LLVM exceptions
+
 (define-public wasi-libc
   (package
     (name "wasi-libc")
