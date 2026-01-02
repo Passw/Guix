@@ -14520,16 +14520,16 @@ and binary encoder.")
 (define-public go-github-com-tetratelabs-wazero
   (package
     (name "go-github-com-tetratelabs-wazero")
-    (version "1.8.2")
+    (version "1.11.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tetratelabs/wazero")
+             (url "https://github.com/wazero/wazero")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xchvrkp6m729x3jknj3qwms4w2b2q8kcwyxhkmagms43yg4ykm5"))
+        (base32 "15gpb9w2wq16z40042vkhqzs39yb6icpxd4l8cnwhdfzbj3rd1hm"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
@@ -14561,14 +14561,15 @@ and binary encoder.")
                              "Test_cli/zig-cc/testcases/test.txt"
                              "Test_cli/zig/test.txt")
                        "|"))))
-    (home-page "https://github.com/tetratelabs/wazero")
-    (synopsis "Zero dependency WebAssembly runtime for Go")
+    (propagated-inputs (list go-golang-org-x-sys))
+    (home-page "https://github.com/wazero/wazero")
+    (synopsis "CGO-free WebAssembly runtime for Go")
     (description
      "wazero is a WebAssembly Core Specification
 @url{https://www.w3.org/TR/2019/REC-wasm-core-1-20191205/,1.0} and
-@code{https://www.w3.org/TR/2022/WD-wasm-core-2-20220419/,2.0} compliant
-runtime.  It has zero dependencies, and doesn't rely on CGO.  This means you
-can run applications in other languages and still keep cross compilation.")
+@url{https://www.w3.org/TR/2022/WD-wasm-core-2-20220419/,2.0} compliant
+runtime.  It doesn't rely on CGO, which means you can run applications in
+other languages and still keep cross compilation.")
     (license license:asl2.0)))
 
 (define-public go-github-com-theodorsm-covert-dtls
