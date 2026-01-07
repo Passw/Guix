@@ -86,6 +86,7 @@
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
+  #:use-module (guix modules)
   #:use-module (guix utils))
 
 (define-public nimf
@@ -873,7 +874,7 @@ noun phrases, verb phrases, etc.).")
 (define-public praat
   (package
     (name "praat")
-    (version "6.4.49")
+    (version "6.4.52")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -882,7 +883,7 @@ noun phrases, verb phrases, etc.).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1h49ffxjrc3pxamm0b77n6jirl5pp9xm09fvb16mx1qwr0cnzi2q"))))
+                "16ab95m7spq1lhkwpdn9s3bxxcnjh6mzznlalh22ag8n414wdj23"))))
     (build-system gnu-build-system)
     (arguments
      (list #:make-flags #~(list (string-append "CC="
@@ -895,8 +896,11 @@ noun phrases, verb phrases, etc.).")
                                ""))))
                         (replace 'configure
                           (lambda _
-                            (copy-file "makefiles/makefile.defs.linux.pulse-gcc"
-                                       "makefile.defs")))
+                            (copy-file
+                             #$(if (target-little-endian?)
+                                   "makefiles/makefile.defs.linux.pulse-gcc.LE"
+                                   "makefiles/makefile.defs.linux.pulse-gcc.BE")
+                             "makefile.defs")))
                         (replace 'check
                           (lambda* (#:key tests? #:allow-other-keys)
                             (when tests?
