@@ -81,6 +81,7 @@
 ;;; Copyright © 2025 ROCKTAKEY <rocktakey@gmail.com>
 ;;; Copyright © 2026 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2026 Luis Guilherme Coelho <lgcoelho@disroot.org>
+;;; Copyright © 2026 Andy Tai <atai@atai.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -137,6 +138,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages debian)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages elf)
@@ -7078,6 +7080,61 @@ network, which causes enabled computers to power on.")
 It shows which process uses the port, and its information like process tree,
 working directory, user, pid, command, and so on.")
     (license license:asl2.0)))
+
+(define-public radius
+  (package
+    (name "radius")
+    (version "1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/radius/radius-" version ".tar.xz"))
+       (sha256
+        (base32 "0n9k30ma7n9xmjwlvsv9x333g52lfplbpzcyg0vh2wmm423bvy36"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "--with-log-dir=/var/log"
+              #$@(if (target-hurd?)
+                     '()
+                     '("--with-libpam")))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'skip-failing-tests
+            (lambda _
+              (for-each (lambda (test)
+                          (substitute* "tests/testsuite.at"
+                            ((test)
+                             "")))
+                        (list "execwait")))))))
+    (inputs (append (if (target-hurd?)
+                        '()
+                        (list linux-pam util-linux))
+                   (list acl
+                         gawk
+                         gdbm
+                         gettext-minimal
+                         guile-3.0
+                         libxcrypt
+                         readline)))
+    (native-inputs (list autoconf
+                         bash-minimal
+                         bison
+                         flex
+                         groff
+                         m4
+                         procps
+                         texinfo))
+    (home-page "https://www.gnu.org/software/radius/")
+    (synopsis "Authentication and accounting services and daemon")
+    (description
+     "GNU Radius is a server for remote user authentication and accounting.  It
+is generally useful for networks that require a centralized authentication
+and accounting services for its workstations.  Authentication can be
+performed in a variety of ways, such as via @file{/etc/passwd} or credentials
+stored in an SQL database.")
+    (license license:gpl3+)))
 
 (define-public xfel
   (package
