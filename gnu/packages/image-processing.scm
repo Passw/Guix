@@ -93,6 +93,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages nss)
@@ -591,7 +592,7 @@ different data arrays similar to those available in the numdiff software.")
 (define-public opencv
   (package
     (name "opencv")
-    (version "4.12.0")
+    (version "4.13.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -620,7 +621,7 @@ different data arrays similar to those available in the numdiff software.")
                                    "zlib-ng")))
               (sha256
                (base32
-                "1n5qif1ispmdby1cmwf9f8isdx07phyhb19jsmgrw5bk3k23dcyy"))))
+                "15w4fqjqv5k1yw70jbjsnlgiky39mqpy05rvmm2fbyjrif4kbgkl"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -811,7 +812,7 @@ different data arrays similar to those available in the numdiff software.")
            (file-name (git-file-name "opencv_extra" version))
            (sha256
             (base32
-             "0awang2hl7z194rlnic38ry6fgxy8b7k2qqasinjqznxab4dkhvz"))))
+             "0jbph7zg4cczpnly9n2xarwk2l1gxlv3644avjny4rkr32kcggdg"))))
        ("opencv-contrib"
         ,(origin
            (method git-fetch)
@@ -820,9 +821,10 @@ different data arrays similar to those available in the numdiff software.")
            (file-name (git-file-name "opencv_contrib" version))
            (sha256
             (base32
-             "1ai1kanlq1wr3173q86yfj6r9h3kkvjx18cakjr31jkb25qyrmny"))))))
+             "121qkc7g9kwgkv094khxdqqm5bf7ykqplmaadgszcsgxa6ml517i"))))))
     (inputs
-     (list eigen
+     (list dlpack
+           eigen
            ffmpeg-4
            ;; TODO: add gstreamer
            gtk+
