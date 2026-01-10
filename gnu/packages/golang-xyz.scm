@@ -4149,7 +4149,7 @@ and multi-selects with a focus on user experience and aesthetics.")
     (version "0.10.1")
     (source
      (origin
-       (method git-fetch)
+       (method git-fetch/lfs)
        (uri (git-reference
               (url "https://github.com/charmbracelet/x")
               (commit (go-version->git-ref version
