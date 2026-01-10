@@ -4263,7 +4263,7 @@ ECMA-48} specs.")
     (version "0.0.0-20241121171228-5bc00623ea2f")
     (source
      (origin
-       (method git-fetch)
+       (method git-fetch/lfs)
        (uri (git-reference
              (url "https://github.com/charmbracelet/x")
              (commit (go-version->git-ref version
