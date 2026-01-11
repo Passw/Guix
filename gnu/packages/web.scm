@@ -78,7 +78,7 @@
 ;;; Copyright © 2025 Ashish SHUKLA <ashish.is@lostca.se>
 ;;; Copyright © 2025 Philippe Swartvagher <phil.swart@gmx.fr>
 ;;; Copyright © 2025 pinoaffe <pinoaffe@gmail.com>
-;;; Copyright © 2025 gemmaro <gemmaro.dev@gmail.com>
+;;; Copyright © 2025, 2026 gemmaro <gemmaro.dev@gmail.com>
 ;;; Copyright © 2025 Igorj Gorjaĉev <igor@goryachev.org>
 ;;; Copyright © 2026 Rodion Goritskov <rodion@goritskov.com>
 ;;; Copyright © 2026 Sharlatan Hellseher <sharlatanus@gmail.com>
@@ -10202,7 +10202,7 @@ week, a month) and then browse/organise it while staying disconnected.")
 (define-public uriparser
   (package
     (name "uriparser")
-    (version "0.9.9")
+    (version "1.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -10211,12 +10211,12 @@ week, a month) and then browse/organise it while staying disconnected.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1cd7z37ap5s5ipr4vnwzfmwir9n1ir266rnxq9rjisfzy5gq903w"))))
+                "05y33g80wgf155lm6ir21kw2an59fgf3q4w26iaarc8zi75m324k"))))
     (build-system cmake-build-system)
     (native-inputs (list googletest doxygen graphviz))
     (arguments (if (%current-target-system)
                    (list #:configure-flags #~(list "-DURIPARSER_BUILD_TESTS=OFF"))
-                   '()))
+                   (list #:configure-flags #~(list "-DURIPARSER_BUILD_TESTS=ON"))))
     (synopsis "Strictly RFC 3986 compliant URI parsing and handling library")
     (description "uriparser is a strictly RFC 3986 compliant URI parsing and
 handling library written in C89 (\"ANSI C\").  uriparser is fast and supports
