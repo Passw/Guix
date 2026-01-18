@@ -118,6 +118,7 @@
             target-loongarch64?
             target-mips64el?
             target-64bit?
+            target-32bit?
             target-little-endian?
             ar-for-target
             as-for-target
@@ -866,6 +867,10 @@ architecture (x86_64) using 32-bit data types?"
                                                (%current-system))))
   (any (cut string-prefix? <> system) '("x86_64" "aarch64" "mips64"
                                         "powerpc64" "riscv64" "loongarch64")))
+
+(define* (target-32bit? #:optional (system (or (%current-target-system)
+                                               (%current-system))))
+  (not (target-64bit? system)))
 
 (define* (target-little-endian? #:optional (target (or (%current-target-system)
                                                        (%current-system))))
