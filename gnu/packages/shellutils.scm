@@ -1066,7 +1066,7 @@ source ${GUIX_ENVIRONMENT:-$HOME/.guix-profile}/etc/profile.d/grc.sh
 (define-public liquidprompt
   (package
     (name "liquidprompt")
-    (version "2.1.2")
+    (version "2.2.1")
     (home-page "https://github.com/liquidprompt/liquidprompt")
     (source
      (origin
@@ -1076,15 +1076,14 @@ source ${GUIX_ENVIRONMENT:-$HOME/.guix-profile}/etc/profile.d/grc.sh
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ljlq97mh84d6g6r3abb254vrwrdan5v74b69fpd62d7p9ffnsgf"))))
+        (base32 "1xm3cb2dinn0zqqqya4qz2v8mp8hb6f1mckqvc6npdf8xlcwap35"))))
     (build-system copy-build-system)
     (arguments
      (list
-      #:install-plan #~'(("liquidpromptrc-dist" "etc/liquidpromptrc")
-                         ("example.bashrc" "share/liquidprompt/examples/")
-                         ("liquid.ps1" "share/liquidprompt/examples/")
+      #:install-plan #~'(("example.bashrc" "share/liquidprompt/examples/")
                          ("liquidprompt" "share/liquidprompt/")
                          ("contrib" "share/liquidprompt/")
+                         ("templates" "share/liquidprompt/")
                          ("themes" "share/liquidprompt/")
                          ("liquidprompt.plugin.zsh"
                           "share/zsh/plugins/liquidprompt/")
@@ -1107,7 +1106,16 @@ source ${GUIX_ENVIRONMENT:-$HOME/.guix-profile}/etc/profile.d/grc.sh
                                          (search-input-file
                                           inputs
                                           (string-append "bin/" command))
-                                         ending))))))))
+                                         ending)))))
+                   (add-after 'install 'install-generated-config
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (let* ((out (assoc-ref outputs "out"))
+                              (etc (string-append out "/etc"))
+                              (config (string-append etc "/liquidpromptrc")))
+                         (mkdir etc)
+                         (with-output-to-file config
+                           (lambda _
+                             (invoke "./tools/config-from-doc.sh")))))))))
     (inputs (list ncurses
                   coreutils
                   inetutils))
