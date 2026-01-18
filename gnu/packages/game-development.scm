@@ -3684,7 +3684,7 @@ utilities frequently used in roguelikes.")
      (list #:tests? #f                  ; No tests.
            #:configure-flags
            ;; Needed to fix 32bit builds.
-           #~(if (not #$(target-64bit?))
+           #~(if #$(target-32bit?)
                  (list "-DCMAKE_CXX_FLAGS=-D_FILE_OFFSET_BITS=64")
                  '())
            #:phases

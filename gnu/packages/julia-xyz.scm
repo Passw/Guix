@@ -740,13 +740,13 @@ calculating corresponding shifts.")
     (arguments
      (list
       #:phases
-      (if (target-64bit?)
-          #~%standard-phases
+      (if (target-32bit?)
           #~(modify-phases %standard-phases
               (add-after 'unpack 'fix-tests-int32-i686
                 (lambda _
                   (substitute* "test/test_blockarrays.jl"
-                    (("Int64") "Int32"))))))))
+                    (("Int64") "Int32")))))
+          #~%standard-phases)))
     (propagated-inputs
      (list julia-arraylayouts
            julia-fillarrays))
@@ -1416,12 +1416,12 @@ of morphisms.")
               (substitute* "Project.toml"
                 (("55351af7-c7e9-48d6-89ff-24e801d99491")
                  "6b7a57c9-7cc1-4fdf-b7f5-e857abae3636"))))
-          #$@(if (target-64bit?)
-                 '()
+          #$@(if (target-32bit?)
                  '((add-after 'unpack 'fix-tests-int32-i686
                      (lambda _
                        (substitute* "test/runtests.jl"
-                         (("Int64") "Int32")))))))))
+                         (("Int64") "Int32")))))
+                 '()))))
     (propagated-inputs
      (list julia-crayons
            julia-expronicon
@@ -1888,7 +1888,7 @@ dictionaries in Julia, for improved productivity and performance.")
                 (("test dist\\(y, x") "test_nowarn dist(y, x")
                 (("test dist\\(z, x") "test_nowarn dist(z, x")
                 (("test dist\\(z, y") "test_nowarn dist(z, y"))
-              #$@(if (not (target-64bit?))
+              #$@(if (target-32bit?)
                    ;; A little too much precision
                    ;; Evaluated: 1.8839055991209719 === 1.8839055991209717
                    `((substitute* "test/test_dists.jl"
@@ -2872,12 +2872,12 @@ matrices the Schur form is often more useful.")
               (substitute* "test/runtests.jl"
                 (("@testset.*MetaT and heterogeneous data.*" all)
                  (string-append all "return\n")))))
-          #$@(if (target-64bit?)
-                 '()
+          #$@(if (target-32bit?)
                  '((add-after 'unpack 'fix-tests-int32-i686
                      (lambda _
                        (substitute* "test/runtests.jl"
-                         (("Int64") "Int32")))))))))
+                         (("Int64") "Int32")))))
+                 '()))))
     (propagated-inputs
      (list julia-itertools
            julia-staticarrays
@@ -4097,13 +4097,13 @@ equations in string literals in the Julia language.")
     (arguments
      (list
       #:phases
-      (if (target-64bit?)
-          #~%standard-phases
+      (if (target-32bit?)
           #~(modify-phases %standard-phases
               (add-after 'unpack 'fix-tests-int32-i686
                 (lambda _
                   (substitute* "test/multests.jl"
-                    (("Int64") "Int32"))))))))
+                    (("Int64") "Int32")))))
+          #~%standard-phases)))
     (propagated-inputs
      (list julia-aqua
            julia-arraylayouts
@@ -4371,7 +4371,7 @@ by @code{NTuples} in Julia.")
               (substitute* "test/runtests.jl"
                 ((".*@test_throws ErrorException b.*") ""))
 
-              (when #$(not (target-64bit?))
+              (when #$(target-32bit?)
                 (substitute* "test/runtests.jl"
                   (("Int64") "Int32"))))))))
     (propagated-inputs
@@ -6770,14 +6770,14 @@ with ANSI escape sequences.")
     (arguments
      (list
       #:phases
-      (if (target-64bit?)
-          #~%standard-phases
+      (if (target-32bit?)
           #~(modify-phases %standard-phases
               (add-after 'unpack 'fix-tests-int32-i686
                 (lambda _
                   (substitute* '("src/utils.jl"
                                  "test/runtests.jl")
-                    (("Int64") "Int32"))))))))
+                    (("Int64") "Int32")))))
+          #~%standard-phases)))
     (propagated-inputs
      (list julia-adapt
            julia-dataapi

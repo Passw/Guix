@@ -982,7 +982,7 @@ independently to be able to run a LLaMA model.")
                 (("\"/bin/sh\"")
                  (string-append
                   "\"" (search-input-file inputs "/bin/sh") "\"")))))
-          #$@(if (not (target-64bit?))
+          #$@(if (target-32bit?)
                  '((add-after 'unpack 'skip-failing-tests
                      (lambda _
                        ;; 32-bit system

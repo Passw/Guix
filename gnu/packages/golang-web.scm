@@ -11380,7 +11380,7 @@ Border Gateway Protocol}} implementation.")
                         ;; cannot parse column object json: cannot unmarshal
                         ;; number 4294967295 into Go struct field .type of
                         ;; type int
-                        #$@(if (not (target-64bit?))
+                        #$@(if (target-32bit?)
                                #~("TestCheckIndexes.*"
                                   "TestClientServer.*"
                                   "TestModelUpdates.*"
@@ -11406,7 +11406,7 @@ Border Gateway Protocol}} implementation.")
             (lambda* (#:key tests? import-path #:allow-other-keys)
               (with-directory-excursion (string-append "src/" import-path)
                 (delete-file-recursively "example"))))
-          #$@(if (not (target-64bit?))
+          #$@(if (target-32bit?)
                  ;; cannot use 4294967295 (untyped int constant) as int value
                  ;; in assignment (overflows)
                  #~((add-after 'unpack 'remove-problematic-test-files

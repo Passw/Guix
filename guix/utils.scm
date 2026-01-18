@@ -751,7 +751,7 @@ a character other than '@'."
                                                 (%current-system))))
   "Does TARGET represent the 32bit GNU(/Hurd) system?"
   (and (target-hurd? target)
-       (not (target-64bit? target))))
+       (target-32bit? target)))
 
 (define* (target-hurd64? #:optional (target (or (%current-target-system)
                                                 (%current-system))))

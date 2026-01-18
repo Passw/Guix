@@ -653,14 +653,14 @@ freedesktop.org project.")
        ;; Meson target anyway.
        #:build-type "release"
        #:phases
-       ,@(if (target-64bit?)
-             `(%standard-phases)
+       ,@(if (target-32bit?)
              `((modify-phases %standard-phases
                  ;; Backported from a commit after the 1.29.0 release.
                  (add-after 'unpack 'correct-value-type-in-atou64_test
                    (lambda _
                      (substitute* "test/test-utils.c"
-                       (("unsigned long val") "uint64_t val")))))))))
+                       (("unsigned long val") "uint64_t val"))))))
+             `(%standard-phases))))
     (native-inputs
      (append (list check pkg-config python-minimal-wrapper python-pytest)
              (if (%current-target-system)

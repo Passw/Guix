@@ -962,7 +962,7 @@ SEGGER J-Link and compatible devices.")
                    ;; XXX All but 1 SSL tests fail (tries connecting to Google
                    ;; servers).
                    (delete-file "tests/ssl.test")))
-               #$@(if (not (target-64bit?))
+               #$@(if (target-32bit?)
                       #~((add-after 'unpack 'delete-failing-tests/32bit
                            (lambda _
                              (delete-file "tests/file.test"))))

@@ -43,7 +43,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system pyproject)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module ((guix utils) #:select (target-64bit?))
+  #:use-module ((guix utils) #:select (target-32bit?))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix gexp)
@@ -285,7 +285,7 @@ when jobs finish.")
 
                    ;; 32-bit support is marked as deprecated and needs to be
                    ;; explicitly enabled.
-                   #$@(if (target-64bit?) '() '("--enable-deprecated")))
+                   #$@(if (target-32bit?) '("--enable-deprecated") '()))
            #:phases
            #~(modify-phases %standard-phases
                (add-after 'unpack 'patch-plugin-linker-flags

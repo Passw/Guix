@@ -801,8 +801,7 @@ than @code{base-compat}, which has no dependencies.")
         (base32 "00332i4n98gh06x8ii4p8mhjpq0ch1bdan9hxmdblxpgk8j7xdvz"))))
     (build-system haskell-build-system)
     (arguments
-     (if (target-64bit?)
-         '()
+     (if (target-32bit?)
          (list #:phases
                #~(modify-phases %standard-phases
                    (add-after 'unpack 'patch-for-32-bit-system
@@ -811,7 +810,8 @@ than @code{base-compat}, which has no dependencies.")
                          #$(local-file
                             (search-patch "ghc-basement-fix-32-bit.patch")))
 
-                       (invoke "patch" "-p1" "--force" "-i" patch)))))))
+                       (invoke "patch" "-p1" "--force" "-i" patch)))))
+         '()))
     (properties '((upstream-name . "basement")))
     (home-page "https://github.com/haskell-foundation/foundation#readme")
     (synopsis "Basic primitives for Foundation starter pack")

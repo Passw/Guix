@@ -870,7 +870,7 @@ source files.")
 
                ;; https://github.com/nodejs/node/issues/45906
                ;; This test depends on 64-bit time_t so skipping on 32-bit systems.
-               ,@(if (not (target-64bit?))
+               ,@(if (target-32bit?)
                      '((delete-file "test/parallel/test-fs-utimes-y2K38.js")
 
                        (delete-file "test/parallel/test-debugger-heap-profiler.js"))

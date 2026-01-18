@@ -1203,9 +1203,9 @@ other git-like projects such as @code{libgit2}.")
                   "-DREGEX_BACKEND=pcre2"
                   "-DUSE_HTTP_PARSER=system"
                   "-DUSE_SSH=ON" ; cmake fails to find libssh if this is missing
-                  ,@(if (target-64bit?)
-                        '()
-                        '("-DCMAKE_C_FLAGS=-D_FILE_OFFSET_BITS=64"))))
+                  ,@(if (target-32bit?)
+                        '("-DCMAKE_C_FLAGS=-D_FILE_OFFSET_BITS=64")
+                        '())))
        #:phases
        (modify-phases %standard-phases
          ;; Run checks more verbosely, unless we are cross-compiling.

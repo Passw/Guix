@@ -7260,7 +7260,7 @@ default and preferred audio driver but also supports native drivers like ALSA.")
                      ;; yabridge-host-32.exe and yabridge-host-32.exe.so.  On
                      ;; 64bit system do not enable it since gcc does not
                      ;; support multilib.
-                     (if (not #$(target-64bit?)) "-Dbitbridge=true" '()))
+                     (if #$(target-32bit?) "-Dbitbridge=true" '()))
            #:phases
            #~(modify-phases %standard-phases
                (add-after 'unpack 'copy-vst3sdk

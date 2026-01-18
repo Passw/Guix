@@ -4596,7 +4596,7 @@ extension.")
            lsof openssl))
     (inputs
      (append
-      (if (not (target-64bit?))
+      (if (target-32bit?)
           ;; Required by test t/pop3d.t, otherwise fails with
           ;; “sizeof(off_t)=8 requires File::FcntlLock”.
           (list perl-file-fcntllock)

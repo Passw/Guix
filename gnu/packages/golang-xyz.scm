@@ -26337,7 +26337,7 @@ pick one that suits you.")
       #:test-flags
       ;; Tests fail on non 64bit systems: unexpected error: invalid index:
       ;; value must be a whole number, between -2147483648 and 2147483647.
-      #~(list #$@(if (not (target-64bit?)) '("-skip" "TestElement") '()))))
+      #~(list #$@(if (target-32bit?) '("-skip" "TestElement") '()))))
     (native-inputs
      (list go-github-com-google-go-cmp))
     (propagated-inputs

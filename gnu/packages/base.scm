@@ -273,7 +273,7 @@ implementation offers several extensions over the standard utility.")
           ;; https://lists.gnu.org/archive/html/bug-tar/2021-10/msg00007.html
           ;; tar-1.34 isn't aware of 64-bit time_t and upstream suggests
           ;; skipping the test for this release on 32-bit systems.
-          ((not (target-64bit?))
+          ((target-32bit?)
            '(#:make-flags (list "TESTSUITEFLAGS= -k '!tricky time stamps'")))
           (else '()))
       ;; XXX: 32-bit Hurd platforms don't support 64bit time_t

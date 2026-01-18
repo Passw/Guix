@@ -3408,13 +3408,13 @@ with a focus on working with embedded toolchains.")
                 (("\"date\"")
                  (format #f "~s" (search-input-file inputs "bin/date"))))))
 
-          #$@(if (target-64bit?)
-                 #~()
+          #$@(if (target-32bit?)
                  #~((add-after 'unpack 'apply-32bit-patch
                       (lambda _
                         (let ((patch #$(local-file
                                   (search-patch "libfaketime-32bit.patch"))))
-                          (invoke "patch" "--force" "-p1" "-i" patch))))))
+                          (invoke "patch" "--force" "-p1" "-i" patch)))))
+                 #~())
 
           (replace 'configure
             (lambda* (#:key outputs #:allow-other-keys)

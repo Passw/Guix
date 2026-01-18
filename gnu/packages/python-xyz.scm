@@ -10731,7 +10731,7 @@ For some datatypes the overhead can be reduced by using khash by factor 4-8.")
                           "complex_numbers_cpp"
                           ;; This test fails when running on 24 cores.
                           "cpp_stl_conversion"
-                          #$@(if (not (target-64bit?))
+                          #$@(if (target-32bit?)
                                  ;; XXX: On 32-bit architectures, running the
                                  ;; parallel tests fails on many-core systems.
                                  ;; See: <https://github.com/cython/cython/issues/2807>.
@@ -10792,7 +10792,7 @@ writing C extensions for Python as easy as Python itself.")
               ;; XXX: On 32-bit architectures, running the parallel tests
               ;; fails on many-core systems, see
               ;; <https://github.com/cython/cython/issues/2807>.
-              #$@(if (not (target-64bit?))
+              #$@(if (target-32bit?)
                      #~("-x" "run.parallel")
                      #~())
               #$@(if (system-hurd?)
