@@ -18203,20 +18203,22 @@ and RSS, with a user interface inspired by notmuch.")
     (license license:gpl3+)))
 
 (define-public emacs-elfeed-goodies
-  (let ((commit "544ef42ead011d960a0ad1c1d34df5d222461a6b"))
+  (let ((commit "544ef42ead011d960a0ad1c1d34df5d222461a6b")
+        (revision "0"))
     (package
       (name "emacs-elfeed-goodies")
-      (version commit)
+      (version (git-version "0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/jeetelongname/elfeed-goodies")
-               (commit version)))
+               (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32 "147pwqx2maf430qhigzfd6lqk7a5sbrydf9a4c5bvsw8jv7wzb6l"))))
       (build-system emacs-build-system)
+      (arguments '(#:tests? #f))        ; no tests
       (propagated-inputs
        (list
         emacs-elfeed
@@ -18240,6 +18242,13 @@ Split pane setup.
 A function to toggle the @code{*elfeed-log*} buffer in a popup window.
 @end itemize")
       (license license:gpl3+))))
+
+;;; See https://issues.guix.gnu.org/42354#6.
+(define-public emacs-elfeed-goodies-prev
+  (package
+    (inherit emacs-elfeed-goodies)
+    (version "544ef42ead011d960a0ad1c1d34df5d222461a6b")
+    (properties `((superseded . ,emacs-elfeed-goodies)))))
 
 (define-public emacs-elfeed-org
   (let ((commit "1197cf29f6604e572ec604874a8f50b58081176a")
