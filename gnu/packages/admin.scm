@@ -80,6 +80,7 @@
 ;;; Copyright © 2025 Luca Kredel <luca.kredel@web.de>
 ;;; Copyright © 2025 ROCKTAKEY <rocktakey@gmail.com>
 ;;; Copyright © 2026 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2026 Luis Guilherme Coelho <lgcoelho@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7113,3 +7114,37 @@ working directory, user, pid, command, and so on.")
     (description "This package contains a debugging tool for Allwinner devices
 (connects via USB OTG).")
     (license license:expat)))
+
+(define-public zzz
+  (package
+    (name "zzz")
+    (version "20250212")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/void-linux/void-runit")
+            (commit version)))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "00nbnjmxwvqj5hf0g00ma26hb29i9mr05g8ls24icp1409c2ykkc"))))
+    (build-system copy-build-system)
+    (arguments
+     (list #:install-plan
+           #~'(("zzz" "sbin/")
+               ("zzz.8" "share/man/man8/"))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'patch-zzz
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "zzz"
+                     (("flock") (search-input-file inputs "bin/flock"))
+                     (("grep") (search-input-file inputs "bin/grep"))))))))
+    (inputs
+     (list grep util-linux))
+    (home-page "https://github.com/void-linux/void-runit")
+    (synopsis "Simple script to suspend or hibernate your computer")
+    (description "Simple script to suspend or hibernate your computer.  It
+suports hooks before and after suspending.")
+    (license license:cc0)))
