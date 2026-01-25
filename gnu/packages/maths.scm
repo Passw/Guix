@@ -5326,14 +5326,14 @@ sparse system of linear equations A x = b using Gaussian elimination.")
 (define-public ruby-asciimath
   (package
     (name "ruby-asciimath")
-    (version "2.0.4")
+    (version "2.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "asciimath" version))
        (sha256
         (base32
-         "1fy2jrn3gr7cl33qydp3pwyfilcmb4m4z6hfhnvydzg8r3srp36j"))))
+         "0b5h65vas9fj4k85gw18cf6pgqbdxfjzj63632rdkngabar67zlq"))))
     (build-system ruby-build-system)
     (native-inputs
      (list ruby-nokogiri ruby-rspec))
