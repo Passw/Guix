@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012-2024 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017, 2020, 2026 Janneke Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2012-2024, 2026 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2020, 2026 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020, 2021 Mathieu Othacehe <othacehe@gnu.org>
@@ -232,17 +232,18 @@ SYSTEM."
 
 (define* (guix-jobs store systems #:key source commit)
   "Return a list of jobs for Guix itself."
-  (define build
-    (primitive-load (string-append source "/build-aux/build-self.scm")))
+  (define instance
+    (checkout->channel-instance source
+                                #:url (channel-url %default-guix-channel)
+                                #:commit commit))
 
   (map
    (lambda (system)
      (let ((name (string->symbol
                   (string-append "guix." system)))
            (drv (run-with-store store
-                  (build source #:version commit #:system system
-                         #:pull-version 1
-                         #:guile-version "2.2"))))
+                  (channel-instances->derivation (list instance)
+                                                 #:system system))))
        (derivation->job name drv)))
    systems))
 
