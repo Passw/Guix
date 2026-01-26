@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019-2022, 2024 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019-2022, 2024, 2026 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,7 +60,8 @@
                                  (return
                                   (list (checkout->channel-instance
                                          source #:commit commit))))))))
-    (channel-instances->derivation instances)))
+    (channel-instances->derivation instances
+                                   #:system system)))
 
 (define channel-build-system
   ;; Build system used to "convert" a channel instance to a package.
@@ -72,6 +73,7 @@
                    (system system)
                    (build build-channels)
                    (arguments `(#:source ,source
+                                #:system ,system
                                 #:channels ,channels
                                 #:authenticate? ,authenticate?
                                 #:commit ,commit))))))
