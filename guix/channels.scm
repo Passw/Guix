@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018-2025 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018-2026 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2021 Brice Waegeneire <brice@waegenei.re>
@@ -1031,20 +1031,24 @@ be used as a profile hook."
   (cons package-cache-file %default-profile-hooks))
 
 (define* (channel-instances->derivation instances
-                                        #:key built-in-builders)
+                                        #:key
+                                        (system (%current-system))
+                                        built-in-builders)
   "Return the derivation of the profile containing INSTANCES, a list of
-channel instances.  If BUILT-IN-BUILDERS is provided, it
+channel instances, for SYSTEM.  If BUILT-IN-BUILDERS is provided, it
 should be a list of strings and this will be used instead of the builtin
 builders provided by the build daemon for store connections used during this
 process."
   (mlet %store-monad ((manifest (channel-instances->manifest
                                  instances
+                                 #:system system
                                  #:built-in-builders
                                  built-in-builders)))
     ;; Emit a profile in format version so that, if INSTANCES denotes an old
     ;; Guix, it can still read that profile, for instance for the purposes of
     ;; 'guix describe'.
     (profile-derivation manifest
+                        #:system system
                         #:hooks %channel-profile-hooks
                         #:format-version 3)))
 
