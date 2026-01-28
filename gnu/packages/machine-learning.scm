@@ -4810,7 +4810,7 @@ contains facebook extensions and is used by PyTorch.")
 PyTorch.")
     (license license:expat)))
 
-(define %python-pytorch-version "2.9.0")
+(define %python-pytorch-version "2.10.0")
 
 (define %python-pytorch-src
   (origin
@@ -4821,7 +4821,7 @@ PyTorch.")
     (file-name (git-file-name "python-pytorch" %python-pytorch-version))
     (sha256
      (base32
-      "005gj27qikkgbibbk00z8xs9a8xms2fxapm53inp31zxm4853myh"))
+      "05pw5i1fm1i3grj8ksyrprq3an4a5pzn4ii1jkym00d0nabgbkyx"))
     (patches (search-patches "python-pytorch-system-libraries.patch"
                              "python-pytorch-runpath.patch"
                              "python-pytorch-without-kineto.patch"
@@ -5007,12 +5007,20 @@ PyTorch.")
                  "caffe2/serialize/inline_container.cc"
                  "torch/csrc/inductor/aoti_package/model_package_loader.cpp"))
 
+              ;; Fix missing include for getCvarString/getCvarInt.
+              (substitute* "torch/csrc/distributed/c10d/GlooDeviceFactory.cpp"
+                (("#include <c10/util/Exception.h>" all)
+                 (string-append
+                  "#include <torch/csrc/distributed/c10d/Utils.hpp>\n\n"
+                  all)))
+
               ;; Fix moodycamel/concurrentqueue includes for system package
               (substitute* '("c10/util/Semaphore.h"
                              "c10/test/util/Semaphore_test.cpp"
                              "torch/nativert/executor/ParallelGraphExecutor.cpp")
                 (("<moodycamel/concurrentqueue\\.h>") "<concurrentqueue.h>")
-                (("<moodycamel/lightweightsemaphore\\.h>") "<lightweightsemaphore.h>"))
+                (("<moodycamel/lightweightsemaphore\\.h>")
+                 "<lightweightsemaphore.h>"))
 
               (substitute* "aten/src/ATen/native/vulkan/api/Allocator.h"
                 (("<include/vk_mem_alloc.h>")
@@ -5054,10 +5062,10 @@ PyTorch.")
               (substitute* '("requirements.txt" "setup.py")
                 (("sympy>=1\\.13\\.3")
                  "sympy>=1.13.1"))
-              ;; Avoid ModuleNotFoundError.
+              ;; Avoid ModuleNotFoundError while preserving setup.py flow.
               (substitute* "setup.py"
-                (("from build_bundled import create_bundled" all)
-                 (string-append "return # " all)))))
+                (("from build_bundled import create_bundled")
+                 "create_bundled = lambda *args, **kwargs: None"))))
           (add-after 'use-system-libraries 'skip-nccl-call
             (lambda _
               ;; Comment-out `checkout_nccl()` invokation in build_pytorch().
