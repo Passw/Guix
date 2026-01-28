@@ -13,6 +13,7 @@
 ;;; Copyright © 2023 David Elsing <david.elsing@posteo.net>
 ;;; Copyright © 2025 Mark Walker <mark.damon.walker@gmail.com>
 ;;; Copyright © 2025 Tiago de Paula Peixoto <tiago@skewed.de>
+;;; Copyright © 2026 Luca Alloatti <luca-guix@f-si.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -645,6 +646,51 @@ contains supporting code for evaluation and parameter tuning.")
     (description "Faiss is a library for efficient similarity search and
 clustering of dense vectors.  This package provides Python bindings to the
 Faiss library.")))
+
+(define-public lemon-graph
+  (package
+    (name "lemon-graph")
+    (version "1.3.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             ;; Copy of http://lemon.cs.elte.hu/pub
+             (url "https://github.com/The-OpenROAD-Project/lemon-graph")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0j4vwyghlcsyzbr3f8fm99zdl5zr25d2799ahbq0z9057brgm7r0"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "-DLEMON_ENABLE_COIN=OFF"
+              "-DLEMON_ENABLE_GLPK=OFF"
+              "-DLEMON_ENABLE_ILOG=OFF"
+              "-DLEMON_ENABLE_SOPLEX=OFF")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-tests
+            (lambda _
+              ;; Fix missing import in source code of tests.
+              (substitute* "test/maps_test.cc"
+                (("distance")
+                 "std::distance"))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "make" "check")))))))
+    (native-inputs (list python-minimal-wrapper))
+    (home-page "https://lemon.cs.elte.hu/trac/lemon")
+    (synopsis "C++ library of optimized algorithms and data structures")
+    (description
+     "@acronym{LEMON, Library for Efficient Modeling and Optimization in
+Networks} is a C++ template library providing efficient implementations of
+common data structures and algorithms with focus on combinatorial optimization
+tasks connected mainly with graphs and networks.  This is the OpenROAD
+Project's fork with C++20 compatibility fixes.")
+    (license license:boost1.0)))
 
 (define-public libleidenalg
   (package
