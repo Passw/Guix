@@ -5277,7 +5277,7 @@ Note: currently this package does not provide GPU support.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0g55nsjs3n66i462cc0fba14qs6w9nk519hrac6rsf5anp8dx551"))))
+        (base32 "1j2h722cvvwa4g4vq8gw9x214ara6qimjmyvdm1x2x2pa4fj6nvg"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -5291,6 +5291,8 @@ test/torchaudio_unittest/prototype/hifi_gan/hifi_gan_gpu_test.py"
          "--ignore=test/torchaudio_unittest/kaldi_io_test.py"
          "--ignore=test/torchaudio_unittest/test_load_save_torchcodec.py"
          "--ignore-glob=test/torchaudio_unittest/backend/dispatcher/ffmpeg"
+         ;; Dataset tests require torchcodec (used by 'torchaudio.load').
+         "--ignore-glob=test/torchaudio_unittest/datasets"
          ;; XXX: We don't really want to run those tests.
          "--ignore-glob=test/torchaudio_unittest/example"
          ;; XXX: Integration tests require additional data / models.
