@@ -3480,7 +3480,7 @@ compositors.")
 (define-public poweralertd
   (package
     (name "poweralertd")
-    (version "0.2.0")
+    (version "0.3.0")
     (source
      (origin
        (method git-fetch)
@@ -3489,7 +3489,7 @@ compositors.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19rw9q4pcqw56nmzjfglfikzx5wwjl4n08awwdhg0jy1k0bm3dvp"))))
+        (base32 "1k8bb1znxw63a0zzq2i1nzr3a6divr3z0rx0hdzc9fymzn396fjv"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Dman-pages=enabled")))
