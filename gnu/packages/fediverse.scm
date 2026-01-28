@@ -3,7 +3,7 @@
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Taiju HIGASHI <higashi@taiju.info>
 ;;; Copyright © 2024 Sergio Durigan Junior <sergiodj@sergiodj.net>
-;;; Copyright © 2025 Ashish SHUKLA <ashish.is@lostca.se>
+;;; Copyright © 2025, 2026 Ashish SHUKLA <ashish.is@lostca.se>
 ;;; Copyright © 2025 Herman Rimm <herman@rimm.ee>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -274,7 +274,7 @@ seamlessly with your desktop environment.")
 (define-public snac2
   (package
     (name "snac")
-    (version "2.83")
+    (version "2.89")
     (source
      (origin
        (method git-fetch)
@@ -283,7 +283,7 @@ seamlessly with your desktop environment.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xh108p148mqlj1da05yrng0d82rw34n1i97cjzz7p606ll4j6p4"))))
+        (base32 "0d0hzgvzvmzandlxlcpbcva831hkk8klx4kakgbambhxgh9fyw1j"))))
     (build-system gnu-build-system)
     (inputs (list curl openssl))
     (arguments
