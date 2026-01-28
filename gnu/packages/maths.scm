@@ -74,6 +74,7 @@
 ;;; Copyright © 2025 Reza Housseini <reza@housseini.me>
 ;;; Copyright © 2026 Cayetano Santos <csantosb@inventati.org>
 ;;; Copyright © 2026 Peter Polidoro <peter@polidoro.io>
+;;; Copyright © 2026 Luca Alloatti <luca-guix@f-si.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10581,6 +10582,36 @@ when an application performs repeated divisions by the same divisor.")
        "This header-only C++ library implements conversion to and from
 half-precision floating point formats.")
       (license license:expat))))
+
+(define-public soplex
+  (package
+    (name "soplex")
+    (version "8.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/scipopt/soplex")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1j0xqm99pdvj6l52q4wk96aj0vnq3xgm2gdyli4g8gfb1g1m9p9l"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "-DPAPILO=OFF")))
+    (inputs (list boost gmp mpfr zlib))
+    (home-page "https://soplex.zib.de/")
+    (synopsis "Sequential object-oriented simPlex linear programming solver")
+    (description
+     "SoPlex is an optimization package for solving linear
+programming problems (LPs) based on an advanced implementation of the primal
+and dual revised simplex algorithm.  It provides special support for the exact
+solution of LPs with rational input data.  It can be used as a standalone
+solver reading MPS or LP format files via a command line interface as well as
+embedded into other programs via a C++ class library.")
+    (license license:asl2.0)))
 
 (define-public scilab
   (package
