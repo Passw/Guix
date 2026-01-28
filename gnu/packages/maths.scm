@@ -121,6 +121,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages benchmark)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages calendar)
@@ -184,6 +185,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages prolog)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
@@ -191,6 +193,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages regex)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ruby-check)
   #:use-module (gnu packages ruby-xyz)
@@ -10655,6 +10658,61 @@ integer nonlinear programming (MINLP).  It is a framework for constraint
 integer programming and branch-cut-and-price, allowing total control
 of the solution process and access to detailed information down to the
 internals of the solver.")
+    (license license:asl2.0)))
+
+(define-public or-tools
+  (package
+    (name "or-tools")
+    (version "9.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/google/or-tools")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hb608s6c7aiyr8vaj0gi0jf45z39wvwvrgfq8x5dzgyzy06zszp"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list
+      #:tests? #f                       ;TODO: requires protobuf-matchers
+      #:configure-flags
+      #~(list "-DBUILD_CXX=ON"
+              "-DBUILD_DEPS=OFF"
+              "-DBUILD_DOTNET=OFF"
+              "-DBUILD_EXAMPLES=OFF"
+              "-DBUILD_JAVA=OFF"
+              "-DBUILD_PYTHON=OFF"
+              "-DBUILD_SAMPLES=OFF"
+              "-DBUILD_SHARED_LIBS=ON"
+              "-DUSE_COINOR=OFF"
+              "-DUSE_CPLEX=OFF"
+              "-DUSE_GLPK=ON"
+              "-DUSE_HIGHS=OFF"
+              "-DUSE_SCIP=ON"
+              (string-append "-DSCIP_DIR=" #$(this-package-input "scip")))))
+    (native-inputs
+     (list benchmark
+           googletest
+           pkg-config
+           python-minimal-wrapper))
+    (inputs
+     (list abseil-cpp
+           eigen
+           glpk
+           gmp
+           mpfr
+           protobuf-6
+           re2-next
+           scip
+           zlib))
+    (home-page "https://developers.google.com/optimization")
+    (synopsis "Software suite for combinatorial optimization")
+    (description
+     "OR-Tools is a C++ portable software suite, tuned for solving
+combinatorial optimization problems in vehicle routing, flows, integer, linear
+and constraint programming.")
     (license license:asl2.0)))
 
 (define-public scilab
