@@ -4788,7 +4788,7 @@ contains facebook extensions and is used by PyTorch.")
 (define-public ideep-pytorch
   (package
     (name "ideep-pytorch")
-    (version "3.3.2")
+    (version "3.7.1")
     (source
      (origin
        (method git-fetch)
@@ -4798,7 +4798,7 @@ contains facebook extensions and is used by PyTorch.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0y6r938qryi3bnf15rp0fbilsfimdcgmvsa0ygwrn3zifw6386rb"))))
+         "06h3q86k9jlb1ia6rc8adzqypab7x9dmy2gc49v80ylqxab6azar"))))
     (build-system copy-build-system)
     (arguments
      (list
