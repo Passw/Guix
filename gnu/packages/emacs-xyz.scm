@@ -41772,10 +41772,10 @@ service, and connect it with Emacs via inter-process communication.")
       (license license:gpl3+))))
 
 (define-public emacs-telega
-  (let ((commit "956ce7f34bd3d88f446254461cb9c52cf7df071f"))
+  (let ((commit "70945291fff62ad0c8c2d2c28cbad319138ae811"))
     (package
       (name "emacs-telega")
-      (version "0.8.570")               ; see telega-version in telega.el
+      (version "0.8.600")               ; see telega-version in telega.el
       (source
        (origin
          (method git-fetch)
@@ -41783,11 +41783,10 @@ service, and connect it with Emacs via inter-process communication.")
                (url "https://github.com/zevlg/telega.el")
                (commit commit)))
          (sha256
-          (base32 "1yhkhdimryhh76bl71f84a5zabbkq54kkg8y6m6kwcs40g3587q5"))
+          (base32 "08z81m3aa7lf895iy5fkdp52qkvl2nw1r1k1k67dipnyrj4y2bfk"))
          (file-name (git-file-name "emacs-telega" version))
          (patches
-          (search-patches "emacs-telega-path-placeholder.patch"
-                          "emacs-telega-test-env.patch"))))
+          (search-patches "emacs-telega-test-env.patch"))))
       (build-system emacs-build-system)
       (arguments
        (list
@@ -41796,11 +41795,20 @@ service, and connect it with Emacs via inter-process communication.")
                     ;; Require wide-int support for 32-bit platform.
                     emacs-wide-int)
         #:test-command #~(list "make" "test_el")
-        #:include #~(cons "^etc\\/" %default-include)
+        #:include #~(cons "^etc/" %default-include)
+        #:exclude #~(list "etc/telega-make.el"
+                          "Dockerfile" "asound\\.conf"
+                          "etc/telegram-msgin\\.wav"
+                          "TODO.*org$" "\\.tl$" "^test\\.el")
         #:phases
         #~(modify-phases %standard-phases
             (add-after 'unpack 'patch-sources
               (lambda* (#:key inputs #:allow-other-keys)
+                (delete-file-recursively "contrib")
+                (emacs-substitute-variables "telega-customize.el"
+                  ("telega-server-command"
+                   (search-input-file inputs "/bin/telega-server")))
+
                 ;; Hard-code paths to `ffplay` and `ffmpeg`.
                 (let* ((ffplay-bin (search-input-file inputs "/bin/ffplay"))
                        (ffmpeg-bin (search-input-file inputs "/bin/ffmpeg"))
@@ -41820,15 +41828,6 @@ service, and connect it with Emacs via inter-process communication.")
                     (("\\(executable-find \"ffmpeg\"\\)")
                      (string-append "(and (file-executable-p \"" ffmpeg-bin "\")"
                                     "\"" ffmpeg-bin "\")"))))))
-            (add-after 'unpack 'configure
-              (lambda* (#:key inputs outputs #:allow-other-keys)
-                (substitute* "telega-customize.el"
-                  (("@TELEGA_SERVER_BIN@")
-                   (search-input-file inputs "/bin/telega-server")))
-                (substitute* "telega-core.el"
-                  (("@TELEGA_SHARE@")
-                   (string-append (elpa-directory (assoc-ref outputs "out"))
-                                  "/etc")))))
             (delete 'check)
             (add-after 'install 'check (assoc-ref %standard-phases 'check))
             (add-before 'check 'set-home
@@ -41843,8 +41842,9 @@ service, and connect it with Emacs via inter-process communication.")
        (list emacs-telega-server ffmpeg tgs2png))
       (native-inputs '())
       (propagated-inputs
-       (list emacs-visual-fill-column emacs-company
-             emacs-rainbow-identifiers))
+       (list emacs-company
+             emacs-transient            ; requires 0.9.0
+             emacs-visual-fill-column))
       (home-page "https://zevlg.github.io/telega.el/")
       (synopsis "GNU Emacs client for the Telegram messenger")
       (description "Telega is a full-featured, unofficial GNU Emacs-based client
