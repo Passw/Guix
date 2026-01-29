@@ -5717,7 +5717,7 @@ feedback.")
 (define-public python-pytorch-lightning
     (package
       (name "python-pytorch-lightning")
-      (version "2.5.5")
+      (version "2.6.0")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -5726,7 +5726,7 @@ feedback.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1xjib19kk8nfncr7cmd0j1czazvjzrprayarw275b75i0szda87h"))))
+                  "0fqzjs3k55n2sp1kz8wxf82687d1vq0yydv45qx2vl3kzgvl0qff"))))
       (build-system pyproject-build-system)
       (arguments
        (list
@@ -5744,14 +5744,21 @@ feedback.")
                 ;; These need tensorboard
                 " and not test_property_logger"
                 " and not test_property_loggers"))
-        #:phases
-        '(modify-phases %standard-phases
+       #:phases
+       '(modify-phases %standard-phases
            (add-after 'unpack 'patch-version-detection
              (lambda _
                ;; We do have pytorch 2.4.0, but the version comparison fails.
                (substitute* "src/lightning/fabric/utilities/imports.py"
                  (("_TORCH_GREATER_EQUAL_2_4 =.*")
                   "_TORCH_GREATER_EQUAL_2_4 = True\n"))))
+           (add-after 'patch-version-detection 'fix-leafspec-deprecation
+             (lambda _
+               ;; `LeafSpec' is deprecated starting with PyTorch 2.10.
+               (substitute* "src/lightning/pytorch/utilities/_pytree.py"
+                 (("SUPPORTED_NODES, LeafSpec, PyTree, TreeSpec, _get_node_type, tree_unflatten")
+                  "SUPPORTED_NODES, PyTree, TreeSpec, _get_node_type, tree_unflatten, treespec_leaf")
+                 (("LeafSpec\\(\\)") "treespec_leaf()"))))
            (add-before 'build 'pre-build
              (lambda _ (setenv "PACKAGE_NAME" "lightning")))
            (add-after 'install 'pre-build-pytorch
