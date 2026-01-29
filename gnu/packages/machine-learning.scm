@@ -5479,8 +5479,10 @@ in the audio domain.")
       (arguments
        (list
         #:test-flags
-        ;; Hangs with AttributeError: 'NoneType' object has no attribute 'rpc_async'
-        '(list "--ignore=test/distributed/test_rpc.py"
+        '(list ;; PyTorch 2.10 raises deprecation warnings during import.
+               "-W" "ignore::DeprecationWarning"
+               ;; Hangs with AttributeError: 'NoneType' object has no attribute 'rpc_async'
+               "--ignore=test/distributed/test_rpc.py"
                ;; A message passing jinja template is missing
                "--ignore=test/nn/conv/test_message_passing.py"
                "--ignore=test/nn/test_sequential.py"
