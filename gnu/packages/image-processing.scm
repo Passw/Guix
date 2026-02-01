@@ -597,186 +597,179 @@ different data arrays similar to those available in the numdiff software.")
                     (url "https://github.com/opencv/opencv")
                     (commit version)))
               (file-name (git-file-name name version))
-              (modules '((guix build utils)))
               (snippet
-               '(begin
-                  ;; Remove external libraries.  Almost all of them are
-                  ;; available in Guix.
-                  (with-directory-excursion "3rdparty"
-                    (for-each delete-file-recursively
-                              '("cpufeatures"
-                                "flatbuffers"
-                                "ffmpeg"
-                                "include"
-                                "ippicv"
-                                "ittnotify"
-                                "libjasper"
-                                "libjpeg"
-                                "libjpeg-turbo"
-                                "libpng"
-                                "libtiff"
-                                "libwebp"
-                                "openexr"
-                                "openjpeg"
-                                "protobuf"
-                                ;;"quirc"
-                                "tbb"
-                                "zlib")))
-
-                  ;; Delete any bundled .jar files.
-                  (for-each delete-file (find-files "." "\\.jar$"))))
+               #~(begin
+                   (use-modules (guix build utils)
+                                (ice-9 ftw)
+                                (srfi srfi-26))
+                   ;; Delete any bundled .jar files.
+                   (for-each delete-file (find-files "." "\\.jar$"))
+                   (define (delete-all-but directory . preserve)
+                     (with-directory-excursion directory
+                       (let* ((pred (negate (cut member <>
+                                                 (cons* "." ".." preserve))))
+                              (items (scandir "." pred)))
+                         (for-each (cut delete-file-recursively <>) items))))
+                   (delete-all-but "3rdparty"
+                                   "fastcv"     ;TODO: Unbundle these
+                                   "libspng"
+                                   "libtim-vx"
+                                   "orbbecsdk"
+                                   "quirc"
+                                   "zlib-ng")))
               (sha256
                (base32
                 "1n5qif1ispmdby1cmwf9f8isdx07phyhb19jsmgrw5bk3k23dcyy"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:parallel-tests? #f
-       #:configure-flags
-       (list "-DWITH_ADE=OFF"           ;we don't have a package for ade yet
-             "-DWITH_IPP=OFF"
-             "-DWITH_ITT=OFF"
-             "-DWITH_CAROTENE=OFF"      ; only visible on arm/aarch64
-             "-DENABLE_PRECOMPILED_HEADERS=OFF"
-             "-DOPENCV_GENERATE_PKGCONFIG=ON"
+     (list
+      #:parallel-tests? #f
+      #:configure-flags
+      #~(list "-DWITH_ADE=OFF"           ;we don't have a package for ade yet
+              "-DWITH_IPP=OFF"
+              "-DWITH_ITT=OFF"
+              "-DWITH_CAROTENE=OFF"      ; only visible on arm/aarch64
+              "-DENABLE_PRECOMPILED_HEADERS=OFF"
+              "-DOPENCV_GENERATE_PKGCONFIG=ON"
 
-             ;; CPU-Features:
-             ;; See cmake/OpenCVCompilerOptimizations.cmake
-             ;; (CPU_ALL_OPTIMIZATIONS) for a list of all optimizations
-             ;; BASELINE is the minimum optimization all CPUs must support
-             ;;
-             ;; DISPATCH is the list of optional dispatches.
-             "-DCPU_BASELINE=SSE2"
+              ;; CPU-Features:
+              ;; See cmake/OpenCVCompilerOptimizations.cmake
+              ;; (CPU_ALL_OPTIMIZATIONS) for a list of all optimizations
+              ;; BASELINE is the minimum optimization all CPUs must support
+              ;;
+              ;; DISPATCH is the list of optional dispatches.
+              "-DCPU_BASELINE=SSE2"
 
-             ;; Build Python bindings.
-             "-DBUILD_opencv_python3=ON"
+              ;; Build Python bindings.
+              "-DBUILD_opencv_python3=ON"
 
-             ,@(match (%current-system)
-                 ("x86_64-linux"
-                  '("-DCPU_DISPATCH=NEON;VFPV3;FP16;SSE;SSE2;SSE3;SSSE3;SSE4_1;SSE4_2;POPCNT;AVX;FP16;AVX2;FMA3;AVX_512F;AVX512_SKX"
-                    "-DCPU_DISPATCH_REQUIRE=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2"))
-                 ("armhf-linux"
-                  '("-DCPU_BASELINE_DISABLE=NEON")) ; causes build failures
-                 ("aarch64-linux"
-                  '("-DCPU_BASELINE=NEON"
-                    "-DCPU_DISPATCH=NEON;VFPV3;FP16"))
-                 (_ '()))
+              #$@(match (%current-system)
+                   ("x86_64-linux"
+                    '("-DCPU_DISPATCH=NEON;VFPV3;FP16;SSE;SSE2;SSE3;SSSE3;SSE4_1;SSE4_2;POPCNT;AVX;FP16;AVX2;FMA3;AVX_512F;AVX512_SKX"
+                      "-DCPU_DISPATCH_REQUIRE=SSE3,SSSE3,SSE4_1,SSE4_2,AVX,AVX2"))
+                   ("armhf-linux"
+                    '("-DCPU_BASELINE_DISABLE=NEON")) ; causes build failures
+                   ("aarch64-linux"
+                    '("-DCPU_BASELINE=NEON"
+                      "-DCPU_DISPATCH=NEON;VFPV3;FP16"))
+                   (_ '()))
 
-             "-DBUILD_PERF_TESTS=OFF"
-             "-DBUILD_TESTS=ON"
+              "-DBUILD_PERF_TESTS=OFF"
+              "-DBUILD_TESTS=ON"
 
-             (string-append "-DOPENCV_EXTRA_MODULES_PATH=" (getcwd)
-                            "/opencv-contrib/modules")
+              (string-append "-DOPENCV_EXTRA_MODULES_PATH=" (getcwd)
+                             "/opencv-contrib/modules")
 
-             ;;Define test data:
-             (string-append "-DOPENCV_TEST_DATA_PATH=" (getcwd)
-                            "/opencv-extra/testdata")
+              ;;Define test data:
+              (string-append "-DOPENCV_TEST_DATA_PATH=" (getcwd)
+                             "/opencv-extra/testdata")
 
-             ;; Is ON by default and would try to rebuild 3rd-party protobuf,
-             ;; which we had removed, which would lead to an error:
-             "-DBUILD_PROTOBUF=OFF"
+              ;; Is ON by default and would try to rebuild 3rd-party protobuf,
+              ;; which we had removed, which would lead to an error:
+              "-DBUILD_PROTOBUF=OFF"
 
-             ;; OpenCV tries to use flatbuffers in 3rdparty which we removed
-             ;; so for now we don't buildfor  flatbuffer support
-             ;; TODO: make OpenCV use system flatbuffers which involves
-             ;; modifying CMake files
-             "-DWITH_FLATBUFFERS=OFF"
+              ;; OpenCV tries to use flatbuffers in 3rdparty which we removed
+              ;; so for now we don't buildfor  flatbuffer support
+              ;; TODO: make OpenCV use system flatbuffers which involves
+              ;; modifying CMake files
+              "-DWITH_FLATBUFFERS=OFF"
 
-             ;; Rebuild protobuf files, because we have a slightly different
-             ;; version than the included one. If we would not update, we
-             ;; would get a compile error later:
-             "-DPROTOBUF_UPDATE_FILES=ON"
+              ;; Rebuild protobuf files, because we have a slightly different
+              ;; version than the included one. If we would not update, we
+              ;; would get a compile error later:
+              "-DPROTOBUF_UPDATE_FILES=ON"
 
-             ;; For xfeatures2d.
-             "-DOPENCV_SKIP_FEATURES2D_DOWNLOADING=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'disable-broken-tests
-           (lambda _
-             ;; This test fails with "unknown file: Failure"
-             ;; But I couldn't figure out which file was missing:
-             (substitute* "../opencv-contrib/modules/face/test/test_face_align.cpp"
-               (("\\bcan_detect_landmarks\\b" all)
-                (string-append "DISABLED_" all)))
+              ;; For xfeatures2d.
+              "-DOPENCV_SKIP_FEATURES2D_DOWNLOADING=ON")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'disable-broken-tests
+            (lambda _
+              ;; This test fails with "unknown file: Failure"
+              ;; But I couldn't figure out which file was missing:
+              (substitute* "../opencv-contrib/modules/face/test/test_face_align.cpp"
+                (("\\bcan_detect_landmarks\\b" all)
+                 (string-append "DISABLED_" all)))
 
-             ;; This all fails with a comparison between the expected 396 and
-             ;; the actual 440 in file size.
-             (substitute* "modules/imgcodecs/test/test_exr.impl.hpp"
-               (("\\breadWrite_32FC1\\b" all)
-                (string-append "DISABLED_" all)))
+              ;; This all fails with a comparison between the expected 396 and
+              ;; the actual 440 in file size.
+              (substitute* "modules/imgcodecs/test/test_exr.impl.hpp"
+                (("\\breadWrite_32FC1\\b" all)
+                 (string-append "DISABLED_" all)))
 
-             ;; These fail with protobuf parse errors that come from
-             ;; opencv-extra/alldata.
-             (substitute* "modules/dnn/test/test_layers.cpp"
-               (("\\b(Accum|DataAugmentation|Resample|Correlation|Interp)\\b" all)
-                (string-append "DISABLED_" all)))
+              ;; These fail with protobuf parse errors that come from
+              ;; opencv-extra/alldata.
+              (substitute* "modules/dnn/test/test_layers.cpp"
+                (("\\b(Accum|DataAugmentation|Resample|Correlation|Interp)\\b" all)
+                 (string-append "DISABLED_" all)))
 
-             ;; This test fails on x86-64, loosen the bounds.
-             ;; Expected: (max) < (0.1), actual: 0.2 vs 0.1
-             (substitute* "modules/photo/test/test_hdr.cpp"
+              ;; This test fails on x86-64, loosen the bounds.
+              ;; Expected: (max) < (0.1), actual: 0.2 vs 0.1
+              (substitute* "modules/photo/test/test_hdr.cpp"
                 (("0\\.1\\)") "0.222)"))
 
-             ,@(if (target-aarch64?)
-                 `(;; This test fails on aarch64, loosen the bounds.
-                   ;; Expected: (max) < (0.131), actual: 0.207148 vs 0.131
-                   (substitute* "modules/photo/test/test_hdr.cpp"
-                     (("0\\.131") "0.222"))
-                   ;; These tests hang forever on aarch64.
-                   (delete-file-recursively "modules/videoio/test/")
-                   ;; This test fails on aarch64 due to floating-point precision
-                   ;; differences with ARM NEON.
-                   ;; Expected: RMSE <= 0.34, actual: 0.407627
-                   (substitute* "../opencv-contrib/modules/optflow/test/test_OF_accuracy.cpp"
-                     (("\\bReferenceAccuracy\\b" all)
-                      (string-append "DISABLED_" all))))
-                 '())
+              #$@(if (target-aarch64?)
+                     `(;; This test fails on aarch64, loosen the bounds.
+                       ;; Expected: (max) < (0.131), actual: 0.207148 vs 0.131
+                       (substitute* "modules/photo/test/test_hdr.cpp"
+                         (("0\\.131") "0.222"))
+                       ;; These tests hang forever on aarch64.
+                       (delete-file-recursively "modules/videoio/test/")
+                       ;; This test fails on aarch64 due to floating-point precision
+                       ;; differences with ARM NEON.
+                       ;; Expected: RMSE <= 0.34, actual: 0.407627
+                       (substitute* "../opencv-contrib/modules/optflow/test/test_OF_accuracy.cpp"
+                         (("\\bReferenceAccuracy\\b" all)
+                          (string-append "DISABLED_" all))))
+                     '())
 
-             ,@(if (target-riscv64?)
-                 `(;; This test fails on riscv64, loosen the bounds.
-                   ;; Expected: (max) < (0.1), actual: 0.220829 vs 0.1
-                   (substitute* "modules/photo/test/test_hdr.cpp"
-                     (("0\\.1") "0.240"))
-                   ;; Expected equality of these values:
-                   ;;   ellipses.size()
-                   ;;     Which is: 668
-                   ;;   ellipses_size
-                   ;;     Which is: 2449
-                   (substitute* "../opencv-contrib/modules/ximgproc/test/test_fld.cpp"
-                     (("\\bManySmallCircles\\b" all)
-                      (string-append "DISABLED_" all))))
-                 '())))
-         (add-after 'unpack 'unpack-submodule-sources
-           (lambda* (#:key inputs #:allow-other-keys)
-             (mkdir "../opencv-extra")
-             (mkdir "../opencv-contrib")
-             (copy-recursively (assoc-ref inputs "opencv-extra")
-                               "../opencv-extra")
-             (copy-recursively (assoc-ref inputs "opencv-contrib")
-                               "../opencv-contrib")
+              #$@(if (target-riscv64?)
+                     `(;; This test fails on riscv64, loosen the bounds.
+                       ;; Expected: (max) < (0.1), actual: 0.220829 vs 0.1
+                       (substitute* "modules/photo/test/test_hdr.cpp"
+                         (("0\\.1") "0.240"))
+                       ;; Expected equality of these values:
+                       ;;   ellipses.size()
+                       ;;     Which is: 668
+                       ;;   ellipses_size
+                       ;;     Which is: 2449
+                       (substitute* "../opencv-contrib/modules/ximgproc/test/test_fld.cpp"
+                         (("\\bManySmallCircles\\b" all)
+                          (string-append "DISABLED_" all))))
+                     '())))
+          (add-after 'unpack 'unpack-submodule-sources
+            (lambda* (#:key inputs #:allow-other-keys)
+              (mkdir "../opencv-extra")
+              (mkdir "../opencv-contrib")
+              (copy-recursively (assoc-ref inputs "opencv-extra")
+                                "../opencv-extra")
+              (copy-recursively (assoc-ref inputs "opencv-contrib")
+                                "../opencv-contrib")
 
-             ;; Disable downloads of Boost and VGG descriptors as we include
-             ;; them in native inputs.
-             (substitute* "../opencv-contrib/modules/xfeatures2d/CMakeLists.txt"
-               (("download_(boost|vgg)_descriptors") "#"))
-             (copy-recursively (assoc-ref inputs "opencv-3rdparty-boost")
-                               "../downloads/xfeatures2d")
-             (for-each make-file-writable
-                       (find-files "../downloads/xfeatures2d" "."))
-             (copy-recursively (assoc-ref inputs "opencv-3rdparty-vgg")
-                               "../downloads/xfeatures2d")))
-         (add-after 'build 'do-not-install-3rdparty-file
-           (lambda _
-             (substitute* "cmake_install.cmake"
-               (("file\\(INSTALL .*3rdparty/include/opencl/LICENSE.txt.*")
-                ""))))
-         (add-before 'check 'start-xserver
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((xorg-server (assoc-ref inputs "xorg-server"))
-                   (disp ":1"))
-               (setenv "HOME" (getcwd))
-               (setenv "DISPLAY" disp)
-               ;; There must be a running X server and make check doesn't start one.
-               ;; Therefore we must do it.
-               (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))))))
+              ;; Disable downloads of Boost and VGG descriptors as we include
+              ;; them in native inputs.
+              (substitute* "../opencv-contrib/modules/xfeatures2d/CMakeLists.txt"
+                (("download_(boost|vgg)_descriptors") "#"))
+              (copy-recursively (assoc-ref inputs "opencv-3rdparty-boost")
+                                "../downloads/xfeatures2d")
+              (for-each make-file-writable
+                        (find-files "../downloads/xfeatures2d" "."))
+              (copy-recursively (assoc-ref inputs "opencv-3rdparty-vgg")
+                                "../downloads/xfeatures2d")))
+          (add-after 'build 'do-not-install-3rdparty-file
+            (lambda _
+              (substitute* "cmake_install.cmake"
+                (("file\\(INSTALL .*3rdparty/include/opencl/LICENSE.txt.*")
+                 ""))))
+          (add-before 'check 'start-xserver
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                    (disp ":1"))
+                (setenv "HOME" (getcwd))
+                (setenv "DISPLAY" disp)
+                ;; There must be a running X server and make check doesn't start one.
+                ;; Therefore we must do it.
+                (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("xorg-server" ,xorg-server-for-tests) ;For running the tests
