@@ -1220,15 +1220,16 @@ file name or an nfs-root containing ':/')."
                   (sleep 1)
                   (loop (+ 1 count))))))))
 
+  (define (device-exists? device)
+    (and (file-exists? device)
+         device))
+
   (match spec
     ((? string?)
-     (if (or (string-contains spec ":/") ;nfs
-             (and (>= (string-length spec) 2)
-                  (equal? (string-take spec 2) "//")) ;cifs
-             (string=? spec "none"))
-         spec                  ; do not resolve NFS / CIFS / tmpfs devices
+     (if (string-prefix? "/dev/" spec)
          ;; Nothing to do, but wait until SPEC shows up.
-         (resolve identity spec identity)))
+         (resolve device-exists? spec identity)
+         spec)) ; do not resolve NFS / CIFS / tmpfs devices
     ((? file-system-label?)
      ;; Resolve the label.
      (resolve find-partition-by-label
