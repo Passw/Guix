@@ -37,6 +37,7 @@
   #:use-module (guix i18n)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 exceptions)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
@@ -45,6 +46,8 @@
   #:autoload   (system repl repl) (start-repl)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:export (disk-partitions
             partition-label-predicate
             partition-uuid-predicate
@@ -64,6 +67,9 @@
             read-luks-partition-uuid
 
             cleanly-unmounted-ext2?
+
+            partition-lookup-error?
+            &partition-lookup-error
 
             bind-mount
 
@@ -1182,6 +1188,10 @@ were found."
 (define find-partition-by-luks-uuid
   (find-partition luks-partition-uuid-predicate))
 
+(define-condition-type &partition-lookup-error &condition
+  partition-lookup-error?
+  (spec partition-lookup-error-spec))
+
 
 (define (canonicalize-device-spec spec)
   "Return the device name corresponding to SPEC, which can be a <uuid>, a
@@ -1201,7 +1211,9 @@ file name or an nfs-root containing ':/')."
             ;; Some devices take a bit of time to appear, most notably USB
             ;; storage devices.  Thus, wait for the device to appear.
             (if (> count max-trials)
-                (error "failed to resolve partition" (fmt spec))
+                (raise (condition
+                        (&partition-lookup-error
+                         (spec (fmt spec)))))
                 (begin
                   (format #t "waiting for partition '~a' to appear...~%"
                           (fmt spec))
@@ -1319,6 +1331,14 @@ corresponds to the symbols listed in FLAGS."
       (()
        0))))
 
+(define kind-and-args-exception?
+  (exception-predicate &exception-with-kind-and-args))
+
+(define (system-error? exception)
+  "Return true if EXCEPTION is a Guile 'system-error exception."
+  (and (kind-and-args-exception? exception)
+       (eq? 'system-error (exception-kind exception))))
+
 (define* (mount-file-system fs #:key (root "/root")
                             (check? (file-system-check? fs))
                             (skip-check-if-clean?
@@ -1339,8 +1359,8 @@ corresponds to the symbols listed in FLAGS."
            (host-part (string-take source idx))
            ;; Strip [] from around host if present
            (host (match (string-split host-part (string->char-set "[]"))
-                 (("" h "") h)
-                 ((h) h)))
+                   (("" h "") h)
+                   ((h) h)))
            (inet-addr (host-to-ip host "nfs")))
       ;; Mounting an NFS file system requires passing the address
       ;; of the server in the addr= option
@@ -1426,26 +1446,37 @@ corresponds to the symbols listed in FLAGS."
                                              "," 'prefix)
                                 "")))))
 
-  (let* ((type    (file-system-type fs))
-         (source  (canonicalize-device-spec (file-system-device fs)))
-         (target  (string-append root "/"
-                                 (file-system-mount-point fs)))
-         (flags   (logior (mount-flags->bit-mask (file-system-flags fs))
+  (guard (c ((partition-lookup-error? c)
+             (format (current-error-port)
+                     "could not find the partition: ~a~%"
+                     (partition-lookup-error-spec c))
+             (unless (file-system-mount-may-fail? fs)
+               (raise c)))
+            ((system-error? c)
+             (format (current-error-port)
+                     "could not mount partition ~a: ~a~%"
+                     (file-system-device fs)
+                     (exception-message c))
+             (unless (file-system-mount-may-fail? fs)
+               (raise c))))
+      (let* ((type    (file-system-type fs))
+             (source  (canonicalize-device-spec (file-system-device fs)))
+             (target  (string-append root "/"
+                                     (file-system-mount-point fs)))
+             (flags   (logior (mount-flags->bit-mask (file-system-flags fs))
 
-                          ;; For bind mounts, preserve the original flags such
-                          ;; as MS_NOSUID, etc.  Failing to do that, the
-                          ;; MS_REMOUNT call below fails with EPERM.
-                          ;; See <https://bugs.gnu.org/46292>
-                          (if (memq 'bind-mount (file-system-flags fs))
-                              (statfs-flags->mount-flags
-                               (file-system-mount-flags (statfs source)))
-                              0)))
-         (options (file-system-options fs)))
-    (when check?
-      (check-file-system source type (not skip-check-if-clean?) repair))
+                              ;; For bind mounts, preserve the original flags such
+                              ;; as MS_NOSUID, etc.  Failing to do that, the
+                              ;; MS_REMOUNT call below fails with EPERM.
+                              ;; See <https://bugs.gnu.org/46292>
+                              (if (memq 'bind-mount (file-system-flags fs))
+                                  (statfs-flags->mount-flags
+                                   (file-system-mount-flags (statfs source)))
+                                  0)))
+             (options (file-system-options fs)))
+        (when check?
+          (check-file-system source type (not skip-check-if-clean?) repair))
 
-    (catch 'system-error
-      (lambda ()
         ;; Create the mount point.  Most of the time this is a directory, but
         ;; in the case of a bind mount, a regular file or socket may be
         ;; needed.
@@ -1474,10 +1505,7 @@ corresponds to the symbols listed in FLAGS."
         (when (and (= MS_BIND (logand flags MS_BIND))
                    (= MS_RDONLY (logand flags MS_RDONLY)))
           (let ((flags (logior MS_REMOUNT flags)))
-            (mount source target type flags options))))
-      (lambda args
-        (or (file-system-mount-may-fail? fs)
-            (apply throw args))))))
+            (mount source target type flags options))))))
 
 (define %device-name-regexp "/dev/[hsvw]d([abcd])([0-9]*)")
 (define %hurd-device-name-regexp "part:([0-9]*):device:[hw]d([0-9]*)")

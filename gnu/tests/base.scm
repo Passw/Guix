@@ -24,7 +24,8 @@
   #:use-module (gnu tests)
   #:use-module (gnu image)
   #:use-module (gnu system)
-  #:autoload   (gnu system image) (system-image)
+  #:use-module (gnu system file-systems)
+  #:autoload   (gnu system image) (system-image qcow2-image-type)
   #:use-module (gnu system privilege)
   #:use-module (gnu system shadow)
   #:use-module (gnu system vm)
@@ -60,6 +61,8 @@
             %test-root-unmount
             %test-cleanup
             %test-activation
+
+            %test-missing-file-system
 
             %hello-dependencies-manifest
             guix-daemon-test-cases
@@ -1357,3 +1360,52 @@ runs unprivileged.")
                #:imported-modules '((gnu services herd)
                                     (guix combinators)))))
       (run-guix-daemon-test os "guix-daemon-unprivileged-test")))))
+
+(define %test-missing-file-system
+  (system-test
+   (name "missing-file-system")
+   (description
+    "Test that boot does not fail when a file system that might fail
+is specified and isn't provided by any device.")
+   (value
+    (let* ((os (marionette-operating-system
+                (operating-system
+                  (inherit %simple-os)
+                  (kernel-arguments (list "console=ttyS0,115200"))
+                  (file-systems
+                   (cons* (file-system
+                            (device (uuid "abcdef12-3456-7890-abcd-ef1234567890"))
+                            (mount-point "/somewhere/1")
+                            (mount? #t)
+                            (mount-may-fail? #t)
+                            (type "ext4"))
+                          (file-system
+                            (device (file-system-label "missing-fs"))
+                            (mount-point "/somewhere/2")
+                            (mount? #t)
+                            (mount-may-fail? #t)
+                            (type "ext4"))
+                          (file-system
+                            (device "/dev/missing")
+                            (mount-point "/somewhere/3")
+                            (mount? #t)
+                            (mount-may-fail? #t)
+                            (type "ext4"))
+                          (file-system
+                            (device (file-system-label "my-root"))
+                            (mount-point "/")
+                            (type "ext4"))
+                          %base-file-systems)))
+                #:imported-modules '((gnu services herd)
+                                     (guix combinators))))
+           (image (system-image (os->image os #:type qcow2-image-type)))
+           (command
+            #~`(,(string-append #$qemu-minimal "/bin/" (qemu-command))
+                ,@(if (file-exists? "/dev/kvm")
+                      '("-enable-kvm")
+                      '())
+                "-m" "1024" ;memory size, in MiB
+                "-serial" "stdio"
+                "-snapshot" ;for volatile root, writable overlay
+                "-drive" ,(format #f "file=~a,if=virtio" #$image))))
+      (run-basic-test os command name)))))
