@@ -110,6 +110,7 @@
             target-aarch64?
             target-arm?
             target-avr?
+            target-bpf?
             target-ppc32?
             target-ppc64le?
             target-powerpc?
@@ -830,6 +831,11 @@ architecture (x86_64) using 32-bit data types?"
 (define* (target-avr? #:optional (target (%current-target-system)))
   "Is the architecture of TARGET a variant of Microchip's AVR architecture?"
   (or (string=? target "avr") (string-prefix? "avr-" target)))
+
+(define* (target-bpf? #:optional (target (%current-target-system)))
+  "Is TARGET a BPF (Berkeley Packet Filter) virtual machine target?"
+  (and target
+       (or (string=? target "bpf") (string-prefix? "bpf-" target))))
 
 (define* (target-loongarch64? #:optional (target (or (%current-target-system)
                                                      (%current-system))))

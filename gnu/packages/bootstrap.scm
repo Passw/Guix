@@ -345,6 +345,7 @@ or false to signal an error."
      ;; here just so we can keep going.
      ((string=? system "arm-eabi") "no-ld.so")
      ((string=? system "avr") "no-ld.so")
+     ((string=? system "bpf-none") "no-ld.so")
      ((string=? system "or1k-elf") "no-ld.so")
      ((string-suffix? "-elf" system) "no-ld.so")
      ((string-suffix? "-mingw" system) "no-ld.so")
