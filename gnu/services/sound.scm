@@ -213,28 +213,29 @@ computed-file object~%") file))))
 .include /etc/pulse/default.pa.d~%")))))))
 
 (define pulseaudio-etc
-  (match-lambda
-    (($ <pulseaudio-configuration> client-conf daemon-conf default-script-file
-                                   extra-script-files system-script-file)
-     `(("pulse"
-        ,(file-union
-          "pulse"
-          `(("default.pa"
-             ,(if (null? extra-script-files)
-                  default-script-file
-                  (append-include-directive default-script-file)))
-            ("system.pa" ,system-script-file)
-            ,@(if (null? extra-script-files)
-                  '()
-                  `(("default.pa.d" ,(extra-script-files->file-union
-                                      extra-script-files))))
-            ("daemon.conf"
-             ,(apply mixed-text-file "daemon.conf"
-                     "default-script-file = /etc/pulse/default.pa\n"
-                     (map pulseaudio-conf-entry daemon-conf)))
-            ("client.conf"
-             ,(apply mixed-text-file "client.conf"
-                     (map pulseaudio-conf-entry client-conf))))))))))
+  (match-record-lambda <pulseaudio-configuration>
+      ;; Note: extra space for Emacs alignment.
+      ( client-conf daemon-conf
+        script-file extra-script-files system-script-file )
+    `(("pulse"
+       ,(file-union
+         "pulse"
+         `(("default.pa"
+            ,(if (null? extra-script-files)
+                 script-file
+                 (append-include-directive script-file)))
+           ("system.pa" ,system-script-file)
+           ,@(if (null? extra-script-files)
+                 '()
+                 `(("default.pa.d" ,(extra-script-files->file-union
+                                     extra-script-files))))
+           ("daemon.conf"
+            ,(apply mixed-text-file "daemon.conf"
+                    "default-script-file = /etc/pulse/default.pa\n"
+                    (map pulseaudio-conf-entry daemon-conf)))
+           ("client.conf"
+            ,(apply mixed-text-file "client.conf"
+                    (map pulseaudio-conf-entry client-conf)))))))))
 
 (define pulseaudio-service-type
   (service-type
