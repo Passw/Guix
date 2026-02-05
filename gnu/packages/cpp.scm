@@ -2590,7 +2590,7 @@ of C++14 components that complements @code{std} and Boost.")
 (define-public poco
   (package
     (name "poco")
-    (version "1.13.3")
+    (version "1.15.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2599,7 +2599,7 @@ of C++14 components that complements @code{std} and Boost.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b8w3s6j020r356s6j6ijpnvzjdby4qwwndhzhfjc3rm727m085g"))))
+                "0fzf46y7rga233nsg7d1jc6xa83i6qajxil6rak1z2z2bmhk5xa8"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -2607,6 +2607,10 @@ of C++14 components that complements @code{std} and Boost.")
                                 "-DENABLE_NETSSL=ON")
       #:phases
       #~(modify-phases %standard-phases
+          (add-before 'check 'check-setenv
+            (lambda _
+              (setenv "HOME" "/tmp")
+              (setenv "TMPDIR" "/tmp")))
           (add-after 'unpack 'disable-problematic-tests
             (lambda _
               (substitute* (list "Foundation/CMakeLists.txt" ; XXX: fails.
