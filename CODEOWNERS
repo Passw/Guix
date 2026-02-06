@@ -333,6 +333,17 @@ guix/import/pypi\.scm                              @guix/python
 guix/scripts/import/pypi\.scm                      @guix/python
 tests/import/pypi\.scm                             @guix/python
 
+gnu/ci\.scm                                        @guix/qa-packages
+gnu/packages/benchmark\.scm                        @guix/qa-packages
+gnu/packages/check\.scm                            @guix/qa-packages
+gnu/packages/ci\.scm                               @guix/qa-packages
+gnu/packages/code\.scm                             @guix/qa-packages
+gnu/packages/debug\.scm                            @guix/qa-packages
+gnu/packages/dezyne\.scm                           @guix/qa-packages
+gnu/packages/libunwind\.scm                        @guix/qa-packages
+gnu/services/ci\.scm                               @guix/qa-packages
+gnu/tests/ci\.scm                                  @guix/qa-packages
+
 gnu/packages/qt\.scm                               @guix/qt
 guix/build-system/qt\.scm                          @guix/qt
 guix/build/qt-build-system\.scm                    @guix/qt

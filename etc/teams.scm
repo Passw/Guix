@@ -954,6 +954,23 @@ perl-build-system as well as the rakudo-build-system."
               "guix/scripts/import/pypi.scm"
               "tests/import/pypi.scm")))
 
+(define-team qa-packages
+  (team 'qa-packages
+        #:name "Team for quality assurance packages"
+        #:description
+        "Quality assurance software (CI/CD, testing, analysis;
+no direct relation to Guix's QA)."
+        #:scope (list "gnu/ci.scm"
+                      "gnu/packages/benchmark.scm"
+                      "gnu/packages/check.scm"
+                      "gnu/packages/ci.scm"
+                      "gnu/packages/code.scm"
+                      "gnu/packages/debug.scm"
+                      "gnu/packages/dezyne.scm"
+                      "gnu/packages/libunwind.scm"
+                      "gnu/services/ci.scm"
+                      "gnu/tests/ci.scm")))
+
 (define-team qt
   (team 'qt
         #:name "Qt team"
@@ -1232,7 +1249,7 @@ the \"texlive\" importer."
 (define-member (person "Liliana Marie Prikler"
                        "liliana.prikler@gmail.com"
                        "lilyp")
-  emacs games gnome)
+  emacs games gnome qa-packages)
 
 (define-member (person "Ricardo Wurmus"
                        "rekado@elephly.net"
@@ -1352,7 +1369,7 @@ the \"texlive\" importer."
 (define-member (person "Janneke Nieuwenhuizen"
                        "janneke@gnu.org"
                        "janneke")
-  bootstrap core-packages home hurd installer)
+  bootstrap core-packages home hurd installer qa-packages)
 
 (define-member (person "Ian Eure"
                        "ian@retrospec.tv"
@@ -1471,7 +1488,7 @@ the \"texlive\" importer."
 (define-member (person "Nguyễn Gia Phong"
                        "cnx@loang.net"
                        "cnx")
-  python sysadmin)
+  python qa-packages sysadmin)
 
 (define-member (person "Lilah Tascheter"
                        "lilah@lunabee.space"
