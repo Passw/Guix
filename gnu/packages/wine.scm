@@ -81,7 +81,7 @@
 (define-public wine-minimal
   (package
     (name "wine-minimal")
-    (version "10.0")
+    (version "11.0")
     (source
      (origin
        (method url-fetch)
@@ -93,7 +93,7 @@
               (string-append "https://dl.winehq.org/wine/source/" dir
                              "wine-" version ".tar.xz")))
        (sha256
-        (base32 "009nmi0z60ilrlrxjj9msdqk2n2wp0jcdnflkh7b7bzgyzsv7q65"))))
+        (base32 "0087dr25h0wxvclacnnvx70q296976gxfj2lzw6wc7rwjdbnhyn0"))))
     (properties '((upstream-name . "wine")))
     (build-system gnu-build-system)
     (native-inputs (list bison flex))
@@ -111,8 +111,7 @@
        #:tests? #f
 
        #:make-flags
-       #~(list "SHELL=bash"
-               (string-append "libdir=" #$output "/lib/wine32"))
+       #~(list "SHELL=bash")
 
        #:phases
        #~(modify-phases %standard-phases
@@ -212,33 +211,6 @@ integrate Windows applications into your desktop.")
            wayland-protocols))
     (arguments
      (substitute-keyword-arguments (package-arguments wine-minimal)
-       ((#:phases phases)
-        #~(modify-phases #$phases
-           ;; Explicitly set the 32-bit version of vulkan-loader when installing
-           ;; to i686-linux or x86_64-linux.
-           ;; TODO: Add more JSON files as they become available in Mesa.
-           #$@(match (%current-system)
-                ((or "i686-linux" "x86_64-linux")
-                 `((add-after 'install 'wrap-executable
-                     (lambda* (#:key inputs outputs #:allow-other-keys)
-                       (let* ((out (assoc-ref outputs "out"))
-                              (icd (string-append out "/share/vulkan/icd.d")))
-                         (mkdir-p icd)
-                         (copy-file (search-input-file
-                                     inputs
-                                     "/share/vulkan/icd.d/radeon_icd.i686.json")
-                                    (string-append icd "/radeon_icd.i686.json"))
-                         (copy-file (search-input-file
-                                     inputs
-                                     "/share/vulkan/icd.d/intel_icd.i686.json")
-                                    (string-append icd "/intel_icd.i686.json"))
-                         (wrap-program (string-append out "/bin/wine-preloader")
-                           `("VK_ICD_FILENAMES" ":" =
-                             (,(string-append icd
-                                              "/radeon_icd.i686.json" ":"
-                                              icd "/intel_icd.i686.json")))))))))
-                (_
-                 `()))))
        ((#:configure-flags _ '()) #~'())))))
 
 (define-public wine64
@@ -250,52 +222,13 @@ integrate Windows applications into your desktop.")
     (arguments
      (substitute-keyword-arguments
          (strip-keyword-arguments '(#:system) (package-arguments wine))
-       ((#:make-flags _)
-        #~(list "SHELL=bash"
-                (string-append "libdir=" #$output "/lib/wine64"))
-        )
        ((#:phases phases)
         #~(modify-phases #$phases
-            (add-after 'install 'copy-wine32-binaries
-              (lambda* (#:key inputs outputs #:allow-other-keys)
-                (let ((out (assoc-ref %outputs "out")))
-                  ;; Copy the 32-bit binaries needed for WoW64.
-                  (copy-file (search-input-file inputs "/bin/wine")
-                             (string-append out "/bin/wine"))
-                  ;; Copy the real 32-bit wine-preloader instead of the wrapped
-                  ;; version.
-                  (copy-file (search-input-file inputs "/bin/.wine-preloader-real")
-                             (string-append out "/bin/wine-preloader")))))
             (add-after 'install 'copy-wine32-libraries
               (lambda* (#:key inputs outputs #:allow-other-keys)
                 (let* ((out (assoc-ref %outputs "out")))
-                  (copy-recursively (search-input-directory inputs "/lib/wine32")
-                                    (string-append out "/lib/wine32")))))
-            ;; Explicitly set both the 64-bit and 32-bit versions of vulkan-loader
-            ;; when installing to x86_64-linux so both are available.
-            ;; TODO: Add more JSON files as they become available in Mesa.
-            #$@(match (%current-system)
-                 ((or "x86_64-linux")
-                  `((delete 'wrap-executable)
-                    (add-after 'copy-wine32-binaries 'wrap-executable
-                      (lambda* (#:key inputs outputs #:allow-other-keys)
-                        (let* ((out (assoc-ref outputs "out"))
-                               (icd-files (map
-                                           (lambda (basename)
-                                             (search-input-file
-                                              inputs
-                                              (string-append "/share/vulkan/icd.d/"
-                                                             basename)))
-                                           '("radeon_icd.x86_64.json"
-                                             "intel_icd.x86_64.json"
-                                             "radeon_icd.i686.json"
-                                             "intel_icd.i686.json"))))
-                          (wrap-program (string-append out "/bin/wine-preloader")
-                            `("VK_ICD_FILENAMES" ":" = ,icd-files))
-                          (wrap-program (string-append out "/bin/wine64-preloader")
-                            `("VK_ICD_FILENAMES" ":" = ,icd-files)))))))
-                 (_
-                  `()))
+                  (copy-recursively (search-input-directory inputs "/lib/wine")
+                                    (string-append out "/lib/wine")))))
             (add-after 'compress-documentation 'copy-wine32-manpage
               (lambda* (#:key inputs outputs #:allow-other-keys)
                 (let* ((out (assoc-ref %outputs "out")))
