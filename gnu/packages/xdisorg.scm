@@ -3497,6 +3497,15 @@ support such as Xfce.")
        (sha256
         (base32 "1hqc5z4qgfl8s2wzg1f9nq3ww2xg0vihdahhprjpmj9lgla50m7i"))))
     (build-system gnu-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-cross-compile
+            (lambda _
+              (substitute* "autogen.sh"
+                (("pkg-config")
+                 #$(pkg-config-for-target))))))))
     (native-inputs
      (list autoconf automake pkg-config))
     (inputs
