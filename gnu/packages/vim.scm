@@ -44,6 +44,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system pyproject)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system vim)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
@@ -54,12 +55,14 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages coq)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages enlightenment)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
@@ -74,6 +77,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
@@ -1761,3 +1765,56 @@ line of a file contains @@startuml.  Additionally the makeprg is set to plantuml
 assuming you have this executable in your path.")
       (home-page "https://github.com/aklt/plantuml-syntax")
       (license license:vim))))
+
+(define-public neovim-qt
+  (package
+    (name "neovim-qt")
+    (version "0.2.19")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/equalsraf/neovim-qt")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0i7gr33q85mg1znf2383lqan7cbsb2kh7k9hzzb62yjmgj1yvgmg"))))
+    (build-system qt-build-system)
+    (native-inputs (list doxygen graphviz xvfb-run))
+    (inputs (list msgpack-c neovim python qtbase qtsvg))
+    (arguments
+     (list
+      #:configure-flags
+      #~(list "-DWITH_QT:STRING=Qt6" "-DUSE_SYSTEM_MSGPACK:BOOL=ON"
+              "-DENABLE_TESTS:BOOL=ON")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'replace-default-nvim-bin-path
+            (lambda* _
+              (let ((nvim-bin-path (which "nvim")))
+                (substitute* "src/gui/app.cpp"
+                  (("(parser.value\\(\"nvim\"\\) : \")(nvim)(\" };)" all start
+                    nvim-bin end)
+                   (string-append start nvim-bin-path end))
+                  ((", nvim\\{ parser.value\\(\"nvim\"\\) \\}")
+                   (string-append ", nvim{ (parser.isSet(\"nvim\")) ?\n"
+                                  "parser.value(\"nvim\") : \"" nvim-bin-path
+                                  "\"}"))))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (let ((xdg-runtime-dir (string-append (getcwd) "/runtime-dir")))
+                  ;; QStandardPaths: wrong permissions on runtime directory
+                  (setenv "XDG_RUNTIME_DIR" xdg-runtime-dir)
+                  (mkdir xdg-runtime-dir)
+                  (chmod xdg-runtime-dir #o700))
+                (setenv "QT_QPA_PLATFORM" "offscreen")
+                (setenv "HOME"
+                        (getenv "TMPDIR"))
+                ;; TODO: Investigate failure of tst_shell
+                (invoke "xvfb-run" "ctest" "--exclude-regex" "tst_shell")))))))
+    (synopsis "Neovim client library and GUI, in Qt")
+    (description
+     "Neovim Qt is a lightweight cross-platform Neovim GUI written in C++ with Qt.")
+    (home-page "https://github.com/equalsraf/neovim-qt")
+    (license license:isc)))
