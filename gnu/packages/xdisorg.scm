@@ -3486,7 +3486,7 @@ support such as Xfce.")
 (define-public xwallpaper
   (package
     (name "xwallpaper")
-    (version "0.7.3")
+    (version "0.7.6")
     (source
      (origin
        (method git-fetch)
@@ -3495,7 +3495,7 @@ support such as Xfce.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rsv42cl0s149sbpdxz9yqqjip3si95jv3dglwzrcm7pjfg7519v"))))
+        (base32 "1hqc5z4qgfl8s2wzg1f9nq3ww2xg0vihdahhprjpmj9lgla50m7i"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf automake pkg-config))
