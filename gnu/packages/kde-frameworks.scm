@@ -1702,7 +1702,7 @@ kwidgetsaddons-kcolumnresizertest)")))))))))
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
-    (version "6.21.0")
+    (version "6.22.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1711,7 +1711,7 @@ kwidgetsaddons-kcolumnresizertest)")))))))))
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0cs10qfnzyx2bgkrkdqvalwak2b8nhngr63dk4p2z3c59qahnril"))))
+                "15ai1q4ph6jgs3xwl3gw8qifd8w9s4k6ynybmk9d8xsfhn9dl898"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules
