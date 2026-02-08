@@ -324,14 +324,14 @@ other Mah Jongg like games.")
 (define-public kmahjongg
   (package
     (name "kmahjongg")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/"
                            version "/src/kmahjongg-" version ".tar.xz"))
        (sha256
-        (base32 "1fpfakx0gl76crba64dlnw3bk12304dzlm8mriv31nj08v84mwla"))))
+        (base32 "1w8l7lm87ngpfn6978cx1bwmxngfxifivazci1322z7y3s5x97yd"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
