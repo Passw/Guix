@@ -3235,7 +3235,7 @@ of a Plasma shell.")
 (define-public wacomtablet
   (package
     (name "wacomtablet")
-    (version "6.5.2")
+    (version "6.5.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -3243,7 +3243,7 @@ of a Plasma shell.")
                               "/wacomtablet-" version ".tar.xz"))
               (sha256
                (base32
-                "0qxwg5j5dy3icrfmg364v0fglinrnh4hn4piynk6hvfqgaimj3f0"))))
+                "1lk7nk0n1x1i2cn5c4p5mywhxm8v91jnkkcdbczqrs443579a35y"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
