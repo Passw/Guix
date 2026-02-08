@@ -369,14 +369,14 @@ to perform data analysis.")
 (define-public marble
   (package
     (name "marble")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/"
                            version "/src/marble-" version ".tar.xz"))
        (sha256
-        (base32 "0yywm869ah3hns7bgg08fy5vzgn16igqzignkw3kbvwyn2cvsadf"))))
+        (base32 "078a342zkbd93pbgpv4ys1zynnrc08lk7rh6nqjzmgz046591qir"))))
     (build-system qt-build-system)
     (arguments
      ;; FIXME: libmarblewidget-qt5.so.28 not found.  Also enable the
