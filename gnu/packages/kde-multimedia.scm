@@ -1157,14 +1157,14 @@ CDs.")
 (define-public plasmatube
   (package
     (name "plasmatube")
-    (version "25.12.0")
+    (version "25.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/plasmatube-" version ".tar.xz"))
               (sha256
                (base32
-                "1cnj1yjazqx8pwyqbhrhz123x6522w0j1ch39g98qjj072dmz8a9"))))
+                "1jc6iqcxz0zyai26vx80nyfr818r4cj8lpw0b1pbvb1vya12v8zy"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules pkg-config python-minimal))
     (inputs
