@@ -950,7 +950,7 @@ computer's hardware.")
 (define-public kmenuedit
   (package
     (name "kmenuedit")
-    (version "6.5.2")
+    (version "6.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -958,7 +958,7 @@ computer's hardware.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "0mfbrhi0yzinlj4sdplspsk50bxawkgq1mz8q6a0sgr79z3yyqcf"))))
+                "17q23zyx46xjafsyvyvm2rf0i6fli000i0xvw04x1j1dbqhdh1a5"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase
                      #:tests? #f))
