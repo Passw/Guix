@@ -188,7 +188,7 @@ framework.  It builds XMPP clients complying with the XMPP Compliance Suites
 (define-public kaidan
   (package
     (name "kaidan")
-    (version "0.13.0")
+    (version "0.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/unstable/kaidan/" version
@@ -198,7 +198,7 @@ framework.  It builds XMPP clients complying with the XMPP Compliance Suites
                #~(begin
                    (delete-file-recursively "3rdparty")))
               (sha256
-               (base32 "082bg19jd6g1w2h65zjp5hraihaayrrfjqzwgfqdn3lgwyqnrdxm"))))
+               (base32 "11g4lifji6gh9zmpgyx4dnmxyzzwkhhj84j2w9r4bvgqm2pxdhnd"))))
     (build-system qt-build-system)
     (arguments
      (list
@@ -212,7 +212,8 @@ framework.  It builds XMPP clients complying with the XMPP Compliance Suites
                (setenv "HOME" "/tmp"))))))
     (native-inputs (list extra-cmake-modules
                          pkg-config))
-    (inputs (list icu4c
+    (inputs (list gstreamer
+                  icu4c
                   kcrash
                   kdsingleapplication
                   kio
