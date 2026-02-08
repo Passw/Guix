@@ -529,14 +529,14 @@ This package is part of the KDE multimedia module.")
 (define-public kdenlive
   (package
     (name "kdenlive")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kdenlive-" version ".tar.xz"))
        (sha256
-        (base32 "199c4jw76hk8dbyhyypn6f3km5n0pxh8vwi0fx89zs99xkcfkzna"))))
+        (base32 "0m41px8055mbgxxiq78vgc1pynhp4ln86c4kpz42x9rljwajq7ss"))))
     (build-system qt-build-system)
     (arguments
      ;; XXX otiotest seemingly freezes.  Additionally, tests/mixtest.cpp:818
