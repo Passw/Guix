@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2025 Artur Wroblewski <wrobell@riseup.net>
+;;; Copyright © 2026 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -134,13 +135,17 @@ listeners.tcp.2 = ::1:5672
           (stop #~(make-kill-destructor)))))))
 
 (define rabbitmq-service-type
-  (service-type (name 'rabbitmq)
-                (description "Run the RabbitMQ message broker service.")
-                (extensions (list (service-extension
-                                   shepherd-root-service-type
-                                   rabbitmq-shepherd-service)
-                                  (service-extension activation-service-type
-                                                     rabbitmq-activation)
-                                  (service-extension account-service-type
-                                                     (const %rabbitmq-accounts))))
-                (default-value (rabbitmq-configuration))))
+  (service-type
+    (name 'rabbitmq)
+    (description "Run the RabbitMQ message broker service.")
+    (extensions (list (service-extension
+                       shepherd-root-service-type
+                       rabbitmq-shepherd-service)
+                      (service-extension activation-service-type
+                                         rabbitmq-activation)
+                      (service-extension account-service-type
+                                         (const %rabbitmq-accounts))
+                      (service-extension
+                       profile-service-type
+                       (compose list rabbitmq-configuration-rabbitmq))))
+    (default-value (rabbitmq-configuration))))
