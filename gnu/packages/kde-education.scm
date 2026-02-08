@@ -111,7 +111,7 @@ expressions and let you evaluate and draw them.")
 (define-public gcompris-qt
   (package
     (name "gcompris-qt")
-    (version "25.1.1")
+    (version "26.0")
     (source
      (origin
        (method url-fetch)
@@ -119,7 +119,7 @@ expressions and let you evaluate and draw them.")
              "mirror://kde//stable/gcompris/qt/src/gcompris-qt-"
              version ".tar.xz"))
        (sha256
-        (base32 "0am1dmncwfci8jqc94kzvb98bhzji3qla606my7n5zgmicbfjvb3"))))
+        (base32 "0czk3srhx7g370mhx8yk13ak004h6y8lzqdbj0wqhvnxjszghgbx"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
@@ -146,10 +146,14 @@ expressions and let you evaluate and draw them.")
            python-wrapper
            qtcharts
            qtdeclarative
+           qtgraphs
            qtmultimedia
+           qtquick3d
            qtsensors
+           qtshadertools
            qtsvg
-           qtwayland))
+           qtwayland
+           wayland))
     (home-page "https://gcompris.net/index-en.html")
     (synopsis "Educational games for small children")
     (description
