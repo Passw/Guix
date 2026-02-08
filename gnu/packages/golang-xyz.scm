@@ -3492,6 +3492,35 @@ frequently used with (but not limited to) the Polish language.")
 package provides that key-value store API interface.")
     (license license:asl2.0)))
 
+(define-public go-github-com-blevesearch-vellum
+  (package
+    (name "go-github-com-blevesearch-vellum")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/blevesearch/vellum")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0z0k2pf0qmdsg30a842l78f1dx1x6b8jnfpvvvgdk8cmq8bra0kf"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/blevesearch/vellum"))
+    (native-inputs
+     (list go-github-com-spf13-cobra))
+    (propagated-inputs
+     (list go-github-com-bits-and-blooms-bitset
+           go-github-com-blevesearch-mmap-go))
+    (home-page "https://github.com/blevesearch/vellum")
+    (synopsis "Go finite state transducer")
+    (description
+     "This package provides a Go library for building, serializing and
+executing an @acronym{FST, finite state transducer}.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-bmatcuk-doublestar
   (package
     (name "go-github-com-bmatcuk-doublestar")
@@ -31891,6 +31920,27 @@ various modes for analyzing and transforming YAML data.")))
                      go-github-com-envoyproxy-protoc-gen-validate)
                     "\nThis package provides command line interface (CLI)
 tools."))))
+
+(define-public vellum
+  (package/inherit go-github-com-blevesearch-vellum
+    (name "vellum")
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments go-github-com-blevesearch-vellum)
+       ((#:tests? _ #t) #f)
+       ((#:install-source? _ #t) #f)
+       ((#:skip-build? _ #t) #f)
+       ((#:import-path _) "github.com/blevesearch/vellum/cmd/vellum")
+       ((#:unpack-path _ "") "github.com/blevesearch/vellum")))
+    (native-inputs
+     (append
+      (package-native-inputs go-github-com-blevesearch-vellum)
+      (package-propagated-inputs go-github-com-blevesearch-vellum)))
+    (propagated-inputs '())
+    (inputs '())
+    (description
+     "This package provides an utility to work with vellum @acronym{FST,
+finite state transducer} files.")))
 
 ;;;
 ;;; Avoid adding new packages to the end of this file. To reduce the chances
