@@ -509,14 +509,14 @@ This package is part of the KDE administration module.")
 (define-public kwalletmanager
   (package
     (name "kwalletmanager")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kwalletmanager-" version ".tar.xz"))
        (sha256
-        (base32 "0y4xqhqzh71rwf36b5wd809wrj8agslfmhwwvcfqk7akcbljyraz"))))
+        (base32 "0lbi40ivslzi1gh904mggw45n32r84gvjhfd59pqfavkhip6dafl"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
