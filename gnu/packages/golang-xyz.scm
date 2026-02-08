@@ -3379,6 +3379,32 @@ Segmentation as described in @url{http://www.unicode.org/reports/tr29/,
 Unicode Standard Annex #29}.")
     (license license:asl2.0)))
 
+(define-public go-github-com-blevesearch-snowball
+  (package
+    (name "go-github-com-blevesearch-snowball")
+    (version "0.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/blevesearch/snowball")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0infs0y0kps7hm255z8x8wq7cnns6c92iasb3k1z2vg80b9wgplf"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/blevesearch/snowball"))
+    (home-page "https://github.com/blevesearch/snowball")
+    (synopsis "Go implementation of the Snowball stemmer")
+    (description
+     "This package provides a Go implementation of the
+@url{http://snowball.tartarus.org/, Snowball stemmer} for natural language
+processing.  It's an alternative fork of
+@url{https://github.com/kljensen/snowball}.")
+    (license license:expat)))
+
 (define-public go-github-com-bmatcuk-doublestar
   (package
     (name "go-github-com-bmatcuk-doublestar")
