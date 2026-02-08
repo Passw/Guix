@@ -3327,6 +3327,33 @@ approach to multi-version concurrency control.  It's an alternative fork of
 @url{https://github.com/steveyen/gtreap}.")
     (license license:expat)))
 
+(define-public go-github-com-blevesearch-scorch-segment-api
+  (package
+    (name "go-github-com-blevesearch-scorch-segment-api")
+    (version "2.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/blevesearch/scorch_segment_api")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h09w3z1vhsdy1g3lpcxa83z0lqlfvqwdxyrmh36mzyg0sc3k7s0"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/blevesearch/scorch_segment_api"))
+    (propagated-inputs
+     (list go-github-com-blevesearch-bleve-index-api
+           go-github-com-roaringbitmap-roaring))
+    (home-page "https://github.com/blevesearch/scorch_segment_api")
+    (synopsis "Scorch internal segment API")
+    (description
+     "Scorch supports a pluggable segment interface.  This package provides
+that segment API interface.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-bmatcuk-doublestar
   (package
     (name "go-github-com-bmatcuk-doublestar")
