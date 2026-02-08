@@ -1684,7 +1684,7 @@ conjunction with the KDE Plasma Desktop.")
 (define-public milou
   (package
     (name "milou")
-    (version "6.5.2")
+    (version "6.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -1692,7 +1692,7 @@ conjunction with the KDE Plasma Desktop.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1gcvwx0kip5fnh9g1kx34w7l398yz6vnri13096a4khm3b27kcw4"))))
+                "1pc97l90l7fw6s6lmqkh22rci24d8b48ycwpv404iyyr0ad0j7g8"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
     (inputs (list kcoreaddons
