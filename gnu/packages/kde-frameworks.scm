@@ -4529,7 +4529,7 @@ to separate the structure of documents from the data they contain.")
 (define-public kwallet
   (package
     (name "kwallet")
-    (version "6.21.0")
+    (version "6.22.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4538,7 +4538,7 @@ to separate the structure of documents from the data they contain.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0j3z10p5myivkwzfypp5r4wh2ny2fjglcn8fqb068lgcfjp9w384"))))
+                "01ma4pvwxyxrg9wzppym46wjw201wsb9p5fwxqf4i6yb3i31m0hh"))))
     (build-system cmake-build-system)
     (arguments
      (list #:test-exclude "fdo_secrets_test";seems to require network
