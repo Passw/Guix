@@ -209,14 +209,14 @@ decorations.")
 (define-public bluedevil
   (package
     (name "bluedevil")
-    (version "6.5.2")
+    (version "6.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1c23vkkvfr28xqi7k5v6i01ijhk6dqg061wxza2wz94hg5mv9hs8"))))
+                "1dndb6zcsk2qsqj4cpnw6z6zvyj4nrnd076mgxl4rvs20k6lpcyj"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase
                      #:tests? #f))
