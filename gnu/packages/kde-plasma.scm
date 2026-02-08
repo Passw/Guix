@@ -497,16 +497,16 @@ concept.")
 (define-public klassy
   (package
     (name "klassy")
-    (version "6.4.breeze6.4.0")
+    (version "6.5.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/paulmcauley/klassy")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hrr8kg988qzpk8mccc8kk9lah9b89wx0h47s1981wvb9bci5dpr"))))
+        (base32 "1dx8fa15jb8j1rnw5cpw1zp5016kazigqbldc5sdnfzx9gs4q4xc"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules))
     (inputs (list qtsvg
