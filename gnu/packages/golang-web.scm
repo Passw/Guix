@@ -48,6 +48,7 @@
 ;;; Copyright © 2025 Patrick Norton <patrick.147.norton@gmail.com>
 ;;; Copyright © 2025 Jared Klingenberger <jkling@noreply.codeberg.org>
 ;;; Copyright © 2026 Carlos Durán Domínguez <wurt@wurt.eu>
+;;; Copyright © 2026 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2676,6 +2677,53 @@ capable of querying the current time from a remote NTP server as specified in
     (description
      "This package provides SCSS compiler support for Go applications.")
     (license license:expat)))
+
+(define-public go-github-com-blevesearch-go-metrics
+  (package
+    (name "go-github-com-blevesearch-go-metrics")
+    (version "0.0.0-20201227073835-cf1acfcdf475")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/blevesearch/go-metrics")
+              (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0s7zab04slz07c7l4h2cqz62qnqah69r6p157vvbd7725a7wzkr0"))
+       (modules '((guix build utils)))
+       (snippet
+        #~(begin
+            ;; github.com/blevesearch/go-metrics was forked from
+            ;; github.com/rcrowley/go-metrics, but it seems rcrowley was
+            ;; not replaced everywhere consistently. Fix this.
+            (substitute* (find-files "." "\\.go$")
+              (("github.com/rcrowley/go-metrics")
+               "github.com/blevesearch/go-metrics"))))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/blevesearch/go-metrics"
+      #:test-flags
+      ;; Arbitrary precision tests are known to be broken on aarch64, ppc64le
+      ;; and s390x. See: https://github.com/rcrowley/go-metrics/issues/249
+      #~(list #$@(if (or (target-aarch64?) (target-ppc64le?))
+                     '("-skip" (string-join
+                                (list "TestEWMA1"
+                                      "TestEWMA5"
+                                      "TestUniformSampleSnapshot"
+                                      "TestUniformSampleStatistics")
+                                "|"))
+                     '())
+              "-vet=off")))
+    (propagated-inputs
+     (list go-github-com-stathat-go))
+    (home-page "https://github.com/blevesearch/go-metrics")
+    (synopsis "Go port of Coda Hale's Metrics library")
+    (description
+     "This package provides a Go implementation of Coda Hale's Metrics
+library. It's an alternative fork of https://github.com/rcrowley/go-metrics.")
+    (license license:bsd-2)))
 
 (define-public go-github-com-bradenhilton-mozillainstallhash
   (package
