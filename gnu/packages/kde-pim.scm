@@ -970,14 +970,14 @@ functions for accessing calendar data using the kcalcore API.")
 (define-public kdepim-addons
   (package
     (name "kdepim-addons")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kdepim-addons-" version ".tar.xz"))
        (sha256
-        (base32 "1iqgdw1b2wxg79zqq77pwbshgsf8118rn26bn35y554bxjlnjrxx"))))
+        (base32 "01ldq96fhh0791x674hll12w5n62h02ffx7fni5djm6gi467bl9g"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
