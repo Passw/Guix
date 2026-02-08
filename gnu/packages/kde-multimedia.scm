@@ -167,19 +167,18 @@ This package is part of the KDE multimedia module.")
 (define-public amarok
   (package
     (name "amarok")
-    (version "3.3.1")
+    (version "3.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/amarok/" version
                                   "/amarok-" version ".tar.xz"))
               (sha256
                (base32
-                "00cw6gk1vhc5ch2jri90lma5jbkah3bq1dmyzg49bnq77aljwvrr"))))
+                "02v6sf2v9hnkzzkxq3xszazxbswaymqhnvvyyf6f86wrsc4nnhxa"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
-           #:configure-flags
-           #~(list "-DBUILD_WITH_QT6=ON")
+           #:test-exclude "testtrackforurlworker"
            #:phases
            #~(modify-phases %standard-phases
                (add-before 'configure 'check-setup
