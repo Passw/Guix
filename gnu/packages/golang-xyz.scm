@@ -3297,6 +3297,36 @@ It's an alternative fork of https://github.com/edsrzf/mmap-go")
 library for vector similarity search.")
     (license license:expat)))
 
+(define-public go-github-com-blevesearch-gtreap
+  (package
+    (name "go-github-com-blevesearch-gtreap")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/blevesearch/gtreap")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0pkcwgn2nkgqg01w95ivwbggcxihrc04k8i3wgaif2f437jpz2h7"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/blevesearch/gtreap"))
+    (home-page "https://github.com/blevesearch/gtreap")
+    (synopsis "Go immutable treap library")
+    (description
+     "This package provides an immutable treap implementation in the Go
+Language.  A treap is a data structure that maintains a dynamic set of ordered
+keys and allows binary searches among the keys.  Its height is, with high
+probability, proportional to the logarithm of the number of keys, so that each
+search, insertion, or deletion operation takes logarithmic time to perform.
+gtreap's implementation of a treap is immutable, and thus provides a simple
+approach to multi-version concurrency control.  It's an alternative fork of
+@url{https://github.com/steveyen/gtreap}.")
+    (license license:expat)))
+
 (define-public go-github-com-bmatcuk-doublestar
   (package
     (name "go-github-com-bmatcuk-doublestar")
