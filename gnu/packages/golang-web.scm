@@ -725,6 +725,95 @@ Signature headers are to be set (but not both).
 It's an alternative fork of @url{https://github.com/go-fed/httpsig}.")
     (license license:bsd-3)))
 
+(define-public go-github-com-99designs-gqlgen
+  (package
+    (name "go-github-com-99designs-gqlgen")
+    (version "0.17.86")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/99designs/gqlgen")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1yv97h2c75f2b5w4x4xjflzypgi5irsxadzckckbb94bdn2pylyy"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/99designs/gqlgen"
+      #:embed-files
+      #~(list "bash_autocomplete" "powershell_autocomplete.ps1"
+              "zsh_autocomplete" "prelude.graphql")
+      #:test-flags
+      #~(list "-skip"
+              (string-join
+               ;; These tests require network access.
+               (list "TestAltairHandler_Integrity"
+                     "TestApolloSandboxHandler_Integrity"
+                     "TestHandler_Integrity"
+                     ;; These tests fail due to the way our go-build-system
+                     ;; unpacks and lays out the source code.
+                     "TestImportPathForDir"
+                     "TestRewriter/out_of_scope_dir"
+                     ;; Commenting out autobind generates the modules
+                     ;; necessary for these tests. See discussion at
+                     ;; https://github.com/99designs/gqlgen/issues/1765 But
+                     ;; then, go mod tidy fails probably because we disable
+                     ;; modules in our go-build-system by setting
+                     ;; GO111MODULE=off.
+                     "TestAutobinding"
+                     "TestCodeGeneration"
+                     "TestCodeGenerationFederation2"
+                     "TestGenerate"
+                     "TestGenerateWithSchemaMutator"
+                     "TestInjectSourceLate"
+                     "TestModelGenerationDirectiveEmbedding"
+                     "TestNoEntities"
+                     "TestWithEntities")
+               "|"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-permissions
+            (lambda* (#:key import-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" import-path)
+                ;; Make some go files writable. Some tests fail when they are
+                ;; not.
+                (for-each (lambda (file)
+                            (chmod file #o644))
+                          (append (find-files "plugin" "^schema.custom.go$")
+                                  (find-files "plugin" "^schema.resolvers.go$")
+                                  (find-files "plugin" "^generated\\.go$")
+                                  (find-files "plugin" "^generated_[^.]*\\.go$")))))))))
+    (native-inputs
+     (list go-github-com-matryer-moq))
+    (propagated-inputs
+     (list go-github-com-go-viper-mapstructure-v2
+           go-github-com-goccy-go-yaml
+           go-github-com-google-uuid
+           go-github-com-gorilla-websocket
+           go-github-com-hashicorp-golang-lru-v2
+           go-github-com-kevinmbeaulieu-eq-go
+           go-github-com-logrusorgru-aurora-v4
+           go-github-com-mattn-go-colorable
+           go-github-com-mattn-go-isatty
+           go-github-com-puerkitobio-goquery
+           go-github-com-sosodev-duration
+           go-github-com-stretchr-testify
+           go-github-com-urfave-cli-v3
+           go-github-com-vektah-gqlparser-v2
+           go-golang-org-x-text
+           go-golang-org-x-tools
+           go-google-golang-org-protobuf
+           go-gopkg-in-yaml-v3))
+    (home-page "https://github.com/99designs/gqlgen")
+    (synopsis "Go GraphQL server library")
+    (description
+     "gqlgen is a @command{go generate} based GraphQL server library.  It
+generates Go server code from a schema written in the GraphQL Schema
+Definition Language.")
+    (license license:expat)))
+
 (define-public go-github-com-a-h-templ
   (package
     (name "go-github-com-a-h-templ")
