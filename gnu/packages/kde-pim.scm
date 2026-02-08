@@ -932,14 +932,14 @@ calendaring applications.")
 (define-public kcalutils
   (package
     (name "kcalutils")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kcalutils-" version ".tar.xz"))
        (sha256
-        (base32 "1h1w8fwzzkn8f3n773i6dzzqvv7d3fylxqzxazks7zsmw0s82123"))))
+        (base32 "0wdygkm9f5c9sk1i41gsc8p5bvc3ll7zz2nndbr6gsgwld8fm97y"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules libxml2)) ;; xmllint required for tests
