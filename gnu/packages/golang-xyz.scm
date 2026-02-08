@@ -3436,6 +3436,38 @@ the @code{Current()} method.  The @code{Env} structure can be reused for
 subsequent calls by using the @code{SetCurrent()} method.")
     (license license:bsd-3)))
 
+(define-public go-github-com-blevesearch-stempel
+  (package
+    (name "go-github-com-blevesearch-stempel")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/blevesearch/stempel")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0myqkpsr031q1ipw25lbd1ni1ygvwd50zirjgs7pj47q30hy70xa"))
+       (snippet
+        #~(begin
+            (use-modules (guix build utils))
+            ;; Delete example stempel command-line tool.
+            (delete-file-recursively "cmd")))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/blevesearch/stempel"))
+    (propagated-inputs
+     (list go-golang-org-x-text))
+    (home-page "https://github.com/blevesearch/stempel")
+    (synopsis "Go implementation of the Stempel stemmer")
+    (description
+     "This package provides a Go implementation of the
+@url{http://www.getopt.org/stempel/, Stempel} stemmer, an algorithmic stemmer
+frequently used with (but not limited to) the Polish language.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-bmatcuk-doublestar
   (package
     (name "go-github-com-bmatcuk-doublestar")
