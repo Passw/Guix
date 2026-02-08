@@ -15107,7 +15107,7 @@ and is designed to be accessible to both humans and machines.")
 (define-public go-github-com-vektah-gqlparser-v2
   (package
     (name "go-github-com-vektah-gqlparser-v2")
-    (version "2.5.21")
+    (version "2.5.31")
     (source
      (origin
        (method git-fetch)
@@ -15116,7 +15116,7 @@ and is designed to be accessible to both humans and machines.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hrzm9f3kvcblff4hypf1p95kxsv5pww7vcghhw2jb7r8r4kmdf0"))))
+        (base32 "1fg0p4q4ryh59jrcdbzh6kvs98525dhj52xc6d2r3yhsgbjm3qns"))))
     (build-system go-build-system)
     (arguments
      (list
