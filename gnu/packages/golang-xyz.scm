@@ -3137,6 +3137,39 @@ based on murmurhash.")
 @url{https://blevesearch.com/, Bleve} - indexing & search for Go.")
     (license license:asl2.0)))
 
+(define-public go-github-com-blevesearch-geo
+  (package
+    (name "go-github-com-blevesearch-geo")
+    (version "0.2.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/blevesearch/geo")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05vgzxf6g7gmw9wymxxwkq2xxwakr1lrhs2jy6v91k7akgz9alsv"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:skip-build? #t
+      #:import-path "github.com/blevesearch/geo"))
+    (native-inputs
+     (list go-github-com-google-go-cmp))
+    (propagated-inputs
+     (list go-github-com-blevesearch-bleve-index-api
+           go-github-com-json-iterator-go))
+    (home-page "https://github.com/blevesearch/geo")
+    (synopsis "Go S2 geometry library")
+    (description
+     "This is a library for manipulating geometric shapes.  Unlike many
+geometry libraries, S2 is primarily designed to work with spherical geometry,
+i.e., shapes drawn on a sphere rather than on a planar 2D map.  This makes it
+especially suitable for working with geographic data.  It an alternative fork
+of https://github.com/golang/geo.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-bmatcuk-doublestar
   (package
     (name "go-github-com-bmatcuk-doublestar")
