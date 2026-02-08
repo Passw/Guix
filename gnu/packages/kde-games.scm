@@ -646,14 +646,14 @@ This package is part of the KDE games module.")
 (define-public kblocks
   (package
     (name "kblocks")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/"
                            version "/src/kblocks-" version ".tar.xz"))
        (sha256
-        (base32 "0n2h3scphwj0mlkg8bsmf2pbdfv4gm94w0rhw8rr03hfr7vphkwx"))))
+        (base32 "01s46l0rr7jiz0daa9ja5k7ippy4bppn5qadp3pajv7z5psbahmw"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase))
     (native-inputs
