@@ -154,14 +154,14 @@ structure.  It features:
 (define-public kcachegrind
   (package
     (name "kcachegrind")
-    (version "25.12.0")
+    (version "25.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/kcachegrind-" version ".tar.xz"))
               (sha256
                (base32
-                "027wpnswp91q7zj4swm167p45k9rvqgcbg4i25ln5p8avpg6ysbn"))))
+                "01qvb7br6kqs191jkz27ig2nmrp7khhl1l7fd3mdpy8jmnrkgs26"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules perl python qttools kdoctools))
