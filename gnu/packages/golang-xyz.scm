@@ -3521,6 +3521,44 @@ package provides that key-value store API interface.")
 executing an @acronym{FST, finite state transducer}.")
     (license license:asl2.0)))
 
+(define-public go-github-com-blevesearch-zapx-v11
+  (package
+    (name "go-github-com-blevesearch-zapx-v11")
+    (version "11.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/blevesearch/zapx")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "192d9x0lw73i1px2wn8b5wvb3gjhirrvaghpv15qamxhc5rmqd33"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/blevesearch/zapx"))
+    (native-inputs
+     (list go-github-com-spf13-cobra))
+    (propagated-inputs
+     (list go-github-com-bits-and-blooms-bitset
+           go-github-com-blevesearch-bleve-index-api
+           go-github-com-blevesearch-go-faiss
+           go-github-com-blevesearch-mmap-go
+           go-github-com-blevesearch-scorch-segment-api
+           go-github-com-blevesearch-vellum
+           go-github-com-golang-snappy
+           go-github-com-roaringbitmap-roaring))
+    (home-page "https://github.com/blevesearch/zapx")
+    (synopsis "Go zap file format library")
+    (description
+     "This package is a Go implementation of the zap file format.
+The zap file format is used by the bleve search engine to store its indexes.
+It is documented at
+@url{https://github.com/blevesearch/zapx/blob/master/zap.md}.  It was
+originated as @url{https://github.com/blevesearch/zap}.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-bmatcuk-doublestar
   (package
     (name "go-github-com-bmatcuk-doublestar")
