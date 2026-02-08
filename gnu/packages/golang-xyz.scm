@@ -6244,6 +6244,30 @@ submodules:
 bash syntax.")
     (license license:expat)))
 
+(define-public go-github-com-couchbase-ghistogram
+  (package
+    (name "go-github-com-couchbase-ghistogram")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/couchbase/ghistogram")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05nhcp5i8l9ndcf18bn58qgm6vh10d59xnxz6qikk0sajyy4r2s1"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/couchbase/ghistogram"))
+    (home-page "https://github.com/couchbase/ghistogram")
+    (synopsis "Go simple int histogram library")
+    (description
+     "This package provides a simple int histogram library for Go that avoids
+runtime memory allocations.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-couchbase-gomemcached
   (package
     (name "go-github-com-couchbase-gomemcached")
