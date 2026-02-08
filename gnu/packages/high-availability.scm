@@ -627,7 +627,11 @@ Virtually anything that can be scripted can be managed as part of a Pacemaker cl
                   (for-each (lambda (prog)
                               (symlink (string-append sbindir "/" prog)
                                        (string-append target "/" prog)))
-                            rabbitmq-programs))))))))
+                            rabbitmq-programs))))
+            (add-after 'install 'install-man
+              (lambda _
+                (invoke "make" "install-man"
+                        (string-append "PREFIX=" #$output))))))))
     (inputs (list bash-minimal))
     (native-inputs (list erlang elixir python-wrapper which p7zip))
     (synopsis
