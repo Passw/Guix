@@ -2360,14 +2360,14 @@ unnecessary network operations.")
 (define-public kpimtextedit
   (package
     (name "kpimtextedit")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kpimtextedit-" version ".tar.xz"))
        (sha256
-        (base32 "0bpnynwp90gzcxv7dpzkpxmmfcls4yisnbgnw1jlciv9knr6kbsg"))))
+        (base32 "0m0yk9hg3k5z174xckcy9j62sriqp33fw58cm1yyvwi24fwx7zky"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules qttools))
