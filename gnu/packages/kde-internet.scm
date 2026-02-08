@@ -856,14 +856,14 @@ protocol, supporting end-to-end encryption.  Its features include:
 (define-public ruqola
   (package
     (name "ruqola")
-    (version "2.6.0")
+    (version "2.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde//stable/ruqola/ruqola-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "09wcqmnl6v6p56633djrszy7znb2zdmd5xlnr8njz0dk2ps7grmm"))))
+                "09pp1xp7r1jwjiaairfzxcjcdj7sssrjv8dspbn19frmj0bivs5f"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
