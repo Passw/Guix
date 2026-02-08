@@ -2954,7 +2954,7 @@ between feed formats.")
 (define-public baloo
   (package
     (name "baloo")
-    (version "6.21.0")
+    (version "6.22.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2963,7 +2963,7 @@ between feed formats.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "07kpadsvjczjzq51piy1xxcvq8hq8k6ngjmdzchd99w50j1zizjw"))))
+                "0akdlrsyhd96v85wyvj56aspz1d5g8zgw9a16svrkm2kx4darcjp"))))
     (build-system cmake-build-system)
     (propagated-inputs
      (list kcoreaddons kfilemetadata))
@@ -2988,7 +2988,14 @@ between feed formats.")
            qtdeclarative
            solid))
     (arguments
-     (list #:test-exclude "filewatchtest" ;requires udisks2
+     (list #:test-exclude
+           (string-append "("
+                          (string-join '("filewatchtest" ;requires udisks2
+                                         ;; testMoveRootFolder() and
+                                         ;; testRacyReplace() fail.
+                                         "kinotifytest")
+                                       "|")
+                          ")")
            #:phases
            #~(modify-phases %standard-phases
                (replace 'check
