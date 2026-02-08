@@ -1687,14 +1687,14 @@ This package is part of the KDE games module.")
 (define-public knavalbattle
   (package
     (name "knavalbattle")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/knavalbattle-" version ".tar.xz"))
        (sha256
-        (base32 "0v26pmgrf1dj6mrniz20f64i372f2dbd8m8b8w6jml2f6z9d1syv"))))
+        (base32 "1cza6dx918jg34pn0fciwmm93m1vw07pvhin5qyzxw0yr1izjn14"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
