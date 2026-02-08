@@ -982,7 +982,7 @@ computer's hardware.")
 (define-public knighttime
   (package
     (name "knighttime")
-    (version "6.5.2")
+    (version "6.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -990,7 +990,7 @@ computer's hardware.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "03czrz2ln4a2xhn98lq6ga24124wakwsknkx09g4w0dkbfjczz6g"))))
+                "18rnlxgsjhrvkyn85m022m6vam7bbfb52hrg5fxndy2rf2xk0951"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase))
     (native-inputs (list extra-cmake-modules qttools))
