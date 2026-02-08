@@ -780,14 +780,14 @@ UnifiedPush} client library and distributor daemon.")
 (define-public neochat
   (package
     (name "neochat")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/"
                            version "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1z7y4xzdm94x39ckfxygflbfhh4fcd4d1dsnknlvp89xsl114bd5"))))
+        (base32 "09mn9wn08zyixsvx77vmfigw1h2k8dvjzd1mf6bpgsr8jv1qjz79"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
@@ -803,6 +803,7 @@ UnifiedPush} client library and distributor daemon.")
            kcoreaddons
            kdbusaddons
            ki18n
+           kiconthemes
            kio
            kirigami
            kirigami-addons
