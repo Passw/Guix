@@ -552,14 +552,14 @@ This package is part of the KDE administration module.")
 (define-public partitionmanager
   (package
     (name "partitionmanager")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/partitionmanager-" version ".tar.xz"))
        (sha256
-        (base32 "1ym2jmb05jpv2dp5fkv5d3smnqr900mpyvjri8s72c1qyw207ris"))))
+        (base32 "0022qmz3807v1pf6vd1s2fh97s4flby7d7jqq54h1a8434mzlyzm"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
