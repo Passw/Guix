@@ -841,14 +841,14 @@ functionality")
 (define-public kinfocenter
   (package
     (name "kinfocenter")
-    (version "6.5.2")
+    (version "6.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ja6c24a33gp8z12y6hbdmrdiqd6jzp4wazga7jrrivnkhb9mq7z"))))
+                "075qslmnxzgz07m5lrbbpnb5cj1pmb79mmbz877i8r409jgqyysn"))))
     (build-system qt-build-system)
     (arguments
      (list
