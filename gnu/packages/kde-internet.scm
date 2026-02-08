@@ -493,14 +493,14 @@ the functionality of the KDE resource and network access abstractions.")
 (define-public kio-zeroconf
   (package
     (name "kio-zeroconf")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kio-zeroconf-" version ".tar.xz"))
        (sha256
-        (base32 "1a727i2j690z7di3qcbrx20g5c3022gzqibfc1lypmvk2vh96z12"))))
+        (base32 "05shzl4xhrgx8dc2i3nhh1badz8mjf0a6qdmbqkn7if6m08vqb5v"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
