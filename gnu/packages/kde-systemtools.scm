@@ -62,14 +62,14 @@
 (define-public baloo-widgets
   (package
     (name "baloo-widgets")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/baloo-widgets-" version ".tar.xz"))
        (sha256
-        (base32 "10vgk8fs3h0nwzian9bsi2kq10yi07ybmqlbihsfsyrlp5gqbpwf"))))
+        (base32 "08xbsb1ni1d05ldmml9ppx33r5r2qdccfn6lla8rpzdbdwjdcsk0"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
