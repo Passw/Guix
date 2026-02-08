@@ -14,6 +14,7 @@
 ;;; Copyright © 2025 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2025 Matthias Riße <matrss@0px.xyz>
 ;;; Copyright © 2025 jgart <jgart@dismail.de>
+;;; Copyright © 2026 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,8 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages golang-build)
   #:use-module (gnu packages golang-check)
+  #:use-module (gnu packages golang-crypto)
+  #:use-module (gnu packages golang-vcs)
   #:use-module (gnu packages golang-web)
   #:use-module (gnu packages golang-xyz)
   #:use-module (gnu packages gstreamer)
@@ -161,6 +164,74 @@ machines.")
        "Clikan is a super simple command-line utility for tracking tasks
 following the Japanese kanban (boarding) style.")
       (license license:expat))))
+
+(define-public git-bug
+  (package
+    (name "git-bug")
+    (version "0.10.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/git-bug/git-bug")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1s3y8ll2942d6my2wz6bbipram4l6brbwwfvp2nr8cchzrb23dl8"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:install-source? #f
+      #:import-path "github.com/git-bug/git-bug"
+      #:embed-files
+      #~(list "prelude.graphql")
+      #:test-flags
+      #~(list "-skip" (string-join
+                       (list
+                        ;; These tests require network access.
+                        "TestValidateProject"
+                        "TestValidateUsername"
+                        ;; This test is buggy. See
+                        ;; https://github.com/git-bug/git-bug/issues/809
+                        "TestGoGitRepo_Indexes")
+                       "|"))))
+    (native-inputs
+     (list go-github-com-99designs-gqlgen
+           go-github-com-99designs-keyring
+           go-github-com-araddon-dateparse
+           go-github-com-awesome-gocui-gocui
+           go-github-com-blevesearch-bleve
+           go-github-com-dustin-go-humanize
+           go-github-com-fatih-color
+           go-github-com-go-git-go-billy-v5
+           go-github-com-go-git-go-git-v5
+           go-github-com-gorilla-mux
+           go-github-com-hashicorp-golang-lru-v2
+           go-github-com-michaelmure-go-term-text
+           go-github-com-phayes-freeport
+           go-github-com-protonmail-go-crypto
+           go-github-com-shurcool-githubv4
+           go-github-com-skratchdot-open-golang
+           go-github-com-spf13-cobra
+           go-github-com-stretchr-testify
+           go-github-com-vbauerster-mpb-v8
+           go-github-com-vektah-gqlparser-v2
+           ;; The build fails with the latest (v1.28.1)
+           ;; go-gitlab-com-gitlab-org-api-client-go. See
+           ;; https://github.com/git-bug/git-bug/issues/1514 So, we use the
+           ;; version specified in go.mod.
+           go-gitlab-com-gitlab-org-api-client-go-0.116
+           go-golang-org-x-oauth2
+           go-github-com-icrowley-fake
+           ;; git is required only for tests.
+           git-minimal/pinned))
+    (home-page "https://github.com/git-bug/git-bug")
+    (synopsis "Distributed, offline-first bug tracker embedded in git")
+    (description
+     "@code{git-bug} is a standalone, distributed, offline-first issue
+management tool that embeds issues, comments, and more as objects in a git
+repository.")
+    (license license:gpl3+)))
 
 (define-public annextimelog
   (package
