@@ -688,14 +688,14 @@ This package is part of the KDE games module.")
 (define-public ksudoku
   (package
     (name "ksudoku")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/"
                            version "/src/ksudoku-" version ".tar.xz"))
        (sha256
-        (base32 "1ivnsfh0ngzsig3vr252k4pmhygs554r13j8q3q0car3jcbf2mb3"))))
+        (base32 "1rsf7ybnx3z3v9bq8dgfjzs2f3syzy2pbriiq14pfpnfa1slsgpv"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
