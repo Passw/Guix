@@ -55,7 +55,7 @@
 (define-public poxml
   (package
     (name "poxml")
-    (version "25.12.0")
+    (version "25.12.2")
     (source (origin
               (method url-fetch)
               (uri
@@ -63,7 +63,7 @@
                               "/src/poxml-" version ".tar.xz"))
               (sha256
                (base32
-                "1k682yib9nsjv076mazgg1jblq3s4pqrzq1fcnymkn119q09j57g"))))
+                "0d78adkvf4j81qkmwlprrc7k7qzvpmzgzadhxhgkdsqxhahrg2xv"))))
     (build-system cmake-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools))
