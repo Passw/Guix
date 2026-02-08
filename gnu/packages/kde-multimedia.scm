@@ -980,14 +980,14 @@ This package is part of the KDE multimedia module.")
 (define-public kwave
   (package
     (name "kwave")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kwave-" version ".tar.xz"))
        (sha256
-        (base32 "1a3zgkyf0b9k6gvjjwk9rxmmmxxpc9dvxmyy0pnljcll7y1bqny6"))))
+        (base32 "1c7lvc5wwnmzp7vjd6gs8bj13wrihq6hai8v36gi0k11mzd0arzy"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules (librsvg-for-system) pkg-config kdoctools
