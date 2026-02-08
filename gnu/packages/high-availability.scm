@@ -560,80 +560,74 @@ Virtually anything that can be scripted can be managed as part of a Pacemaker cl
               (string-append "RABBITMQ_VERSION="
                              #$version))
       #:phases
-      #~(modify-phases %standard-phases
-          ;; erlang.mk contains the entries
-          ;;
-          ;; ELIXIR_BIN ?= $(shell readlink -f `which elixir`)
-          ;; ELIXIR_LIBS ?= $(abspath $(dir $(ELIXIR_BIN))/../lib)
-          ;;
-          ;; but fails to find elixir.app when building plugins.
-          ;;
-          ;; Despite the failures, the build is reported successful while some
-          ;; plugins are not built. For example, running rabbitmqctl
-          ;; command-line utility gives error
-          ;;
-          ;; undefined function Elixir.RabbitMQCtl':main/1
-          ;;
-          ;; After changing `dir` to `dirname`, all plugins build successfully
-          ;; and it is possible to use the command-line utilities.
-          (add-after 'unpack 'extract-rabbitmq-sources
-            (lambda _
-              (substitute* "erlang.mk"
-                (("dir \\$\\(ELIXIR_BIN\\)")
-                 "shell dirname \\$\\(ELIXIR_BIN\\)"))))
-          (add-after 'install 'wrap-rabbitmq
-            (lambda* (#:key outputs inputs #:allow-other-keys)
-              (let ((sbindir (string-append #$output "/lib/rabbitmq_server-"
-                                            #$version "/sbin"))
-                    (rabbitmq-programs (list "rabbitmqctl"
-                                             "rabbitmq-diagnostics"
-                                             "rabbitmq-plugins"
-                                             "rabbitmq-queues"
-                                             "rabbitmq-server"
-                                             "rabbitmq-streams"
-                                             "rabbitmq-upgrade")))
-                ;; Starting RabbitMQ server requires: getconf, df, erl.
-                (wrap-program (string-append sbindir "/rabbitmq-server")
-                  `("PATH" ":" prefix
-                    (,(dirname (search-input-file inputs "bin/getconf"))
-                     ,(dirname (search-input-file inputs "bin/df"))
-                     ,(dirname (search-input-file inputs "bin/erl")))))
-                ;; Each of the RabbitMQ programs requires Erlang cookie
-                ;; stored in RabbitMQ'S user home directory.
-                (for-each (lambda (prog)
-                            (wrap-program (string-append sbindir "/" prog)
-                              `("PATH" suffix
-                                (,(string-append #$erlang "/bin")))
-                              `("HOME" =
-                                ("/var/lib/rabbitmq")))) rabbitmq-programs))))
-          (delete 'configure)
-          (add-after 'install 'patch-scripts
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (substitute* (string-append #$output "/lib/rabbitmq_server-"
-                                          #$version "/sbin/rabbitmq-env")
-                (("basename")
-                 (which "basename"))
-                (("dirname")
-                 (which "dirname"))
-                (("readlink")
-                 (which "readlink")))))
-          (add-after 'install 'install-bin
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let ((target (string-append #$output "/sbin"))
-                    (sbindir (string-append #$output "/lib/rabbitmq_server-"
-                                            #$version "/sbin"))
-                    (rabbitmq-programs (list "rabbitmqctl"
-                                             "rabbitmq-diagnostics"
-                                             "rabbitmq-plugins"
-                                             "rabbitmq-queues"
-                                             "rabbitmq-server"
-                                             "rabbitmq-streams"
-                                             "rabbitmq-upgrade")))
-                (mkdir-p target)
-                (for-each (lambda (prog)
-                            (symlink (string-append sbindir "/" prog)
-                                     (string-append target "/" prog)))
-                          rabbitmq-programs)))))))
+      #~(let ((rabbitmq-programs (list "rabbitmqctl"
+                                       "rabbitmq-diagnostics"
+                                       "rabbitmq-plugins"
+                                       "rabbitmq-queues"
+                                       "rabbitmq-server"
+                                       "rabbitmq-streams"
+                                       "rabbitmq-upgrade")))
+          (modify-phases %standard-phases
+            ;; erlang.mk contains the entries
+            ;;
+            ;; ELIXIR_BIN ?= $(shell readlink -f `which elixir`)
+            ;; ELIXIR_LIBS ?= $(abspath $(dir $(ELIXIR_BIN))/../lib)
+            ;;
+            ;; but fails to find elixir.app when building plugins.
+            ;;
+            ;; Despite the failures, the build is reported successful while some
+            ;; plugins are not built. For example, running rabbitmqctl
+            ;; command-line utility gives error
+            ;;
+            ;; undefined function Elixir.RabbitMQCtl':main/1
+            ;;
+            ;; After changing `dir` to `dirname`, all plugins build successfully
+            ;; and it is possible to use the command-line utilities.
+            (add-after 'unpack 'extract-rabbitmq-sources
+              (lambda _
+                (substitute* "erlang.mk"
+                  (("dir \\$\\(ELIXIR_BIN\\)")
+                   "shell dirname \\$\\(ELIXIR_BIN\\)"))))
+            (add-after 'install 'wrap-rabbitmq
+              (lambda* (#:key outputs inputs #:allow-other-keys)
+                (let ((sbindir (string-append #$output "/lib/rabbitmq_server-"
+                                              #$version "/sbin")))
+                  ;; Starting RabbitMQ server requires: getconf, df, erl.
+                  (wrap-program (string-append sbindir "/rabbitmq-server")
+                    `("PATH" ":" prefix
+                      (,(dirname (search-input-file inputs "bin/getconf"))
+                       ,(dirname (search-input-file inputs "bin/df"))
+                       ,(dirname (search-input-file inputs "bin/erl")))))
+                  ;; Each of the RabbitMQ programs requires Erlang cookie
+                  ;; stored in RabbitMQ'S user home directory.
+                  (for-each (lambda (prog)
+                              (wrap-program (string-append sbindir "/" prog)
+                                `("PATH" suffix
+                                  (,(string-append #$erlang "/bin")))
+                                `("HOME" =
+                                  ("/var/lib/rabbitmq"))))
+                            rabbitmq-programs))))
+            (delete 'configure)
+            (add-after 'install 'patch-scripts
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (substitute* (string-append #$output "/lib/rabbitmq_server-"
+                                            #$version "/sbin/rabbitmq-env")
+                  (("basename")
+                   (which "basename"))
+                  (("dirname")
+                   (which "dirname"))
+                  (("readlink")
+                   (which "readlink")))))
+            (add-after 'install 'install-bin
+              (lambda* (#:key inputs outputs #:allow-other-keys)
+                (let ((target (string-append #$output "/sbin"))
+                      (sbindir (string-append #$output "/lib/rabbitmq_server-"
+                                              #$version "/sbin")))
+                  (mkdir-p target)
+                  (for-each (lambda (prog)
+                              (symlink (string-append sbindir "/" prog)
+                                       (string-append target "/" prog)))
+                            rabbitmq-programs))))))))
     (inputs (list bash-minimal))
     (native-inputs (list erlang elixir python-wrapper which p7zip))
     (synopsis
