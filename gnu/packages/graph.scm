@@ -574,6 +574,47 @@ vectors of any size, up to ones that possibly do not fit in RAM.  It also
 contains supporting code for evaluation and parameter tuning.")
     (license license:bsd-3)))
 
+(define-public faiss-for-go-faiss
+  (let ((commit "608356b7c9630e891ff87cc49cc7bb460c3870d3")
+        (revision "0"))
+    (package
+      (inherit faiss)
+      (name "faiss-for-go-faiss")
+      (version (git-version "1.11.0" revision commit))
+      (source
+       (origin
+         (inherit (package-source faiss))
+         (uri (git-reference
+                (url "https://github.com/blevesearch/faiss")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0m0hyqn9db0xdbvan0lin7xf11dl4xdpjwwpagw01hl4z72w3al0"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments faiss)
+         ((#:configure-flags flags '())
+          ;; Add -fpermissive to suppress errors about non-conforming code.
+          #~(cons "-DCMAKE_CXX_FLAGS=-fpermissive"
+                  #$flags))
+         ((#:test-exclude test-exclude #f)
+          "Threading.openmp|IVF.list_context")
+         ((#:phases phases #~%standard-phases)
+          #~(modify-phases #$phases
+              (add-after 'unpack 'fix-bugs
+                (lambda _
+                  ;; Add include directory to target.
+                  (substitute* "c_api/CMakeLists.txt"
+                    (("add_library\\(faiss_c [^\n]*" line)
+                     (string-append line "\n"
+                                    "target_include_directories(faiss_c PRIVATE ${CMAKE_SOURCE_DIR})\n")))
+                  ;; Do not assign using initializer list.
+                  (substitute* "tests/test_hamming.cpp"
+                    (("\\{na, k, ids_ham_knn.data[^\n]*" all)
+                     (string-append "faiss::int_maxheap_array_t" all)))))))))
+    (description "This package provides an alternative build of Faiss.")
+    (license (list license:bsd-3       ;faiss code
+                   license:expat)))))  ;blevesearch fork
+
 (define-public python-faiss
   (package (inherit faiss)
     (name "python-faiss")
