@@ -3170,6 +3170,37 @@ especially suitable for working with geographic data.  It an alternative fork
 of https://github.com/golang/geo.")
     (license license:asl2.0)))
 
+(define-public go-github-com-blevesearch-goleveldb
+  (package
+    (name "go-github-com-blevesearch-goleveldb")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/blevesearch/goleveldb")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0yx4vp60nyn7y5i9nfg0vkm3w62lgbgn16la44xh0yjvacqqbm01"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:skip-build? #t
+      #:import-path "github.com/blevesearch/goleveldb"))
+    (native-inputs
+     (list go-github-com-onsi-ginkgo
+           go-github-com-onsi-gomega))
+    (propagated-inputs
+     (list go-github-com-golang-snappy))
+    (home-page "https://github.com/blevesearch/goleveldb")
+    (synopsis "LevelDB implementation in Go")
+    (description
+     "This package provides a Go implementation of the LevelDB key/value
+storage system.  It's an alternative fork of
+https://github.com/syndtr/goleveldb.")
+    (license license:bsd-2)))
+
 (define-public go-github-com-blevesearch-mmap-go
   (package
     (name "go-github-com-blevesearch-mmap-go")
