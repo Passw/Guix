@@ -3171,6 +3171,36 @@ especially suitable for working with geographic data.  It an alternative fork
 of https://github.com/golang/geo.")
     (license license:asl2.0)))
 
+(define-public go-github-com-blevesearch-go-porterstemmer
+  (package
+    (name "go-github-com-blevesearch-go-porterstemmer")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/blevesearch/go-porterstemmer")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0nj448j7kj31vg76xa7nh2i6iz4b4fnvarh0dgsl11ay1pmfhj45"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/blevesearch/go-porterstemmer"
+      #:test-flags
+      ;; porterstemmer_stem_string_test.go:35: Could not download test file
+      ;; (from web) from URL:
+      ;; [http://tartarus.org/martin/PorterStemmer/voc.txt]
+      #~(list "-skip" "TestStemString")))
+    (home-page "https://github.com/blevesearch/go-porterstemmer")
+    (synopsis "Clean room implementation of the Porter Stemming algorithm")
+    (description
+     "This package provides a native Go clean room implementation of the
+Porter Stemming Algorithm.  It's an alternative fork of
+@url{https://github.com/reiver/go-porterstemmer}.")
+    (license license:expat)))
+
 (define-public go-github-com-blevesearch-goleveldb
   (package
     (name "go-github-com-blevesearch-goleveldb")
