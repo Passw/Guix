@@ -467,7 +467,7 @@ are only roxying @code{dbus}.")
 (define-public kactivitymanagerd
   (package
     (name "kactivitymanagerd")
-    (version "6.5.2")
+    (version "6.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/"
@@ -475,7 +475,7 @@ are only roxying @code{dbus}.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0vfzginrm7j52wjdrbcfvc3gjgd8jck12idvh2j0dy46zkqbaclk"))))
+                "1y7vf40s7lx325yd7hckjg4kkys0m3cpbzmjrafwc3qqby3gi847"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase
                      #:tests? #f))
