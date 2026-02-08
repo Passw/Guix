@@ -404,14 +404,14 @@ models such as Ollama.")
 (define-public kamera
   (package
     (name "kamera")
-    (version "25.12.0")
+    (version "25.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/kamera-" version ".tar.xz"))
               (sha256
                (base32
-                "1di2v07nhg10y49cbacyvz1i25bnm6vs16036p9wdyb1azmh490b"))))
+                "0fbw7nxam18k8lc7v2ravy27m7x90ldgs9lswrkmw4fwbypx95xz"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
