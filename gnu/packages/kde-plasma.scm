@@ -1992,14 +1992,14 @@ by which applications, and what documents have been linked to which activity.")
 (define-public plasma5support
   (package
     (name "plasma5support")
-    (version "6.5.2")
+    (version "6.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1vxqfizki70gr3g586y71lmsysp71y85lqz2j6vl5w2bik4m25c1"))))
+                "1zawikfndp60dqiwi8lbfn4m4a4g5rqjp8rs9k2s3ql5pdz3wbqs"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase
                      #:tests? #f)) ;no tests
