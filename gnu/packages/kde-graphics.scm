@@ -668,14 +668,14 @@ expression library, that is used in Krita.")
 (define-public libkdcraw
   (package
     (name "libkdcraw")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "1m2gz0md29jra8ac73q2mzq1xhi76daxrh7fc2k16hvqb4d40mji"))))
+        (base32 "15rp4k7fp0qapkf463h1kxazaslqr6xn7cgpav10q3wg3pbgrxpj"))))
     (build-system cmake-build-system)
     (native-inputs
      (list pkg-config extra-cmake-modules))
