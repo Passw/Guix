@@ -17054,6 +17054,34 @@ optimized for UTF-16.")
 colored strings.")
     (license license:expat)))
 
+(define-public go-github-com-michaelmure-go-term-text
+  (package
+    (name "go-github-com-michaelmure-go-term-text")
+    (version "0.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/MichaelMure/go-term-text")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05xf32xvx30xrv52h0dd06qly498lk7xqn8wvjkqgmyr2vvzrjcg"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/MichaelMure/go-term-text"))
+    (native-inputs
+     (list go-github-com-stretchr-testify))
+    (propagated-inputs
+     (list go-github-com-mattn-go-runewidth))
+    (home-page "https://github.com/MichaelMure/go-term-text")
+    (synopsis "Format text for the terminal")
+    (description
+     "This package provides a Go library implementing a collection of
+algorithms to help format and manipulate text for the terminal.")
+    (license license:expat)))
+
 (define-public go-github-com-michiwend-golang-pretty
   (package
     (name "go-github-com-michiwend-golang-pretty")
