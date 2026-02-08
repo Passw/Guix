@@ -171,14 +171,14 @@ multi-floor indoor maps.")
 (define-public akonadi
   (package
     (name "akonadi")
-    (version "25.12.0")
+    (version "25.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
                                   version "/src/akonadi-" version ".tar.xz"))
               (sha256
                (base32
-                "1p30cv8x75jn5y0xz78wygi8m69c6mghiyvgbmz8arghwv4zzl49"))
+                "1lrv9kg49983bl14j52sbl217l8x16g1hjl5qddj8y323cj0dba1"))
               (patches (search-patches "akonadi-paths.patch"
                                        "akonadi-timestamps.patch"
                                        "akonadi-not-relocatable.patch"))))
