@@ -443,14 +443,14 @@ with emails through Akonadi easier.")
 (define-public akonadi-search
   (package
     (name "akonadi-search")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/akonadi-search-" version ".tar.xz"))
        (sha256
-        (base32 "1xmq9jjz8dvxgc8prbdg9pgdrdrv0d6k31qkpggfd220ygvrri4d"))))
+        (base32 "1ki15qzcbwr1fhp7y59f0cwalys038fkigq94cz61m2yf97hja43"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules
