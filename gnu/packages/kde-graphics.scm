@@ -760,14 +760,14 @@ picture metadata as EXIF/IPTC and XMP.")
 (define-public okular
   (package
     (name "okular")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "14443kk5brdnqr9l6nk47xppkzj2mikrx82szgkyb3m7pcasa1fg"))))
+        (base32 "0zwki1m7wvnsyd9a9gba38d7dxdn8hi92ck4nn80kpd3w87si14w"))))
     (build-system qt-build-system)
     (arguments
      (list
