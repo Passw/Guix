@@ -1292,14 +1292,14 @@ This package is part of the KDE games module.")
 (define-public kigo
   (package
     (name "kigo")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kigo-" version ".tar.xz"))
        (sha256
-        (base32 "15gphhp6rvdy98qy15lf2s9pwidjv1xchlchp9p3lipjf4hgd292"))))
+        (base32 "0pykhcfpmkq6c31igdhdcv442nlsx7pryq14ngjf64a9d1s4p6jh"))))
     (build-system qt-build-system)
     (arguments
      (list
