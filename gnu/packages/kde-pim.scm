@@ -2076,14 +2076,14 @@ information in non-ASCII character sets.")
 (define-public kontactinterface
   (package
     (name "kontactinterface")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kontactinterface-" version ".tar.xz"))
        (sha256
-        (base32 "0rh2gwczd19m6l3n7dqns7xpwrpx7fqzgidhacn1i18p2z5gbwmh"))))
+        (base32 "0qzl5va6ycq66mzssrqp52q5lkyqkm6gk2pb40w5vj4279nilwv8"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules))
