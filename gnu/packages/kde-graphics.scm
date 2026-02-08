@@ -367,14 +367,14 @@ annotating features.")
 (define-public kdegraphics-mobipocket
   (package
     (name "kdegraphics-mobipocket")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/" name "-" version ".tar.xz"))
        (sha256
-        (base32 "03bhj8r9yaffw2sijjqfg2gaqnm6dvz69zm8p5c8qgr5gr1gc5gm"))))
+        (base32 "1i1sh1kk76d43ci81qzfifsclm67kfhl3alhb8ic3j22qhpamxgh"))))
     (build-system cmake-build-system)
     (arguments
      (list #:tests? #f
