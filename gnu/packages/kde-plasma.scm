@@ -3042,14 +3042,14 @@ hardware management, and a high degree of customizability.")
 (define-public polkit-kde-agent
   (package
     (name "polkit-kde-agent")
-    (version "6.5.2")
+    (version "6.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version "/"
                                   name "-1-" version ".tar.xz"))
               (sha256
                (base32
-                "1k04vhnxsyrbgcjxj73r2jnlx65z0l50xx3hg8fkr1zf7xics71m"))))
+                "0jix36pdq9q5pwx91q6bbzzrv0rx7l5yj6m0ww2ymh2lbdz84pg7"))))
     (build-system qt-build-system)
     (arguments (list #:qtbase qtbase
                      #:tests? #f))
