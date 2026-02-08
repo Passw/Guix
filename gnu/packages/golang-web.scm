@@ -11724,6 +11724,30 @@ original data and access it via a typed struct and a dynamic map.")
      "This package adds support for Unix domain sockets in Go HTTP clients.")
     (license license:asl2.0)))
 
+(define-public go-github-com-phayes-freeport
+  (package
+    (name "go-github-com-phayes-freeport")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/phayes/freeport")
+              (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gwaan8fwmc5lfx4dzymq0jd6z2l1frg83jkmjpm4kw8ay4vr11q"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/phayes/freeport"))
+    (home-page "https://github.com/phayes/freeport")
+    (synopsis "Find a free and open TCP port")
+    (description
+     "This package provides a Go library that finds a free open TCP port that
+is ready to use.")
+    (license license:bsd-3)))
+
 (define-public go-github-com-pion-datachannel
   (package
     (name "go-github-com-pion-datachannel")
