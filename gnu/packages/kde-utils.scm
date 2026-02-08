@@ -1353,14 +1353,14 @@ either be created or generated from a image.")
 (define-public okteta
   (package
     (name "okteta")
-    (version "0.26.24")
+    (version "0.26.25")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/okteta/" version
                            "/src/okteta-" version ".tar.xz"))
        (sha256
-        (base32 "0sk5sb0819pl4pfr3rc1as12a2dr9gakbh9z5j3zrm7l08zk5cii"))))
+        (base32 "0sxpbd52bj6s7yngd3qb3iy5a0n54b81mnx51h1kijwqyhdqkq9b"))))
     (build-system qt-build-system)
     (native-inputs
      (list extra-cmake-modules kdoctools-5 qttools-5 shared-mime-info))
