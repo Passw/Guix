@@ -96,14 +96,14 @@
 (define-public katomic
   (package
     (name "katomic")
-    (version "25.12.0")
+    (version "25.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/katomic-" version ".tar.xz"))
        (sha256
-        (base32 "04bwpkyfr0q60sbad3d4zblj5wll2m2rq5r8w3882wwzg7607yik"))))
+        (base32 "10d274in6a89zfp543hnnfvia5y3034npjarzp7mx04p1frjc6jg"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
