@@ -2029,14 +2029,14 @@ KF5/Qt5 to KF6/Qt6")
 (define-public plasma-browser-integration
   (package
     (name "plasma-browser-integration")
-    (version "6.5.2")
+    (version "6.5.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1aq2cvd9r113vdzbvqwyv9whimg7mpmzjphjhbksnjph98qlhnw1"))))
+                "1vnr3dnfswz1mll3c5c91887clf4iafv31pzpcpvp8pgpv6a5sc8"))))
     (build-system qt-build-system)
     (native-inputs (list extra-cmake-modules pkg-config))
     ;; TODO: Figure out how to integrate this package into web browsers
