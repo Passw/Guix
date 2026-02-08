@@ -684,7 +684,9 @@ projects, tagging and reports.")
      (list
       #:install-source? #f
       #:import-path "github.com/zk-org/zk"
-      #:build-flags #~'("-tags" "fts5")
+      #:build-flags
+      #~(list "-tags" "fts5"
+              "-ldflags" (string-append "-X=main.Version=" #$version))
       #:test-flags
       #~(list "-vet=off" "-skip"
               ;; Test matches $HOME against the /etc/passwd entry.
