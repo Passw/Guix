@@ -2649,7 +2649,7 @@ is a Sieve parser and interpreter library for KDE.")
 (define-public merkuro
   (package
     (name "merkuro")
-    (version "25.12.0")
+    (version "25.12.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/release-service/"
@@ -2657,7 +2657,7 @@ is a Sieve parser and interpreter library for KDE.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "021cg5ivzs5j014lz9iqfmv73p46b0zm8jf3yx8grqmb27f9fm2r"))))
+                "17jkpi8xf5zppj1zqwgmk4f7g29946h2g7d6mwz8041mv2klaiy8"))))
     (build-system qt-build-system)
     (arguments
      (list #:qtbase qtbase
