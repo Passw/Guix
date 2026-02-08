@@ -3631,6 +3631,24 @@ originated as @url{https://github.com/blevesearch/zap}.")
      (list
       #:import-path "github.com/blevesearch/zapx/v15"))))
 
+(define-public go-github-com-blevesearch-zapx-v16
+  (package
+    (inherit go-github-com-blevesearch-zapx-v15)
+    (name "go-github-com-blevesearch-zapx-v16")
+    (version "16.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/blevesearch/zapx")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "19qjnp85y4p7fx66cd2n39pc38p7n6fvi263cjpbq3l4b3zf62j2"))))
+    (arguments
+     (list
+      #:import-path "github.com/blevesearch/zapx/v16"))))
+
 (define-public go-github-com-bmatcuk-doublestar
   (package
     (name "go-github-com-bmatcuk-doublestar")
