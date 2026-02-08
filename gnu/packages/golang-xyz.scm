@@ -17,7 +17,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020, 2021 raingloom <raingloom@riseup.net>
-;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2021, 2026 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2021 Collin J. Doering <collin@rekahsoft.ca>
 ;;; Copyright © 2021 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2021 Guix Together <jgart@dismail.de>
@@ -3169,6 +3169,45 @@ i.e., shapes drawn on a sphere rather than on a planar 2D map.  This makes it
 especially suitable for working with geographic data.  It an alternative fork
 of https://github.com/golang/geo.")
     (license license:asl2.0)))
+
+(define-public go-github-com-blevesearch-mmap-go
+  (package
+    (name "go-github-com-blevesearch-mmap-go")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/blevesearch/mmap-go")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wnjv27jf0lg9vdmcnzc56b5gl7250qiq0y917yc2lghvp3qdafy"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/blevesearch/mmap-go"))
+    (propagated-inputs
+     (list go-golang-org-x-sys))
+    (home-page "https://github.com/blevesearch/mmap-go")
+    (synopsis "Memory mapped fiels (mmap) in Golang")
+    (description
+     "This package implements functionality of mapping files into memory.  It
+tries to provide a simple interface, but doesn't go out of its way to abstract
+away every little platform detail.
+
+This specifically means:
+@itemize
+@item forked processes may or may not inherit mappings
+@item a file's timestamp may or may not be updated by writes through mappings
+@item specifying a size larger than the file's actual size can increase the
+file's size
+@item if the mapped file is being modified by another process while your
+program's running, don't expect consistent results between platforms
+@end itemize
+
+It's an alternative fork of https://github.com/edsrzf/mmap-go")
+    (license license:bsd-3)))
 
 (define-public go-github-com-bmatcuk-doublestar
   (package
