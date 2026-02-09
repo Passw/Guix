@@ -1254,7 +1254,7 @@ defaults for 80% of the use cases.")
 (define-public forgejo-cli
   (package
     (name "forgejo-cli")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
      (origin
        (method git-fetch)
@@ -1263,7 +1263,7 @@ defaults for 80% of the use cases.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ad69r3fakiqlr9hxc2l020qdzicqb68v0sjhbwiisknbknd38zh"))))
+        (base32 "1xsqcq6fyhvc4q3f79745lmx1afan5a58d2w920j7hmnczpgz6hh"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f))
@@ -1271,7 +1271,6 @@ defaults for 80% of the use cases.")
     (inputs
      (cons* libgit2-1.9
             libssh2
-            oniguruma
             openssl
             zlib
             (cargo-inputs 'forgejo-cli)))
