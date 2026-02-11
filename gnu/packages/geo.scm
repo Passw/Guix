@@ -4,7 +4,7 @@
 ;;; Copyright © 2017, 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2023-2025 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019, 2026 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018, 2019, 2020, 2021 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019-2023, 2025 Guillaume Le Vaillant <glv@posteo.net>
@@ -997,7 +997,7 @@ hydrology and waste deposition.")
 (define-public proj
   (package
     (name "proj")
-    (version "9.3.1")
+    (version "9.7.1")
     (source
      (origin
        (method url-fetch)
@@ -1005,7 +1005,7 @@ hydrology and waste deposition.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1g0hkpiablvhsmw0kn5frwgdir3q7avc45p6lc1zhhhzkv5ikydh"))))
+         "03r6mspfv22fs4x4jcgv25v9gsj5k6zy8incvyf94qf50g47s2bc"))))
     (build-system cmake-build-system)
     (native-inputs (list googletest pkg-config))
     (propagated-inputs (list curl libtiff sqlite)) ;required by proj.pc
@@ -1024,6 +1024,19 @@ lets developers use the functionality of Proj in their own software.")
                    license:asl2.0
                    ;; src/geodesic.*, src/tests/geodtest.cpp
                    license:x11))))
+
+(define-public proj-9.3
+  (package
+    (inherit proj)
+    (version "9.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.osgeo.org/proj/proj-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1g0hkpiablvhsmw0kn5frwgdir3q7avc45p6lc1zhhhzkv5ikydh"))))))
 
 (define-public python-obspy
   (package
@@ -1179,7 +1192,7 @@ steps of converting to and from Python data types within Python.")
               ;; pyproj when running tests.
               (delete-file-recursively "pyproj"))))))
     (inputs
-     (list proj))
+     (list proj-9.3))
     (propagated-inputs
      (list python-certifi))
     (native-inputs
@@ -1776,7 +1789,7 @@ vector data.")
            openjpeg
            pcre2
            postgresql ; libpq
-           proj
+           proj-9.3
            qhull
            shapelib
            sqlite
@@ -3964,7 +3977,7 @@ SET\\(PYQT5_SIP_DIR \"\\$\\{Python_SITEARCH\\}/PyQt5/bindings\"\\)")
            netcdf
            pdal
            postgresql
-           proj
+           proj-9.3
            protobuf
            python
            python-chardet

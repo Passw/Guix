@@ -29,7 +29,7 @@
 ;;; Copyright © 2020, 2021 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Antoine Côté <antoine.cote@posteo.net>
-;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020, 2026 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Magali Lemes <magalilemes00@gmail.com>
 ;;; Copyright © 2020-2023, 2025 Simon Tournier <zimon.toutoune@gmail.com>
 ;;; Copyright © 2020 Aniket Patil <aniket112.patil@gmail.com>
@@ -36703,7 +36703,7 @@ information about geometries.")
            openssh
            openssl
            pcre2
-           proj
+           proj-9.3
            sqlite
            zlib))
     (propagated-inputs
@@ -41216,7 +41216,7 @@ emphasize hidden group structures in networks or focus on specific nodes.")
            gdal
            geos
            pcre2
-           proj
+           proj-9.3
            sqlite
            onetbb
            zlib))

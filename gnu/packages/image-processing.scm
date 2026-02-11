@@ -29,6 +29,7 @@
 ;;; Copyright © 2025, 2026 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2025 dan <i@dan.games>
 ;;; Copyright © 2026 Cayetano Santos <csantosb@inventati.org>
+;;; Copyright © 2026 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -456,7 +457,7 @@ many popular formats.")
            libpng
            libtiff
            openmpi
-           proj
+           proj-9.3
            python
            ;("pugixml" ,pugixml)
            sqlite
