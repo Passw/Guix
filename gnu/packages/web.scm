@@ -82,6 +82,7 @@
 ;;; Copyright © 2025 Igorj Gorjaĉev <igor@goryachev.org>
 ;;; Copyright © 2026 Rodion Goritskov <rodion@goritskov.com>
 ;;; Copyright © 2026 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2026 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,6 +152,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
@@ -176,11 +178,13 @@
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-viewers)
   #:use-module (gnu packages java)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages less)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
@@ -9970,6 +9974,58 @@ tools:
 @item kiwix-serve: HTTP daemon serving ZIM files
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public offpunk
+  (let ((commit "947f813de43d07590a7b60e760cd3df85223af52")
+        (revision "1"))
+    (package
+      (name "offpunk")
+      (version (git-version "3.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.sr.ht/~lioploum/offpunk/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0jvxqw53f670d4ky99pdq24ljmya49bx02lc26gd1a3avcwfhisc"))))
+      (build-system pyproject-build-system)
+      (arguments
+       (list
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-external-programs
+              (lambda* (#:key inputs #:allow-other-keys)
+                (substitute* "offutils.py"
+                  ((": \"\\b(grep|xdg-open|less|chafa|file)\\b\"" _ program)
+                   (string-append ": \""
+                                  (search-input-file inputs
+                                                     (format #f "bin/~a"
+                                                             program)) "\""))))))))
+      (native-inputs (list gettext-minimal python-hatchling python-pytest
+                           python-pytest-mock python-hatch-requirements-txt))
+      (inputs (list python-beautifulsoup4
+                    python-chardet
+                    python-cryptography
+                    python-feedparser
+                    python-readability-lxml
+                    python-requests
+                    python-setproctitle
+                    chafa
+                    file
+                    grep
+                    less
+                    xdg-utils))
+      (synopsis "Offline first command-line browser for the smolnet")
+      (description
+       "A command-line and offline-first smolnet browser/feed reader
+for Gemini, Gopher, Spartan and Web.
+
+The goal of Offpunk is to be able to synchronise your content once (a day, a
+week, a month) and then browse/organise it while staying disconnected.")
+      (home-page "https://offpunk.net/")
+      (license license:agpl3+))))
 
 (define-public uriparser
   (package
