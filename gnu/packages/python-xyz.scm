@@ -66,7 +66,7 @@
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019-2021, 2023, 2024, 2026 Giacomo Leidi <therewasa@fishinthecalculator.me>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
-;;; Copyright © 2019, 2020, 2021, 2022 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019, 2020, 2021, 2022, 2026 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019, 2021-2023 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -8843,6 +8843,44 @@ for Python.")
      "Jinja2 is a small but fast and easy to use stand-alone template engine
 written in pure Python.")
     (license license:bsd-3)))
+
+(define-public python-jinja2-fragments
+  (package
+    (name "python-jinja2-fragments")
+    (version "1.11.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/sponsfreixes/jinja2-fragments")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14qr0ppllq296c1y2i5ly8l4y97q8msin5khlpli3akgrzsnvmkl"))
+       (patches
+        ;; Remove test setup code related to `litestar` and `sanic`
+        (search-patches "python-jinja2-fragments-modify-conftest-py.patch"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      #~(list "--ignore=tests/test_litestar.py"
+              "--ignore=tests/test_sanic.py")))
+    (native-inputs
+     (list python-fastapi
+           python-flask
+           python-pytest
+           python-pytest-asyncio
+           python-quart
+           python-setuptools))
+    (propagated-inputs
+     (list python-jinja2))
+    (home-page "https://github.com/sponsfreixes/jinja2-fragments")
+    (synopsis "Jinja2 extension for template fragments")
+    (description
+     "Render Jinja2 template block as HTML page fragments on Python web
+frameworks.")
+    (license license:expat)))
 
 (define-public python-pypugjs
   (package

@@ -35,7 +35,7 @@
 # Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 # Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 # Copyright © 2020, 2021 Brice Waegeneire <brice@waegenei.re>
-# Copyright © 2020, 2023, 2025 Tanguy Le Carrour <tanguy@bioneland.org>
+# Copyright © 2020, 2023, 2025, 2026 Tanguy Le Carrour <tanguy@bioneland.org>
 # Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 # Copyright © 2020 Malte Frank Gerdes <mate.f.gerdes@gmail.com>
 # Copyright © 2020, 2023 Vinicius Monego <monego@posteo.net>
@@ -2098,6 +2098,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-docrepr-fix-tests.patch		\
   %D%/packages/patches/python-gpg-setup-72.patch                \
   %D%/packages/patches/python-hdmedians-replace-nose.patch	\
+  %D%/packages/patches/python-jinja2-fragments-modify-conftest-py.patch	\
   %D%/packages/patches/python-louvain-fix-test.patch		\
   %D%/packages/patches/python-mohawk-pytest.patch	\
   %D%/packages/patches/python-msal-requests.patch	\
