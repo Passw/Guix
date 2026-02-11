@@ -1535,13 +1535,11 @@ content models.")
     (license license:bsd-3)))
 
 (define-public mapnik
-  ;; There hasn't been a release since early 2021, and it fails to build with
-  ;; Boost 1.77+.
-  (let ((commit "81103491b467e17218140f50bc0bb9dc8c1f0317")
+  (let ((commit "cb1e226cc35eec86bb317816dc7942562f548aaa")
         (revision "0"))
     (package
       (name "mapnik")
-      (version (git-version "3.1.0" revision commit))
+      (version (git-version "4.2.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -1552,13 +1550,14 @@ content models.")
                (recursive? #t)))        ;for mapbox dependencies and test data
          (file-name (git-file-name name version))
          (sha256
-          (base32 "094nam57bdd5nak88qy33z2p3kjahk3vk2nk56m5jkcr5d3hlnx2"))))
-      (build-system qt-build-system)
+          (base32 "1zidqcv0qdphgxvvkyjl53wdrcj24gk963sc85nmhqhwv7ihql52"))))
+      (build-system cmake-build-system)
       (arguments
        (list
-        #:cmake cmake                   ;for FIND_PACKAGE_ARGS
         #:configure-flags
-        #~(list (string-append "-DCMAKE_CXX_FLAGS=-I"
+        #~(list "-DBUILD_DEMO_VIEWER=OFF"
+                "-DBUILD_DEMO_CPP=OFF"
+                (string-append "-DCMAKE_CXX_FLAGS=-I"
                                #$(this-package-native-input "catch2")
                                "/include/catch2"))
         ;; The 'ogr' test fails for unknown reasons.  Mark it as expected to
@@ -1585,11 +1584,13 @@ content models.")
              gdal
              harfbuzz
              icu4c
+             libavif
              libjpeg-turbo
              libpng
              libtiff
              libwebp
              libxml2
+             openssl
              proj
              sqlite
              zlib))
