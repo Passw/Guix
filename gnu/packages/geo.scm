@@ -1561,6 +1561,9 @@ content models.")
         #~(list (string-append "-DCMAKE_CXX_FLAGS=-I"
                                #$(this-package-native-input "catch2")
                                "/include/catch2"))
+        ;; The 'ogr' test fails for unknown reasons.  Mark it as expected to
+        ;; fail (see: https://github.com/mapnik/mapnik/issues/4329).
+        #:test-exclude "ogr"
         #:phases
         #~(modify-phases %standard-phases
             (add-after 'unpack 'use-system-catch2
@@ -1570,15 +1573,7 @@ content models.")
                    (string-append all "\n"
                                   "  FIND_PACKAGE_ARGS NAMES Catch2"))
                   (("^include.*Catch2_SOURCE_DIR.*contrib/Catch.cmake.*")
-                   "include(Catch)\n"))))
-            (add-after 'unpack 'disable-problematic-tests
-              (lambda _
-                ;; The 'ogr' test fails for unknown reasons.  Mark it as
-                ;; expected to fail (see:
-                ;; https://github.com/mapnik/mapnik/issues/4329).
-                (substitute* "test/unit/datasource/ogr.cpp"
-                  (("TEST_CASE\\(\"ogr\"" all)
-                   (string-append all ", \"[!shouldfail]\""))))))))
+                   "include(Catch)\n")))))))
       (native-inputs
        (list catch2
              pkg-config
