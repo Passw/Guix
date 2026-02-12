@@ -405,7 +405,7 @@ gnu/packages/antivirus\.scm                        @guix/sysadmin
 gnu/packages/apparmor\.scm                         @guix/sysadmin
 gnu/packages/authentication\.scm                   @guix/sysadmin
 gnu/packages/cluster\.scm                          @guix/sysadmin
-gnu/packages/configuration-management              @guix/sysadmin
+gnu/packages/configuration-management\.scm         @guix/sysadmin
 gnu/packages/databases\.scm                        @guix/sysadmin
 gnu/packages/distributed\.scm                      @guix/sysadmin
 gnu/packages/dns\.scm                              @guix/sysadmin
@@ -425,6 +425,25 @@ gnu/packages/task-runners\.scm                     @guix/sysadmin
 gnu/packages/terraform\.scm                        @guix/sysadmin
 gnu/packages/virtualization\.scm                   @guix/sysadmin
 gnu/packages/vnc\.scm                              @guix/sysadmin
+gnu/services/admin\.scm                            @guix/sysadmin
+gnu/services/authentication\.scm                   @guix/sysadmin
+gnu/services/databases\.scm                        @guix/sysadmin
+gnu/services/dns\.scm                              @guix/sysadmin
+gnu/services/high-availability\.scm                @guix/sysadmin
+gnu/services/kerberos\.scm                         @guix/sysadmin
+gnu/services/monitoring\.scm                       @guix/sysadmin
+gnu/services/nfs\.scm                              @guix/sysadmin
+gnu/services/samba\.scm                            @guix/sysadmin
+gnu/services/virtualization\.scm                   @guix/sysadmin
+gnu/services/vnc\.scm                              @guix/sysadmin
+gnu/tests/databases\.scm                           @guix/sysadmin
+gnu/tests/dns\.scm                                 @guix/sysadmin
+gnu/tests/high-availability\.scm                   @guix/sysadmin
+gnu/tests/monitoring\.scm                          @guix/sysadmin
+gnu/tests/nfs\.scm                                 @guix/sysadmin
+gnu/tests/samba\.scm                               @guix/sysadmin
+gnu/tests/virtualization\.scm                      @guix/sysadmin
+gnu/tests/vnc\.scm                                 @guix/sysadmin
 
 gnu/build/jami-service\.scm                        @guix/telephony
 gnu/packages/jami\.scm                             @guix/telephony
