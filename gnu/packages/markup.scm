@@ -16,6 +16,7 @@
 ;;; Copyright © 2024, 2025 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2024 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2025 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2026 Carlos Durán Domínguez <wurt@wurt.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system perl)
@@ -64,6 +66,53 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
+
+(define-public gofrundis
+  (package
+    (name "gofrundis")
+    (version "0.16.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://codeberg.org/anaseto/gofrundis")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11821nmx9rnxff8pm08dbdzc6rqv4xliw9kx3pdfmxjf8n6p58xj"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:install-source? #f
+      #:import-path "codeberg.org/anaseto/gofrundis/cmd/frundis"
+      #:unpack-path "codeberg.org/anaseto/gofrundis"
+      #:test-subdirs
+      #~(list "../../...")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-paths
+            (lambda* (#:key unpack-path #:allow-other-keys)
+              (substitute* (string-append "src/" unpack-path
+                                          "/frundis/utils.go")
+                (("/bin/sh")
+                 (string-append #$(this-package-input "bash-minimal")
+                                "/bin/sh"))))))))
+    (inputs (list bash-minimal))
+    (native-inputs (list perl)) ; necessary for running the tests
+    (home-page "https://anaseto.codeberg.page/frundis/")
+    (synopsis "Tool for compiling documents written in the frundis")
+    (description
+     "@command{frundis} is a tool for compiling documents written in the
+frundis language, a semantic markup language primarily intended for supporting
+authoring of novels, but also well suited for many other kinds of documents.
+The frundis tool can export documents to LaTeX, XHTML 5, EPUB, markdown and
+groff mom.
+
+The language has a focus on simplicity.  It provides a few flexible built-in
+macros with extensible semantics.  It strives to provide good error messages
+and catch typos, while still allowing one to finely control output for a
+specific format when needed.")
+    (license license:isc)))
 
 (define-public hoedown
   (package
