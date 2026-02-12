@@ -90,6 +90,7 @@
 ;;; Copyright © 2026 Andy Tai <atai@atai.org>
 ;;; Copyright © 2026 Spencer King <spencer.king@wustl.edu>
 ;;; Copyright © 2026 Igorj Gorjaĉev <igor@goryachev.org>
+;;; Copyright © 2026 Nikita Mitasov <me@ch4og.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2365,6 +2366,60 @@ limited size and a few external dependencies.  It is configurable via
 @file{config.h}.")
     ;;             LICENSE       LICENSE.dwm   LICENSE.tinywl
     (license (list license:gpl3+ license:expat license:cc0))))
+
+(define-public mangowc
+  (package
+    (name "mangowc")
+    (version "0.12.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/DreamMaoMao/mangowc")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "024vq3l8pwv4nxq0rnvpgdhy58fdq2k0zlca83s6nv4zzf0qxqvj"))))
+    (build-system meson-build-system)
+    (arguments
+     (list
+      #:configure-flags
+      #~(list (string-append "-Dsysconfdir=" #$output "/etc"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'configure 'patch-meson
+            (lambda _
+              (substitute* "meson.build"
+                ;; Upstream ignores sysconfdir handling for NixOS.
+                ;; We also need to skip that sysconfdir edits.
+                (("is_nixos = false")
+                 "is_nixos = true")
+                ;; Unhardcode path.  Fixes loading default config.
+                (("'-DSYSCONFDIR=\\\"@0@\\\"'.format\\('/etc'\\)")
+                 "'-DSYSCONFDIR=\"@0@\"'.format(sysconfdir)")))))))
+    (native-inputs (list pkg-config wayland-protocols))
+    (inputs (list wayland
+                  libinput
+                  libdrm
+                  libxkbcommon
+                  pixman
+                  libdisplay-info
+                  libliftoff
+                  hwdata
+                  seatd
+                  pcre2
+                  libxcb
+                  xcb-util-wm
+                  wlroots
+                  scenefx))
+    (home-page "https://github.com/DreamMaoMao/mangowc")
+    (synopsis "Wayland compositor based on wlroots and scenefx")
+    (description
+     "MangoWC is a modern, lightweight, high-performance Wayland compositor
+built on dwl — crafted for speed, flexibility, and a customizable desktop experience.")
+    (license (list license:gpl3 ;mangowc itself, dwl
+                   license:expat ;dwm, sway, wlroots
+                   license:cc0)))) ;tinywl
 
 (define-public niri
   (package
