@@ -211,6 +211,48 @@ scattering simulations.")
 of multi-dimensional data produced by Mantid.")
     (license license:gpl3+)))
 
+(define-public python-mvesuvio
+  (package
+    (name "python-mvesuvio")
+    (version "0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mantidproject/vesuvio")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1drpz41dfqlfbx9jpsgig6hv52ylxs79ghzk2a7m6109vbawksvw"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:tests? #f  ; tests require mantid
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-version
+            (lambda _
+              ;; versioningit needs git tags; set version via environment
+              ;; variable and create _version.py directly.
+              (mkdir-p "src/mvesuvio")
+              (call-with-output-file "src/mvesuvio/_version.py"
+                (lambda (port)
+                  (format port "__version__ = \"~a\"~%" #$version))))))))
+    (native-inputs
+     (list python-setuptools))
+    (propagated-inputs
+     (list python-dill
+           python-iminuit
+           python-jacobi))
+    (home-page "https://github.com/mantidproject/vesuvio")
+    (synopsis "Analysis library for VESUVIO neutron spectrometer data")
+    (description
+     "MVesuvio provides optimized analysis procedures for neutron scattering
+data from the VESUVIO spectrometer.  It is a script library meant to be
+imported in Mantid Workbench's script editor (@code{import mvesuvio as mv}),
+not a GUI application.")
+    (license license:gpl3)))
+
 (define-public python-pycifrw
   (package
     (name "python-pycifrw")
