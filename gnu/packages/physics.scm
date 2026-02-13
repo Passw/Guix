@@ -32,10 +32,12 @@
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages ninja)
+  #:use-module (gnu packages noweb)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
@@ -172,18 +174,29 @@ scattering simulations.")
     (version "4.4.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "PyCifRW" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jamesrhester/pycifrw.git")
+             (commit version)))
        (sha256
-        (base32 "05ggj4l9cir02m593azhl03wfjimx3rvwbznpx01bdqawxsmkgq2"))))
+        (base32 "0xda4vgm6dz6fhhrfv8y6igsc5kznlnv0j3yrwkbcd3qqv16ic6r"))))
     (build-system pyproject-build-system)
     (arguments
-     ;; Tests are not included in the PyPI tarball.
-     (list #:tests? #f))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'generate-sources
+            (lambda _
+              (invoke "make" "-C" "src" "PYTHON=python3" "package")
+              (invoke "make" "-C" "src/drel" "PYTHON=python3" "package")))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke "python3" "TestPyCIFRW.py")))))))
     (propagated-inputs
      (list python-numpy python-ply))
     (native-inputs
-     (list python-setuptools))  ; build-backend = setuptools.build_meta
+     (list latex2html noweb python-setuptools))
     (home-page "https://github.com/jamesrhester/pycifrw")
     (synopsis "CIF file reader and writer")
     (description
