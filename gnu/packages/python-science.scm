@@ -6498,41 +6498,6 @@ Python style, together with a fast and comfortable execution environment.")
            python-setuptools
            python-wheel))))
 
-(define-public python-seekpath
-  (package
-    (name "python-seekpath")
-    (version "2.1.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "seekpath" version))
-       (sha256
-        (base32 "1i2jhjc4ikd31v8wkxzfrvhwlv0dlzpkysf3lkafcql2c9wwbkii"))))
-    (build-system pyproject-build-system)
-    (arguments
-     (list
-      #:phases
-      #~(modify-phases %standard-phases
-          (replace 'check
-            (lambda* (#:key tests? #:allow-other-keys)
-              (when tests?
-                (invoke "pytest" "-vv" "tests")))))))
-    (propagated-inputs
-     (list python-numpy
-           python-scipy
-           python-spglib))
-    (native-inputs
-     (list python-pytest
-           python-setuptools))
-    (home-page "https://github.com/giovannipizzi/seekpath")
-    (synopsis "K-path finder for band structure calculations")
-    (description
-     "SeeK-path is a Python module to obtain band paths in the Brillouin zone
-of crystal structures.  It automatically detects Bravais lattice types and
-generates k-point labels and band paths following crystallographic
-conventions.")
-    (license license:expat)))
-
 (define-public python-orsopy
   (package
     (name "python-orsopy")
