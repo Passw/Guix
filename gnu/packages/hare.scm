@@ -71,7 +71,7 @@
 (define-public harec
   (package
     (name "harec")
-    (version "0.25.2")
+    (version "0.26.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -80,7 +80,7 @@
               (file-name (git-file-name name version))
               (sha256
                 (base32
-                  "0qyhni011116wc194kkybmiphmi1cak0n8kxgiq7v174xsh9irp7"))))
+                  "1bzmd4j2q6kdgz8zxs6qwy57fzh7wh7xwps9rcmcrhwl5zngff3b"))))
     (build-system gnu-build-system)
     (arguments
       (list #:modules `((ice-9 format) ,@%default-gnu-modules)
@@ -112,18 +112,17 @@ package.")
 (define-public hare
   (package
     (name "hare")
-    (version "0.25.2")
+    (version "0.26.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://git.sr.ht/~sircmpwn/hare")
                      (commit version)))
               (file-name (git-file-name name version))
-              (patches (search-patches "hare-fallback-cache.patch"
-                                       "hare-toolpath.patch"))
+              (patches (search-patches "hare-fallback-cache.patch"))
               (sha256
                 (base32
-                  "1kfvf1xk36w49dnqrkcahh35xdgilhgdn3q84r2101rz2iy4pbba"))))
+                  "1iay401z2bl6rihjlgd50zq1d29l7k304r5jmwr55l8in2fy3nnw"))))
     (build-system gnu-build-system)
     (arguments
       (list #:modules `((ice-9 format) ,@%default-gnu-modules)
@@ -174,7 +173,7 @@ static typing, manual memory management, and a minimal runtime.")
 (define-public hare-update
   (package
     (name "hare-update")
-    (version "0.25.2.0")
+    (version "0.26.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -183,7 +182,7 @@ static typing, manual memory management, and a minimal runtime.")
               (file-name (git-file-name name version))
               (sha256
                 (base32
-                  "0hpcgiyg458v353g3wm2iaz2kszhc2n2rc40lnvxbg9q6i232m76"))))
+                  "1pqlqgryjdcvzshj95p3gd8icpjgn01hcsfss8r3hd8xqr87v8qk"))))
     (build-system hare-build-system)
     (arguments (list #:phases
                      #~(modify-phases %standard-phases
