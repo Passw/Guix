@@ -396,7 +396,7 @@ conventions.")
 (define-public python-euphonic
   (package
     (name "python-euphonic")
-    (version "1.4.5")
+    (version "1.5.0")
     (source
      (origin
        (method git-fetch)
@@ -405,7 +405,7 @@ conventions.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1n3w2acwi9x1v4wavigrd0qwd559rx6aaz0xknhd4gnbqwzn05qp"))))
+        (base32 "18l5chzk6qhggxsgkqqidxx2nr4piziabvirw05v43kqm9awjfww"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -413,33 +413,15 @@ conventions.")
       #~(modify-phases %standard-phases
           (add-before 'build 'fix-numpy-include
             (lambda* (#:key inputs #:allow-other-keys)
-              (let ((numpy (assoc-ref inputs "python-numpy")))
-                ;; Patch meson.build to use the correct numpy include path
+              (let* ((numpy (assoc-ref inputs "python-numpy"))
+                     (site (site-packages inputs `(("out" . ,numpy)))))
                 (substitute* "meson.build"
                   (("np_inc = include_directories\\(py\\.get_path\\('platlib'\\) / 'numpy/core/include'\\)")
                    (string-append "np_inc = include_directories('"
-                                  numpy "/lib/python3.11/site-packages/numpy/core/include')"))))))
-          (add-before 'build 'fix-lazy-fixture
+                                  numpy site "/numpy/core/include')"))))))
+          (add-before 'check 'delete-source
             (lambda _
-              ;; Migrate from pytest-lazy-fixture to pytest-lazy-fixtures.
-              ;; Add import and replace pytest.lazy_fixture with lf.
-              (for-each
-               (lambda (file)
-                 (substitute* file
-                   (("^import pytest" all)
-                    (string-append "from pytest_lazy_fixtures import lf\n" all))
-                   (("pytest\\.lazy_fixture")
-                    "lf")))
-               (find-files "tests_and_analysis" "\\.py$"))))
-          ;; Run tests after install so the C extension is available.
-          (delete 'check)
-          (add-after 'install 'check
-            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
-              (when tests?
-                (add-installed-pythonpath inputs outputs)
-                ;; Remove source euphonic dir so tests use installed package.
-                (delete-file-recursively "euphonic")
-                (invoke "pytest" "-vv" "tests_and_analysis")))))))
+              (delete-file-recursively "euphonic"))))))
     (propagated-inputs
      (list python-brille ; optional
            python-h5py ; optional, for phonopy-reader
