@@ -2736,7 +2736,7 @@ a path (for moving targets) and combining cutouts
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 985 passed, 7 skipped, 58 deselected
+      ;; tests: 984 passed, 7 skipped, 59 deselected
       #:test-flags
       ;; Tests depend on unpackaged DRAGON's module "gemini_instruments".
       #~(list "--ignore=tests/integration/"
@@ -2800,7 +2800,6 @@ a path (for moving targets) and combining cutouts
                             "test_download_from_archive_None_sub_path"
                             "test_download_memory_leaks"
                             "test_warning_if_no_cache_path"))
-
               #$@(map (lambda (test) (string-append "--deselect="
                                                     "tests/unit/"
                                                     "test_wcs.py::"
@@ -2809,9 +2808,22 @@ a path (for moving targets) and combining cutouts
                             "test_loglinear_axis"
                             "test_reading_and_writing_sliced_image"
                             "test_remove_unused_world_axis"))
+              ;;  gwcs.wcs._exception.GwcsFrameExistsError: Frame in_frame is
+              ;;  already in the pipeline.
+               "--deselect=tests/unit/test_nddata.py::test_wcs_slicing"
               ;; assert 1 == 0
               "-k" (string-append "not test_script_executes[script0-]"
-                                  " and not test_script_executes[script1-]"))))
+                                  " and not test_script_executes[script1-]"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'relax-requirements
+            ;; See: <https://github.com/GeminiDRSoftware/astrodata/issues/96>.
+            (lambda _
+              (substitute* "pyproject.toml"
+                (("astropy =.*") "astropy = '^7.0.0'\n")
+                (("asdf =.*") "asdf = '^5.0.0'\n")
+                (("numpy =.*") "numpy = '^2.3.0'\n")
+                (("gwcs =.*") "gwcs = '^1.0.0'\n")))))))
     (native-inputs
      (list python-poetry-core
            python-objgraph
@@ -2819,11 +2831,11 @@ a path (for moving targets) and combining cutouts
            python-pytest-doctestplus
            python-tomli))
     (propagated-inputs
-     (list python-asdf-3
-           python-astropy-6
-           python-gwcs-0.21
+     (list python-asdf
+           python-astropy
+           python-gwcs
            python-jsonschema
-           python-numpy-1))
+           python-numpy))
     (home-page "https://github.com/GeminiDRSoftware/astrodata")
     (synopsis "Managing astronomical data through a uniform interface")
     (description
