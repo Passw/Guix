@@ -28,6 +28,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
@@ -123,6 +124,47 @@ within an irreducible part of the first Brillouin zone.  It provides Python
 bindings via pybind11 for use in phonon calculations and inelastic neutron
 scattering simulations.")
     (license license:agpl3+)))
+
+(define-public python-gofit
+  (package
+    (name "python-gofit")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ralna/gofit")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0x7kk97k4v1mzgs29z9i2yidjx4hmdwhng77178l564hn29k1c2b"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-requirements
+            (lambda _
+              ;; pybind11[global] is a build-time dependency, not runtime.
+              ;; <https://github.com/pybind/python_example/issues/45>
+              (substitute* "setup.py"
+                (("install_requires=")
+                 "setup_requires="))))
+          (replace 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                ;; test_multistart_ls.py needs cubic.txt in cwd
+                (copy-file "tests/cubic.txt" "cubic.txt")
+                (for-each (lambda (test)
+                            (invoke "python" test))
+                          (find-files "tests" "^test_.*\\.py$"))))))))
+    (native-inputs (list pybind11 python-setuptools cmake python-pytest
+                         python-numpy))
+    (inputs (list eigen))
+    (home-page "https://github.com/ralna/gofit")
+    (synopsis "GOFit: Global Optimization for Fitting problems")
+    (description "GOFit: Global Optimization for Fitting problems.")
+    (license license:bsd-3)))
 
 (define-public python-pycifrw
   (package
