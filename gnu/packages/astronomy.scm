@@ -3911,6 +3911,43 @@ Cesium do feature extraction and evaluation right in your browser with the web
 application.")
     (license license:bsd-3)))
 
+(define-public python-chiantipy
+  (package
+    (name "python-chiantipy")
+    (version "0.15.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/chianti-atomic/ChiantiPy")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1nww5qkla5i1b6xgik5nadhpd2biqwlb4y8cfg7679v413b9ppnh"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      ;; XXX: tests require CHIANTI database
+      ;; <https://www.chiantidatabase.org/chianti_download.html> (~500MiB
+      ;; compressed) accessible via setting XUVTOP environment variable.
+      #:tests? #f))
+    (native-inputs
+     (list python-setuptools))
+    (propagated-inputs
+     (list python-matplotlib
+           python-numpy
+           python-roman
+           python-scipy))
+    (home-page "https://github.com/chianti-atomic/ChiantiPy")
+    (synopsis "Python interface to the CHIANTI atomic database")
+    (description
+     "ChiantiPy is the Python interface to the
+@url{http://www.chiantidatabase.org/, CHIANTI atomic database} for
+astrophysical spectroscopy.  It provides the capability to calculate the
+emission line and continuum spectrum of an optically thin plasma based on the
+data in the CHIANTI database.")
+    (license license:isc)))
+
 (define-public python-ci-watson
   (package
     (name "python-ci-watson")
