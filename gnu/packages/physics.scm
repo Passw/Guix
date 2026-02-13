@@ -459,6 +459,56 @@ scattering data.  It is designed for use with the Mantid framework for
 neutron and muon data analysis.")
     (license license:bsd-3)))
 
+(define-public python-shiver
+  (package
+    (name "python-shiver")
+    (version "1.8.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/neutrons/Shiver")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05bxn1wqqylixzkk4is9nqkcsxfiix46s8m18db4c1zj7kkjawwv"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:tests? #f  ; tests require mantid
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-version
+            (lambda _
+              ;; versioningit needs git tags; patch pyproject.toml to use
+              ;; static version and create _version.py directly.
+              (substitute* "pyproject.toml"
+                (("dynamic = \\[\"version\"\\]")
+                 (string-append "version = \"" #$version "\""))
+                (("source = \"versioningit\"") "")
+                (("\\[tool\\.hatch\\.build\\.hooks\\.versioningit-onbuild\\]")
+                 "[tool.hatch.build.hooks.versioningit-onbuild]
+enable-by-default = false"))
+              (mkdir-p "src/shiver")
+              (call-with-output-file "src/shiver/_version.py"
+                (lambda (port)
+                  (format port "__version__ = \"~a\"~%" #$version))))))))
+    (native-inputs
+     (list python-hatchling))
+    (propagated-inputs
+     (list python-configupdater
+           python-pyoncatqt
+           python-qtpy))
+    (home-page "https://github.com/neutrons/Shiver")
+    (synopsis "Spectroscopy histogram visualizer for neutron event reduction")
+    (description
+     "Shiver (Spectroscopy Histogram Visualizer for Event Reduction) is a
+desktop application for examining Time of Flight inelastic neutron data from
+single crystal, direct geometry experiments.  It integrates with Mantid
+Workbench and appears in the Interfaces menu when both packages are
+installed.")
+    (license license:gpl3)))
+
 (define-public python-spglib
   (package
     (name "python-spglib")
