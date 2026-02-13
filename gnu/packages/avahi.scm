@@ -26,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix gexp)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages bash)
@@ -80,6 +81,9 @@
                                                   (package-supported-systems
                                                    libcap))))
                                  '("--disable-autoipd")
+                                 '())
+                           ,@(if (target-hurd?)
+                                 '("CFLAGS=-g -O2 -Wno-error=incompatible-pointer-types")
                                  '()))
        #:modules ((srfi srfi-26)
                   (guix build utils)
