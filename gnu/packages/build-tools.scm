@@ -25,6 +25,7 @@
 ;;; Copyright © 2025 Aiden Isik <aidenisik+git@member.fsf.org>
 ;;; Copyright © 2025 Josep Bigorra <jjbigorra@gmail.com>
 ;;; Copyright © 2025 John Kehayias <john.kehayias@protonmail.com>
+;;; Copyright © 2026 Nemin <bergengocia@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,10 +45,12 @@
 (define-module (gnu packages build-tools)
   #:use-module (ice-9 optargs)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages c)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
+  #:use-module (guix build-system hare)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system pyproject)
   #:use-module (guix build-system python)
@@ -79,6 +82,7 @@
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages pcre)
@@ -1374,3 +1378,70 @@ The Waf Book and in the API docs
 ;; as meson or ninja which are written in Python as well.
 (define-deprecated-package python-waf
   waf)
+
+(define-public haredo
+  (package
+    (name "haredo")
+    (version "1.0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://git.sr.ht/~autumnull/haredo/")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256 (base32 "1ysm8rgxi0i4zb1q6xj3pf5bwxssjlcc4x158pyd78l8ahz30fn2"))))
+    (build-system hare-build-system)
+    (native-inputs
+     ;; XXX: `harec` and `qbe` are pulled in because Haredo assumes these
+     ;; programs are present and allows build scripts to rely on them freely.
+     ;;
+     ;; See: https://git.sr.ht/~autumnull/haredo/tree/1.0.6/item/doc/haredo.1.scd
+     ;;
+     ;; Importing `harec` the usual way results in a circular dependency for
+     ;; packages that rely on `hare-build-system`.  To avoid that, we import
+     ;; it using delayed evaluation.
+     (list scdoc
+           (module-ref (resolve-interface '(gnu packages hare)) 'harec)
+           qbe))
+    (supported-systems %hare-supported-systems)
+    (arguments
+     (list
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'set-prefix
+            (lambda _ (setenv "PREFIX" #$output)))
+          (add-before 'build 'override-defaults
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; XXX: To prevent future packagers from needing to do delayed
+              ;; input evaluation in all subsequent packages that rely on
+              ;; `haredo` and `hare-build-system`, this package provides the
+              ;; Guix-packaged `harec` and `qbe` as defaults (which can be
+              ;; overridden if needed by setting the appropriate environment
+              ;; variable).
+              (let ((harec-binary (search-input-file inputs "/bin/harec"))
+                    (qbe-binary (search-input-file inputs "/bin/qbe")))
+                (substitute* "./src/haredo.ha"
+                  (("(\"HAREC\", \"harec\")")
+                   (format #f "(\"HAREC\", \"~a\")" harec-binary))
+                  (("(\"QBE\", \"qbe\")")
+                   (format #f "(\"QBE\", \"~a\")" qbe-binary))))))
+          (replace 'build
+            (lambda _ (invoke "./bootstrap.sh")))
+          (replace 'install
+            (lambda _ (invoke "./bootstrap.sh" "install"))))))
+    (home-page "https://sr.ht/~autumnull/haredo/")
+    (synopsis "Build automator, alternative to @command{make} and @command{redo}")
+    (description "@command{haredo} is a build automator.
+It is an alternative to e.g. @command{make(1)} and @command{redo(1)}.  Features:
+
+@itemize
+@item Script syntax is plain shell script,
+@item Only one command with few extraneous rules,
+@item .do files are short and modular like in redo,
+@item Builds its dependency tree on the fly, uses no database,
+@item Doesn't break the build state when interrupted.
+@end itemize
+")
+    (license license:wtfpl2)))
