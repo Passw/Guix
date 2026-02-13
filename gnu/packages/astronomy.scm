@@ -5238,7 +5238,7 @@ the Gizmo code, in particular, the FIRE cosmological simulations.")
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 77 passed, 2 skipped, 3 deselected
+      ;; tests: 72 passed, 2 skipped, 8 deselected
       #:test-flags
       #~(list "--pyargs" "glue_astronomy"
               ;; XXX: See: <https://github.com/glue-viz/glue-astronomy/issues/117>.
@@ -5270,9 +5270,7 @@ the Gizmo code, in particular, the FIRE cosmological simulations.")
     (propagated-inputs
      (list python-astropy
            python-glue-core
-           python-pyqt  ;PyQt5
            python-regions
-           python-reproject
            python-specreduce
            python-spectral-cube
            python-specutils))
