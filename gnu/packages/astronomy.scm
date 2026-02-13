@@ -5572,22 +5572,6 @@ the entire transformation pipeline from input coordinates (detector by
 default) to world coordinates.")
     (license license:bsd-3)))
 
-(define-public python-gwcs-0.21
-  (package
-    (inherit python-gwcs-1)
-    (name "python-gwcs")
-    (version "0.21.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "gwcs" version))
-       (sha256
-        (base32 "1fn5l4v236bl7xqi1is40c2q57dji8by98iwqcndfnmjwqf7zllc"))))
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs python-gwcs)
-       (replace "python-astropy" python-astropy-6)
-       (replace "python-asdf" python-asdf-3)))))
-
 ;; The last 0.X.X version, providing breaking changes with 1.X.X.
 (define-public python-gwcs-0
   (package
