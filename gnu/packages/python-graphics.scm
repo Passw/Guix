@@ -56,6 +56,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -804,6 +805,38 @@ library.")
 ctypes module to interface with SDL2, and provides simple Python classes and
 wrappers for common SDL2 functionality.")
     (license license:cc0)))
+
+(define-public python-qtawesome
+  (package
+    (name "python-qtawesome")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spyder-ide/qtawesome")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "109anjlnin5cafx579clj1x21ggig3qkcm2g1wlx0lshxqzjadan"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      ;; Actually just ::test_get_fonts_info would be better.
+      #~(list "--ignore" "qtawesome/tests/test_qtawesome.py")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'setenv
+            (lambda _
+              (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (propagated-inputs (list python-qtpy python-pyqt))
+    (native-inputs (list python-pytest python-pytest-qt python-setuptools))
+    (home-page "https://github.com/spyder-ide/qtawesome")
+    (synopsis "FontAwesome icons in PyQt and PySide applications")
+    (description
+     "@code{FontAwesome} icons in @code{PyQt} and @code{PySide} applications.")
+    (license license:expat)))
 
 (define-public python-vispy
   (package
