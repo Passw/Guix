@@ -249,6 +249,45 @@ crystallographic data exchange endorsed by the International Union of
 Crystallography.")
     (license license:psfl)))
 
+(define-public python-pyoncat
+  (package
+    (name "python-pyoncat")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyoncat" version))
+       (sha256
+        (base32 "16lkpbkn7wyx8ag42sjmqm0c5acfs5dbglf3ahnfwpvcgcxj6jql"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list #:tests? #f  ; no tests in sdist
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-build-system
+                 (lambda _
+                   ;; Upstream uses the deprecated poetry.masonry.api build
+                   ;; backend which requires the full poetry package.  Guix
+                   ;; only has poetry-core, so switch to poetry.core.masonry.api.
+                   (substitute* "pyproject.toml"
+                     (("requires = \\[\"poetry\"\\]")
+                      "requires = [\"poetry-core\"]")
+                     (("build-backend = \"poetry\\.masonry\\.api\"")
+                      "build-backend = \"poetry.core.masonry.api\"")))))))
+    (native-inputs
+     (list python-poetry-core))
+    (propagated-inputs
+     (list python-oauthlib
+           python-requests
+           python-requests-oauthlib))
+    (home-page "https://oncat.ornl.gov")
+    (synopsis "Python client for ONCat (ORNL Neutron Catalog)")
+    (description
+     "This package provides a Python client for ONCat, the Oak Ridge National
+Laboratory Neutron Catalog.  ONCat is a data catalog service for neutron
+scattering facilities.")
+    (license license:expat)))
+
 (define-public python-pystog
   (package
     (name "python-pystog")
