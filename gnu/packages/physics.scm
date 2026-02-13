@@ -285,6 +285,37 @@ perform Bayesian analysis on quasi-elastic neutron-scattering data.  The
 original Fortran code was written by Dr. Devinder Sivia in the 1980s.")
     (license license:bsd-3)))
 
+(define-public python-quickbayes
+  (package
+    (name "python-quickbayes")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "quickbayes" version))
+       (sha256
+        (base32 "1w3w612cz92bkxjk2wyfcjf502vgp45ajpz92llk1d0z8q1pdn49"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      ;; Upstream runs two test configurations (see .github/workflows/run_tests.yml):
+      ;; - without gofit: test/default and test/shared
+      ;; - with gofit: test/gofit and test/shared
+      ;; Since we have gofit, run the gofit configuration.
+      #~(list "test/gofit" "test/shared")))
+    (propagated-inputs
+     (list python-joblib python-numpy python-scipy))
+    (native-inputs
+     (list python-hatchling python-pytest python-gofit))
+    (home-page "https://quickbayes.readthedocs.io/")
+    (synopsis "Bayesian analysis tools for neutron scattering")
+    (description
+     "QuickBayes provides Bayesian analysis tools for analyzing neutron
+scattering data.  It is designed for use with the Mantid framework for
+neutron and muon data analysis.")
+    (license license:bsd-3)))
+
 (define-public python-spglib
   (package
     (name "python-spglib")
