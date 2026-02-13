@@ -28,10 +28,14 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages ninja)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-check)
@@ -302,3 +306,76 @@ of crystal structures.  It automatically detects Bravais lattice types and
 generates k-point labels and band paths following crystallographic
 conventions.")
     (license license:expat)))
+
+(define-public python-euphonic
+  (package
+    (name "python-euphonic")
+    (version "1.4.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pace-neutrons/Euphonic.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n3w2acwi9x1v4wavigrd0qwd559rx6aaz0xknhd4gnbqwzn05qp"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'fix-numpy-include
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let ((numpy (assoc-ref inputs "python-numpy")))
+                ;; Patch meson.build to use the correct numpy include path
+                (substitute* "meson.build"
+                  (("np_inc = include_directories\\(py\\.get_path\\('platlib'\\) / 'numpy/core/include'\\)")
+                   (string-append "np_inc = include_directories('"
+                                  numpy "/lib/python3.11/site-packages/numpy/core/include')"))))))
+          (add-before 'build 'fix-lazy-fixture
+            (lambda _
+              ;; Migrate from pytest-lazy-fixture to pytest-lazy-fixtures.
+              ;; Add import and replace pytest.lazy_fixture with lf.
+              (for-each
+               (lambda (file)
+                 (substitute* file
+                   (("^import pytest" all)
+                    (string-append "from pytest_lazy_fixtures import lf\n" all))
+                   (("pytest\\.lazy_fixture")
+                    "lf")))
+               (find-files "tests_and_analysis" "\\.py$"))))
+          ;; Run tests after install so the C extension is available.
+          (delete 'check)
+          (add-after 'install 'check
+            (lambda* (#:key tests? inputs outputs #:allow-other-keys)
+              (when tests?
+                (add-installed-pythonpath inputs outputs)
+                ;; Remove source euphonic dir so tests use installed package.
+                (delete-file-recursively "euphonic")
+                (invoke "pytest" "-vv" "tests_and_analysis")))))))
+    (propagated-inputs
+     (list python-brille ; optional
+           python-h5py ; optional, for phonopy-reader
+           python-matplotlib ; optional
+           python-pyyaml ; optional, for phonopy-reader
+           python-numpy
+           python-scipy
+           python-pint
+           python-seekpath
+           python-spglib
+           python-threadpoolctl
+           python-toolz))
+    (native-inputs
+     ;; Note: build-backend is mesonpy.
+     (list meson-python ninja python-numpy python-packaging python-pytest
+           python-pytest-lazy-fixtures python-pytest-mock
+           pkg-config))
+    (home-page "https://github.com/pace-neutrons/Euphonic")
+    (synopsis "Phonon calculations for inelastic neutron scattering")
+    (description
+     "Euphonic is a Python package for calculating phonon bandstructures and
+simulating inelastic neutron scattering (INS) from force constants.  It can
+read output from CASTEP and Phonopy and calculate phonon frequencies,
+eigenvectors, and structure factors.")
+    (license license:gpl3+)))
