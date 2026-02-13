@@ -238,3 +238,32 @@ remove spurious artifacts in the data.")
 perform Bayesian analysis on quasi-elastic neutron-scattering data.  The
 original Fortran code was written by Dr. Devinder Sivia in the 1980s.")
     (license license:bsd-3)))
+
+(define-public python-spglib
+  (package
+    (name "python-spglib")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "spglib" version))
+       (sha256
+        (base32 "1sq8niay87n7hmby6hs628zzpc4apx6kp77cjvyi87hal0mxlvnn"))))
+    (build-system pyproject-build-system)
+    (propagated-inputs
+     (list python-numpy
+           python-typing-extensions))
+    (native-inputs
+     (list cmake-minimal
+           python-pytest
+           python-pyyaml
+           python-scikit-build-core
+           python-setuptools-scm))
+    (home-page "https://spglib.readthedocs.io/")
+    (synopsis "Python bindings for spglib crystal symmetry library")
+    (description
+     "Spglib is a library for finding and handling crystal symmetries written
+in C.  This package provides Python bindings for spglib, allowing Python
+programs to find symmetry operations, identify space groups, and perform
+other symmetry-related operations on crystal structures.")
+    (license license:bsd-3)))
