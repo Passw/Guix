@@ -168,6 +168,49 @@ scattering simulations.")
     (description "GOFit: Global Optimization for Fitting problems.")
     (license license:bsd-3)))
 
+(define-public python-mslice
+  (package
+    (name "python-mslice")
+    (version "2.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mantidproject/mslice.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bbg9hyl6jxyk79hshvqvcbwbx48x6va5nyhavj5kjg6ybd0n8fd"))
+       (patches
+        (search-patches "python-mslice-matplotlib-3.6-compatibility.patch"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list #:tests? #f                    ;require mantid
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-compatibility
+                 (lambda _
+                   ;; dedent_interpd was an alias for interpd; the alias was
+                   ;; removed in
+                   ;; <https://github.com/matplotlib/matplotlib/pull/28826>.
+                   (substitute* "src/mslice/plotting/pyplot.py"
+                     (("@_docstring\\.dedent_interpd")
+                      "@_docstring.interpd"))
+                   ;; self.execute("cls") fails; use widget's clear() method.
+                   ;; <https://github.com/mantidproject/mslice/issues/1152>
+                   (substitute* "src/mslice/widgets/ipythonconsole/ipython_widget.py"
+                     (("self\\.execute\\(\"cls\"\\)")
+                      "self.clear()"))))
+               (delete 'sanity-check))))  ;would require mantid
+    (propagated-inputs (list python-matplotlib python-pyqt python-qtpy
+                             python-qtawesome))
+    (native-inputs (list python-pytest python-setuptools))
+    (home-page "https://github.com/mantidproject/mslice")
+    (synopsis "Performs slices and cuts of multi-dimensional data produced by Mantid")
+    (description "This package provides a tool for performing slices and cuts
+of multi-dimensional data produced by Mantid.")
+    (license license:gpl3+)))
+
 (define-public python-pycifrw
   (package
     (name "python-pycifrw")
