@@ -16467,6 +16467,35 @@ pseudo terminal (pty), and interact with both the process and its pty.")
      "This package provides a framework to implement simple but nice CLIs.")
     (license license:asl2.0)))
 
+(define-public python-configupdater
+  (package
+    (name "python-configupdater")
+    (version "3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pyscaffold/configupdater")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0s2znph12lrs2wcnwz114153dkr1ccn2g7z8xcc83ypy15sbmz6r"))))
+    (build-system pyproject-build-system)
+    (native-inputs
+     (list python-pytest
+           python-pytest-cov
+           python-setuptools
+           python-setuptools-scm))
+    (home-page "https://github.com/pyscaffold/configupdater")
+    (synopsis "Parser like ConfigParser but for updating configuration files")
+    (description
+     "ConfigUpdater is a Python library for updating INI configuration files
+while preserving the original file's formatting, structure, and comments.
+Unlike Python's standard ConfigParser, ConfigUpdater maintains minimal,
+targeted changes--keeping comments, section ordering, key-value pair
+ordering, and original casing intact.")
+    (license license:expat)))
+
 (define-public python-crccheck
   (package
     (name "python-crccheck")
