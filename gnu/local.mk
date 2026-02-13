@@ -549,6 +549,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/phabricator.scm 			\
   %D%/packages/php.scm				\
   %D%/packages/php-xyz.scm			\
+  %D%/packages/physics.scm			\
   %D%/packages/piet.scm			\
   %D%/packages/diagram.scm			\
   %D%/packages/pkg-config.scm			\

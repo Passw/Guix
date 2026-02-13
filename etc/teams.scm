@@ -1044,6 +1044,7 @@ packages (e.g. Astronomy, Chemistry, Math, Physics etc.)"
                       "gnu/packages/lean.scm"
                       "gnu/packages/maths.scm"
                       "gnu/packages/medical.scm"
+                      "gnu/packages/physics.scm"
                       "gnu/packages/sagemath.scm"
                       "gnu/packages/statistics.scm")))
 

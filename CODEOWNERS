@@ -373,6 +373,7 @@ gnu/packages/graph\.scm                            @guix/science
 gnu/packages/lean\.scm                             @guix/science
 gnu/packages/maths\.scm                            @guix/science
 gnu/packages/medical\.scm                          @guix/science
+gnu/packages/physics\.scm                          @guix/science
 gnu/packages/sagemath\.scm                         @guix/science
 gnu/packages/statistics\.scm                       @guix/science
 
