@@ -6233,60 +6233,97 @@ files.")
 (define-public python-kanon
   (package
     (name "python-kanon")
-    (version "0.6.6")
+    ;; 0.6.6 was released in 2022 which does not support Astropy 7+ and
+    ;; NumPy2, try to use the latest commit providing some compatibilities,
+    ;; see: <https://github.com/ALFA-project-erc/kanon/issues/149>,
+    ;;      <https://github.com/ALFA-project-erc/kanon/issues/156>.
+    (properties '((commit . "16aca8d7027937044b0b34942968cb2fee630cad")
+                  (revision . "0")))
+    (version (git-version "0.6.6"
+                          (assoc-ref properties 'revision)
+                          (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ALFA-project-erc/kanon")
-             (commit (string-append "v" version))))
+              (url "https://github.com/ALFA-project-erc/kanon")
+              (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0sg9yrsas5xmhbw6mhfyxsxh9i060af6v02whr9fqgv687fiyrhc"))))
+        (base32 "0d6dvlllpga0d6l5bm3hmwsx4z5qay0dd0h7xn209kgn0369rryc"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 150 passed, 18 deselected, 246 warnings
+      ;; tests: 151 passed, 11 deselected, 220 warnings
       #:test-flags
-      ;; XXX: This tests failing a lot.
-      #~(list "-k" (string-append "not test_attribute_forwardin"
-                                  " and not test_declination"
-                                  " and not test_init_basedquantity"
-                                  " and not test_ptolemy_viz"
-                                  " and not test_ptolemy_viz"
-                                  " and not test_quantity"
-                                  " and not test_read"
-                                  " and not test_shifting"
-                                  " and not test_sun_true_position"
-                                  " and not test_sun_true_position")
-              "--ignore=kanon/tables/__init__.py")
+      #~(list "--ignore=examples/"
+              "--ignore=kanon/tables/__init__.py"
+              "--ignore=kanon/tables/htable.py"
+              #$@(map (lambda (test) (string-append "--deselect=kanon/"
+                                                    test))
+                      ;; XXX: Errors in tests is indication of NumPy2 issues,
+                      ;; upstream is not responsive, try to fix them in the
+                      ;; package.
+                      (list
+                       ;; ValueError: Unable to avoid copy while creating an
+                       ;; array as requested.
+                       "tables/tests/test_hcolumn.py::TestHColumn::test_init"
+                       "tables/tests/test_hcolumn.py::TestHColumn::test_astype"
+                       "tables/tests/test_hcolumn.py::TestHColumn::test_truncable"
+                       ;;  ValueError: First and last rows must not be masked
+                       "tables/tests/test_htable.py::test_fill"
+                       ;; Network access is required
+                        "tables/tests/test_htable_reader.py::test_get_number_of_cells"
+                        ;; ValueError: The truth value of an array with more
+                        ;; than one element is ambiguous. Use a.any() or
+                        ;; a.all()
+                        "tests/test_based_htable.py::test_read"
+                        ;; assert False
+                        "tests/test_based_htable.py::test_quantity"
+                        ;; AttributeError: 'int' object has no attribute
+                        ;; 'truncate'
+                        "units/tests/test_quantity.py::TestQuantity::test_attribute_forwarding"
+                        ;; AttributeError: 'numpy.ndarray' object has no
+                        ;; attribute 'equals'
+                        "units/tests/test_quantity.py::TestQuantity::test_shifting"
+                        "units/tests/test_quantity.py::TestQuantity::test_init_basedquantity")))
       #:phases
       #~(modify-phases %standard-phases
-          ;; See <https://github.com/ALFA-project-erc/kanon/issues/149>.
-          (delete 'sanity-check)
+          (add-after 'unpack 'fix-astropy-7-compatibility
+            (lambda _
+              (substitute* "kanon/units/radices.py"
+                (("from astropy\\.units.core import Unit, .*")
+                 (string-append
+                  "from astropy.units.core import Unit, UnitBase\n"
+                  "from astropy.units.errors import UnitTypeError\n")))))
           (add-after 'unpack 'relax-requirements
             (lambda _
               (substitute* "pyproject.toml"
-                (("version = \"0.0.0\"") (string-append "version = \"" #$version "\""))
                 ;; RuntimeError: Unable to detect version control
                 ;; system. Checked: Git. Not installed: Mercurial, Darcs,
                 ;; Subversion, Bazaar, Fossil, Pijul.  See
                 ;; <https://github.com/blacklanternsecurity/bbot/issues/1257>.
                 (("enable = true") "enable = false"))))
+          (add-before 'build 'set-version
+            (lambda _
+              ;; TODO: Include in pyproject-build-system.
+              (setenv "POETRY_DYNAMIC_VERSIONING_BYPASS"
+                      #$(version-major+minor+point version))))
           (add-before 'check 'prepare-test-environment
             (lambda _
               (setenv "HOME" "/tmp"))))))
     (native-inputs
      (list git-minimal/pinned
+           nss-certs-for-test
            python-poetry-core
            python-poetry-dynamic-versioning
+           python-pytest
            python-pytest-astropy
-           python-pytest-xdist
            python-requests-mock))
     (propagated-inputs
-     (list python-astropy-6
+     (list python-astropy
            python-matplotlib
-           python-numpy-1
+           python-numpy
            python-pandas
            python-requests
            python-scipy
