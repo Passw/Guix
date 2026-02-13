@@ -117,3 +117,30 @@ within an irreducible part of the first Brillouin zone.  It provides Python
 bindings via pybind11 for use in phonon calculations and inelastic neutron
 scattering simulations.")
     (license license:agpl3+)))
+
+(define-public python-pycifrw
+  (package
+    (name "python-pycifrw")
+    (version "4.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyCifRW" version))
+       (sha256
+        (base32 "05ggj4l9cir02m593azhl03wfjimx3rvwbznpx01bdqawxsmkgq2"))))
+    (build-system pyproject-build-system)
+    (arguments
+     ;; Tests are not included in the PyPI tarball.
+     (list #:tests? #f))
+    (propagated-inputs
+     (list python-numpy python-ply))
+    (native-inputs
+     (list python-setuptools))  ; build-backend = setuptools.build_meta
+    (home-page "https://github.com/jamesrhester/pycifrw")
+    (synopsis "CIF file reader and writer")
+    (description
+     "PyCifRW provides support for reading and writing CIF (Crystallographic
+Information File) format files.  CIF is the standard format for
+crystallographic data exchange endorsed by the International Union of
+Crystallography.")
+    (license license:psfl)))
