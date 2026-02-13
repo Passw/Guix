@@ -288,6 +288,54 @@ Laboratory Neutron Catalog.  ONCat is a data catalog service for neutron
 scattering facilities.")
     (license license:expat)))
 
+(define-public python-pyoncatqt
+  (package
+    (name "python-pyoncatqt")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/neutrons/pyoncatqt")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wdzff1jn2jv742qm7g728yzp7axgf7nrizm5hms2w796a1zdqwv"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:tests? #f  ; tests require mantid
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-version
+            (lambda _
+              ;; versioningit needs git tags; patch pyproject.toml to use
+              ;; static version and create _version.py directly.
+              (substitute* "pyproject.toml"
+                (("dynamic = \\[\"version\"\\]")
+                 (string-append "version = \"" #$version "\""))
+                (("source = \"versioningit\"") "")
+                (("\\[tool\\.hatch\\.build\\.hooks\\.versioningit-onbuild\\]")
+                 "[tool.hatch.build.hooks.versioningit-onbuild]
+enable-by-default = false"))
+              (mkdir-p "src/pyoncatqt")
+              (call-with-output-file "src/pyoncatqt/_version.py"
+                (lambda (port)
+                  (format port "__version__ = \"~a\"~%" #$version))))))))
+    (native-inputs
+     (list python-hatchling))
+    (propagated-inputs
+     (list python-oauthlib
+           python-pyoncat
+           python-qtpy))
+    (home-page "https://github.com/neutrons/pyoncatqt")
+    (synopsis "Qt GUI elements for ONCat authentication")
+    (description
+     "This package provides common Qt GUI elements for authenticating with
+ONCat (ORNL Neutron Catalog), including login dialogs and session management
+widgets.")
+    (license license:gpl3)))
+
 (define-public python-pystog
   (package
     (name "python-pystog")
