@@ -106,9 +106,6 @@
 Name: brille
 Version: ~a
 " #$version)))))
-            (add-before 'configure 'set-version
-              (lambda _
-                (setenv "SETUPTOOLS_SCM_PRETEND_VERSION" #$version)))
             (add-after 'install 'install-python
               (lambda* (#:key inputs outputs #:allow-other-keys)
                 (let ((site-packages (site-packages inputs outputs)))
