@@ -1265,7 +1265,7 @@ compression parameters used by Gzip.")
 (define-public borgmatic
   (package
     (name "borgmatic")
-    (version "2.0.13")
+    (version "2.1.2")
     (source
      (origin
        ;; PyPI archive does not contain NEWS file needed for one test.
@@ -1276,7 +1276,7 @@ compression parameters used by Gzip.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "05w3j4knhsg4w0a0yrz8c7lvz3vp3nf95ddmql9i8mqknjqddm1v"))))
+         "0vrpl21n6hf3pj0di4n7s36jq64sx24c93j48cmbdgczs8jiwi36"))))
     (build-system pyproject-build-system)
     (arguments
      (list
