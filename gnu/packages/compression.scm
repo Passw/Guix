@@ -88,6 +88,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -3071,7 +3072,7 @@ compression and decompression speed compared to Deflate using Zlib.")
     (version "1.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://oldhome.schmorp.de/marc/data/"
+              (uri (string-append "https://oldhome.schmorp.de/marc/data/"
                                   "fcrackzip-" version ".tar.gz"))
               (sha256
                (base32
@@ -3079,16 +3080,19 @@ compression and decompression speed compared to Deflate using Zlib.")
     (build-system gnu-build-system)
     (arguments
      (list
+      #:make-flags
+      #~(list "CFLAGS=-Wno-error=implicit-int")
       #:phases
-      '(modify-phases %standard-phases
-         (add-after 'unpack 'fix-reference-to-unzip
-           (lambda _
-             (substitute* "main.c"
-               (("\"unzip")
-                (string-append "\"" (which "unzip")))))))))
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-reference-to-unzip
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "main.c"
+                (("\"unzip")
+                 (string-append "\""
+                                (search-input-file inputs "/bin/unzip")))))))))
     (inputs
      (list perl unzip))
-    (home-page "http://oldhome.schmorp.de/marc/fcrackzip.html")
+    (home-page "https://oldhome.schmorp.de/marc/fcrackzip.html")
     (synopsis "Zip password cracker")
     (description "Fcrackzip is a Zip file password cracker.")
     (license license:gpl2+)))
