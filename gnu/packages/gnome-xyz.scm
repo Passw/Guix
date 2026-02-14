@@ -28,6 +28,7 @@
 ;;; Copyright © 2025 Gabriel Santos <gabrielsantosdesouza@disroot.org>
 ;;; Copyright © 2025 Noé Lopez <noelopez@free.fr>
 ;;; Copyright © 2025 Trevor Arjeski <tmarjeski@gmail.com>
+;;; Copyright © 2026 Luis Guilherme Coelho <lgcoelho@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1555,6 +1556,39 @@ like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
 desktop environments.  It supports GTK 2, GTK 3, GNOME Shell, Budgie,
 Cinnamon, MATE, Unity, Xfce, LightDM, GDM, Chrome theme, etc.")
     (license license:gpl2+)))
+
+(define-public material-gtk-themes
+  ;; No releases nor tags: use the latest commit available.
+  (let ((commit "55f4639ad6a9128f885305a60d230c5842711259")
+        (revision "0"))
+    (package
+      (name "material-gtk-themes")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Fausto-Korpsvart/Material-GTK-Themes")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "15483c2ca5q4q68dync9fja5kzahy508hsdmq42jc62ikwa5slk4"))))
+      (build-system copy-build-system)
+      (arguments
+       (list #:install-plan
+             #~'(("themes" "share/themes")
+                 ("icons" "share/icons"))))
+      (home-page "https://github.com/Fausto-Korpsvart/Material-GTK-Themes")
+      (synopsis "Material GTK Themes")
+      (description "This package provides GTK themes based on the following
+themes:
+@enumerate
+@item Material for Neovim by Marko Cerovac
+@item Graphite GTK by VinceLiuice
+@item Suru Plus Icon Theme by Gusbemacbe
+@end enumerate")
+      (license license:gpl3+))))
 
 (define-public numix-gtk-theme
   (package
