@@ -21,6 +21,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages hare-apps)
   #:use-module (guix build-system hare)
   #:use-module (guix download)
   #:use-module (guix gexp)
@@ -91,7 +92,7 @@
 (define-public hare-lex
   (package
     (name "hare-lex")
-    (version "0.25.2.3")
+    (version "0.26.0.0")
     (source
      (origin
        (method git-fetch)
@@ -100,9 +101,27 @@
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06jlkb1q8ybr6yx56c6ikxv5ywz44k04dpwxcc796cnpzpkgqlyf"))))
+        (base32 "1ps7byn8kdkfj8drxlmpc8dqzfbrvkpjqz7af4k2cmmg7k0y0rkl"))))
+    (native-inputs (list haredo))
     (build-system hare-build-system)
     (supported-systems %hare-supported-systems)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'build)
+          (delete 'check)
+          (add-before 'install 'substitute-vars
+            (lambda _
+              (substitute* "./install.do"
+                (("PREFIX=.*") (format #f "PREFIX=\"~a\"~%" #$output))
+                (("SRCDIR=.*") (format #f "SRCDIR=\"~a/share/hare\"~%" #$output))
+                (("HARESRCDIR=.*") (format #f "HARESRC=\"~a/share/hare\"~%" #$output))
+                (("THIRDPARTYDIR=.*") (format #f "THIRDPARTYDIR=\"~a/share/hare\"~%" #$output)))))
+          (replace 'install
+            (lambda _
+              (setenv "PREFIX" #$output)
+              (invoke "haredo" "install"))))))
     (home-page "https://git.sr.ht/~stacyharper/hare-lex")
     (synopsis "General purpose lexical tokenization machinery for Hare")
     (description "This module provides a general purpose lexer machine for Hare.")
