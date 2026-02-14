@@ -1174,14 +1174,14 @@ shell with fzf, enabling fuzzy finding and multi-selection.")
 (define-public pay-respects
   (package
     (name "pay-respects")
-    (version "0.7.9")
+    (version "0.7.12")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "pay-respects" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0inwxkcqavzx30c3kgc6rjrahdavwfqdwaq2q1ccncivl1j0fjln"))))
+        (base32 "0nmh5kkjhsrmhwlb09wvg6chzpl7w7xq1qr1yy9gc202yrv6cnmk"))))
     (build-system cargo-build-system)
     (arguments (list #:install-source? #f))
     (inputs (cargo-inputs 'pay-respects))
