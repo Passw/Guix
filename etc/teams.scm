@@ -1577,6 +1577,11 @@ the \"texlive\" importer."
                        "pastor")
   guile hpc kde)
 
+(define-member (person "Carlo Zancanaro"
+                       "carlo@zancanaro.id.au"
+                       "czan")
+  lua ruby)
+
 
 (define (find-team name)
   (or (hash-ref %teams (string->symbol name))
