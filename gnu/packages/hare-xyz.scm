@@ -173,7 +173,7 @@ format with one directive per line.")
 (define-public hare-ssh
   (package
     (name "hare-ssh")
-    (version "0.25.2")
+    (version "0.26.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -182,7 +182,7 @@ format with one directive per line.")
               (file-name (git-file-name name version))
               (sha256
                 (base32
-                  "1293xpyl3masbwq6qsamiqpbv241fkc622bdsa7vcb5q89if8hgn"))))
+                  "1y7c7j60p393yiba3nq8yzlkx5gb1996gq9s32n3467zdvrdihws"))))
     (build-system hare-build-system)
     (supported-systems %hare-supported-systems)
     (home-page "https://sr.ht/~sircmpwn/hare-ssh")
