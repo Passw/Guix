@@ -873,6 +873,14 @@ asdf-build-system."
                       "gnu/packages/fonts.scm"
                       "gnu/packages/ibus.scm")))
 
+(define-team lua
+  (team 'lua
+        #:name "Lua team"
+        #:description
+        "Lua, Fennel, and related packages."
+        #:scope (list "gnu/packages/lua.scm"
+                      "gnu/packages/luanti.scm")))
+
 (define-team lxqt
   (team 'lxqt
         #:name "LXQt team"

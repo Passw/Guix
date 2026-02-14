@@ -291,6 +291,9 @@ gnu/packages/fcitx5\.scm                           @guix/localization
 gnu/packages/fonts\.scm                            @guix/localization
 gnu/packages/ibus\.scm                             @guix/localization
 
+gnu/packages/lua\.scm                              @guix/lua
+gnu/packages/luanti\.scm                           @guix/lua
+
 gnu/packages/lxqt\.scm                             @guix/lxqt
 
 gnu/packages/mate\.scm                             @guix/mate
