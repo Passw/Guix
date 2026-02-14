@@ -597,7 +597,7 @@ It aims to support Nintendo DSi and 3DS as well.")
              mbedtls-lts
              mgba-for-dolphin
              mesa
-             miniupnpc
+             miniupnpc-2.1
              minizip-ng
              openal
              pugixml
@@ -756,7 +756,7 @@ turbo speed, networked multiplayer, and graphical enhancements.")
              lzo
              mbedtls-lts
              mesa
-             miniupnpc
+             miniupnpc-2.1
              minizip-ng-compat
              openal
              pugixml
@@ -4092,7 +4092,7 @@ your PC, with many additional features and benefits.")
             libusb-next
             llvm-18
             mesa
-            miniupnpc-next
+            miniupnpc
             openal
             opencv
             pugixml-next
@@ -4835,7 +4835,7 @@ on a Commodore C64, C128 etc.")
                     libcdio
                     libzip
                     lua
-                    miniupnpc
+                    miniupnpc-2.1
                     pulseaudio
                     sdl2
                     spirv-tools

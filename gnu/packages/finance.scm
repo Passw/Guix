@@ -940,7 +940,7 @@ blockchain.")
            libsodium
            libunwind
            libusb
-           miniupnpc
+           miniupnpc-2.1
            openssl
            protobuf
            rapidjson

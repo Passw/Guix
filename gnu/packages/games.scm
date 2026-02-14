@@ -10782,7 +10782,7 @@ a fortress beyond the forbidden swamp.")
            libvorbis
            libxrandr
            mesa
-           miniupnpc
+           miniupnpc-2.1
            openal
            pcg-cpp
            qtbase-5
