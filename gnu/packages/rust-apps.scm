@@ -1976,17 +1976,17 @@ on the terminal in a visually appealing way.")
 (define-public matugen
   (package
     (name "matugen")
-    (version "2.4.1")
+    (version "4.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "matugen" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0rqljm689say9f1878x9x9v1ahaji52vqrnnm6nmkkilfsyfx550"))))
+        (base32 "0xn0i3vnwpxkxlccm8z7p4pmp2yrgvbmlpr18iffk694is9ik98r"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:install-source? #f))
+     (list #:install-source? #f))
     (inputs (cargo-inputs 'matugen))
     (home-page "https://github.com/InioX/matugen")
     (synopsis "Generate themes using the 'Material You' palette")
