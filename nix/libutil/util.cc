@@ -380,8 +380,55 @@ static void _deletePathAt(int fd, const Path & path, const Path & fullPath, unsi
                                  O_DIRECTORY |
                                  O_NOFOLLOW |
                                  O_CLOEXEC);
-      if(!dirfd.isOpen())
-        throw SysError(std::format("opening `{}'", fullPath));
+      if(!dirfd.isOpen()) {
+          if (errno != EACCES)
+              throw SysError(std::format("opening `{}'", fullPath));
+          /* Target directory must not have the right permissions for us to
+           * access it.  Try changing them.  We only do this after the
+           * initial attempt fails because some of the ways we might try
+           * changing the permissions have race conditions, and we'd rather
+           * avoid them if we can (e.g. because we're root). */
+#ifdef O_PATH
+          {
+              AutoCloseFD pathfd = openat(fd, path.c_str(),
+                                          O_PATH |
+                                          O_DIRECTORY |
+                                          O_NOFOLLOW |
+                                          O_CLOEXEC);
+              if (!pathfd.isOpen())
+                  throw SysError(std::format("opening `{}'", fullPath));
+
+              /* fchmod doesn't work with O_PATH file descriptors.  fchmodat
+               * does, but only on very recent kernels (linux 6.6).  Despite
+               * this, regular chmod will work with a /proc/self/fd/N
+               * filename that names an O_PATH file descriptor. */
+              string procPath = "/proc/self/fd/" + std::to_string(pathfd);
+              if (chmod(procPath.c_str(), S_IRUSR | S_IWUSR | S_IXUSR) != 0) {
+                  if (errno != ENOENT)
+                      throw SysError(std::format("chmod of `{}", procPath));
+                  /* Fall through */
+              } else {
+                  goto retry_open;
+              }
+          }
+#endif
+          /* !!! If a malicious process can have replaced the directory at
+                 PATH with a hardlink to an important file, this may change
+                 its permissions to become overly-strict!  This should only
+                 be a concern where /proc/sys/fs/protected_hardlinks is 0, or
+                 on systems without protected_hardlinks. */
+          if (fchmodat(fd, path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR, AT_SYMLINK_NOFOLLOW) != 0)
+              throw SysError(std::format("fchmodat of `{}'", fullPath));
+
+      retry_open:
+          dirfd = openat(fd, path.c_str(),
+                         O_RDONLY |
+                         O_DIRECTORY |
+                         O_NOFOLLOW |
+                         O_CLOEXEC);
+          if (!dirfd.isOpen())
+            throw SysError(std::format("opening `{}'", fullPath));
+      }
 
       /* st.st_mode may currently be from a different file than what we
          actually opened, get it straight from the file instead */

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012-2025 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012-2026 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -966,6 +966,20 @@
     (guard (c ((store-protocol-error? c) c))
       (build-derivations %store (list drv))
       #f)))
+
+(test-assert "unreadable directories in build tree can be removed"
+  ;; Unreadable directories created in the build tree should be removed
+  ;; without problem.  See <https://codeberg.org/guix/guix/issues/5891>.
+  (let* ((drv (build-expression->derivation
+               %store
+               (string-append (number->string (random (expt 2 64) (%seed))
+                                              16)
+                              "-unreadable-test")
+               '(begin
+                  (mkdir "unreadable" #o000)
+                  (mkdir %output)))))
+    (build-derivations %store (list drv))
+    (file-is-directory? (derivation->output-path drv))))
 
 
 (define %coreutils

@@ -98,7 +98,14 @@ void writeLine(int fd, string s);
 /* Delete a path; i.e., in the case of a directory, it is deleted
    recursively.  Don't use this at home, kids.  The second variant
    returns the number of bytes and blocks freed, and 'linkThreshold' denotes
-   the number of links under which a file is accounted for in 'bytesFreed'.  */
+   the number of links under which a file is accounted for in 'bytesFreed'.
+
+   Note that if a directory is unreadable, chmod will be invoked on it to make
+   it u+rwx.  On non-linux systems with no equivalent to
+   /proc/sys/fs/protected_hardlinks, a TOCTTOU race may allow the directory to
+   be replaced with a hardlink to an important file, making that file's
+   permissions overly-strict.
+   */
 void deletePath(const Path & path);
 
 void deletePath(const Path & path, unsigned long long & bytesFreed,
