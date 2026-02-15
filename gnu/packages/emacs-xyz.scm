@@ -33,7 +33,7 @@
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2017-2025 Maxim Cournoyer <maxim@guixotic.coop>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
-;;; Copyright © 2018, 2019 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2018, 2019, 2026 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018, 2019, 2020, 2021 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019, 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018, 2019 Jack Hill <jackhill@jackhill.us>
@@ -32895,50 +32895,30 @@ conversion scenarios.")
   emacs-gt)
 
 (define-public emacs-google-translate
-  (package
-    (name "emacs-google-translate")
-    (version "0.12.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/atykhonov/google-translate/")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0rwpij2bm8d4jq2w5snkp88mfryplw8166dsrjm407n2p6xr48zx"))))
-    (build-system emacs-build-system)
-    (arguments
-     (list
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-before 'check 'disable-failing-tests
-            (lambda _
-              (let-syntax
-                  ((disable-tests
-                    (syntax-rules ()
-                      ((_ file ())
-                       (syntax-error "test names list must not be empty"))
-                      ((_ file (test-name ...))
-                       (substitute* file
-                         (((string-append "^\\(ert-deftest " test-name ".*") all)
-                          (string-append all "(skip-unless nil)\n")) ...)))))
-                ;; These tests fail due to a missing requirement:
-                ;;   (void-function facemenu-set-face)
-                (disable-tests
-                 "test/google-translate-core-ui-test.el"
-                 ("test-google-translate--suggestion"
-                  "test-google-translate--text-phonetic/show-phonetic"
-                  "test-google-translate--translation-phonetic/show-phonetic"
-                  "test-google-translate--translated-text"))))))))
-    (native-inputs (list emacs-el-mock emacs-ert-runner))
-    (home-page "https://github.com/atykhonov/google-translate")
-    (synopsis "Emacs interface to Google Translate")
-    (description
-     "This package provides an Emacs interface to the Google Translate
+  (let ((commit "e84599df7c70870b33dd6c902b527d7f78310815")
+        (revision "0"))
+    (package
+      (name "emacs-google-translate")
+      (version (git-version "0.12.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/atykhonov/google-translate/")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1g098rbqqi26bvn0a8cpxwjx3z603n9zn7fakpnrgzz96vqhfxgx"))))
+      (build-system emacs-build-system)
+      (native-inputs (list emacs-el-mock emacs-ert-runner))
+      (propagated-inputs (list emacs-popup))
+      (home-page "https://github.com/atykhonov/google-translate")
+      (synopsis "Emacs interface to Google Translate")
+      (description
+       "This package provides an Emacs interface to the Google Translate
 on-line service.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-langtool
   (package
