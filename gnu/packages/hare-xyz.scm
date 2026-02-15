@@ -54,7 +54,7 @@
 (define-public hare-ev
   (package
     (name "hare-ev")
-    (version "0.25.2.0")
+    (version "0.26.0.0")
     (source
      (origin
        (method git-fetch)
@@ -63,7 +63,7 @@
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ak9anvzg2qfdsvxpcszshimw5cqbm52zfq7kwx7z0yf6qi6zm0f"))))
+        (base32 "1rw6s1jnv9j7wi521pimv17hwmj5ay0vl5f8z54sdqw51z1ss5qa"))))
     (build-system hare-build-system)
     (supported-systems %hare-supported-systems)
     (home-page "https://sr.ht/~sircmpwn/hare-ev")
