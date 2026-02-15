@@ -8955,24 +8955,30 @@ analysed.")
 
 (define-public tcalc
   (package
-  (name "tcalc")
-  (version "2.0")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (string-append "https://sites.google.com/site/mohammedisam2000/tcalc/tcalc-"
-                            version ".tar.gz"))
-      (sha256
+    (name "tcalc")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://drive.usercontent.google.com/download"
+             "?id=1gICzFCnJEQk10n5ioqOVrSjHd4R_u0Eq"))
+       (file-name (string-append "tcalc-" version ".tar.gz"))
+       (sha256
         (base32
-          "0jq806m4dqfia85nppfm75mml9w57g0cgv4cdw9bp3zymda83s0m"))))
-  (build-system gnu-build-system)
-  (synopsis "The terminal calculator")
-  (description
-    "The terminal calculator is a small program to help users of the GNU/Linux
+         "0jq806m4dqfia85nppfm75mml9w57g0cgv4cdw9bp3zymda83s0m"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:configure-flags #~(list "CFLAGS=-fcommon")))
+    (synopsis "The terminal calculator")
+    (description
+     "The terminal calculator is a small program to help users of the GNU/Linux
 terminal do calculations simply and quickly.  The formula to be calculated can
 be fed to @command{tcalc} through the command line.")
-  (home-page "https://sites.google.com/site/mohammedisam2000/tcalc")
-  (license license:gpl3+)))
+    (home-page
+     "https://sites.google.com/site/mohammedisam2000/tcalc-the-gnulinux-terminal-calculator")
+    (license license:gpl3+)))
 
 (define-public tiny-bignum
   (let ((commit "1d7a1f9b8e77316187a6b3eae8e68d60a6f9a4d4"))
