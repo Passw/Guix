@@ -27,7 +27,7 @@
 (define-public bonsai
   (package
     (name "bonsai")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -36,7 +36,7 @@
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "148rccbh5alpnz36ricv8y26qyrqwm4g7mj936vpwrxwd9dkwmff"))))
+        (base32 "1453qzlc24awd17jfh3szhmrdfr3c5xvpy91pg79b2jf708xjrs5"))))
     (build-system hare-build-system)
     (inputs (list hare-ev hare-json))
     (supported-systems %hare-supported-systems)
