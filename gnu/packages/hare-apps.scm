@@ -87,7 +87,7 @@ Hare.")
 (define-public hare-mcron
   (package
     (name "hare-mcron")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -96,7 +96,7 @@ Hare.")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "18h85fpxa2hs3fr132j85qh8b73dsawcn845ifk8ffgvh2kmw9zl"))))
+        (base32 "0rl8i0c0jkgr0c4zfhlma81k8985iigrq5vcpj5sdl2vg7fwwb1z"))))
     (build-system hare-build-system)
     (native-inputs (list scdoc))
     (inputs (list hare-ev))
