@@ -1188,7 +1188,20 @@ is not available for Guile 2.0.")
                        ;; is used.  (Note: The Shepherd disables JIT on
                        ;; AArch64 so it can safely use Fibers.)
                        (setenv "GUILE_JIT_THRESHOLD" "-1")))))
-         '()))))
+         (if (target-hurd?)
+             (list #:phases
+                   #~(modify-phases %standard-phases
+                       (add-before 'check 'disable-more-tests
+                         (lambda _
+                           (substitute* "Makefile"
+                             ;; clock_nanosleep with a clock from
+                             ;; pthread-getcpuclockid fails with EINVAL
+                             ;; https://codeberg.org/guile/fibers/issues/171
+                             (("tests/preemption.scm") "")
+                             ;; heap grows too much
+                             (("tests/cancel-port-waiters.scm") "")
+                             (("tests/cancel-timer.scm") ""))))))
+             '())))))
 
 (define-public guile-fibers guile-fibers-1.4)
 
