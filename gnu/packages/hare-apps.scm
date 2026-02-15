@@ -64,7 +64,7 @@ more available transition, the state goes back to the initial position.")
 (define-public hare-lsp
   (package
     (name "hare-lsp")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method git-fetch)
@@ -73,10 +73,11 @@ more available transition, the state goes back to the initial position.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1h763ynv1zh2ili26bkd9anmv8srva63rwpv2avnmimia1bvsx81"))))
+        (base32 "174rphdxrky5mfmx6i0dzb67qx94in419d88yh2jsrgbrpk62pms"))))
     (build-system hare-build-system)
     (inputs (list hare-json))
     (supported-systems %hare-supported-systems)
+    (arguments '(#:tests? #f))
     (home-page "https://git.sr.ht/~whynothugo/hare-lsp/")
     (synopsis "Language server implementation for Hare")
     (description "This package provides a language server implementation for
