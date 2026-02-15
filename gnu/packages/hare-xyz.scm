@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2025 Lilah Tascheter <lilah@lunabee.space>
 ;;; Copyright © 2025 jgart <jgart@dismail.de>
+;;; Copyright © 2026 Nemin <bergengocia@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages hare-xyz)
+  #:use-module (gnu packages build-tools)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -194,7 +196,7 @@ and agent protocols in pure Hare.")
 (define-public hare-template
   (package
     (name "hare-template")
-    (version "0.25.2.5")
+    (version "0.26.0.0")
     (source
      (origin
        (method git-fetch)
@@ -203,10 +205,30 @@ and agent protocols in pure Hare.")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mfg3ijfmii7vag1cgvr0n76hd7cic6vdf37gd05c5ilnb31ial6"))))
+        (base32 "06flrjrzjhf8rh3h4y73nv9lnqhkj0j7yw60qv7k9zajpsbnrkn4"))))
     (build-system hare-build-system)
-    (inputs (list hare-lex))
+    (native-inputs (list haredo))
+    (propagated-inputs (list hare-lex))
     (supported-systems %hare-supported-systems)
+    (arguments
+     (list
+      #:modules '((ice-9 match)
+                  (guix build hare-build-system)
+                  (guix build utils))
+      #:tests? #f
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'substitute-vars
+            (lambda _
+              (substitute* "./install.do"
+                (("PREFIX=.*") (format #f "PREFIX=\"~a\"~%" #$output))
+                (("SRCDIR=.*") (format #f "SRCDIR=\"~a/share/hare\"~%" #$output))
+                (("HARESRCDIR=.*") (format #f "HARESRC=\"~a/share/hare\"~%" #$output))
+                (("THIRDPARTYDIR=.*") (format #f "THIRDPARTYDIR=\"~a/share/hare\"~%" #$output)))))
+          (replace 'build
+            (lambda _ (invoke "haredo" "hare-gentmpl")))
+          (replace 'install
+            (lambda _ (invoke "haredo" "install"))))))
     (home-page "https://git.sr.ht/~stacyharper/hare-template")
     (synopsis "Templating tool and library for Hare")
     (description "This package aims to offer a good and simple templating
