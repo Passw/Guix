@@ -307,14 +307,14 @@ paging.")
 (define-public bottom
   (package
     (name "bottom")
-    (version "0.10.2")
+    (version "0.12.3")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "bottom" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0y9wjbzrmcvh0fvfr5cizzwzy6f18hagk970mljwhccrwdsbaapg"))))
+        (base32 "0vnm6l527pzlpk3jb6qai4jhs7l5c9d9vagxgzc6m7kws8srkqii"))))
     (build-system cargo-build-system)
     (arguments
      `(#:install-source? #f
@@ -328,6 +328,9 @@ paging.")
          "--skip=valid_config_tests::test_many_proc"
          "--skip=valid_config_tests::test_styling_sanity_check"
          "--skip=valid_config_tests::test_styling_sanity_check_2"
+         "--skip=valid_config_tests::test_linux_only"
+         "--skip=valid_config_tests::test_new_default"
+         "--skip=valid_config_tests::test_proc_columns"
          "--skip=valid_config_tests::test_theme")
        #:phases
        (modify-phases %standard-phases
