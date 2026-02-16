@@ -29744,7 +29744,7 @@ replacement for mattn/go-sqlite3.")
 (define-public go-modernc-org-strutil
   (package
     (name "go-modernc-org-strutil")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -29753,7 +29753,7 @@ replacement for mattn/go-sqlite3.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rk76c1n189hzg3kfab8pfvssa1h9v0vxk5jxy8pk32rqic0hdim"))))
+        (base32 "0qgp86vwln4mddazxpn7alnq49r8iczllbx45jxhjz65lv6w3lkn"))))
     (build-system go-build-system)
     (arguments
      (list
