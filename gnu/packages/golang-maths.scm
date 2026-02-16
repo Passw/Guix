@@ -2,6 +2,7 @@
 ;;; Copyright © 2024 Rodion Goritskov <rodion.goritskov@gmail.com>
 ;;; Copyright © 2024 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2025 IliaLuetin <antonstimmer@gmx.de>
+;;; Copyright © 2026 Carlos Durán Domínguez <wurt@wurt.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -600,7 +601,7 @@ pointer receiver.  A @@code{Uint128} value is therefore immutable, just like
 (define-public go-modernc-org-mathutil
   (package
     (name "go-modernc-org-mathutil")
-    (version "1.6.0")
+    (version "1.7.1")
     (source
      (origin
        (method git-fetch)
@@ -609,7 +610,7 @@ pointer receiver.  A @@code{Uint128} value is therefore immutable, just like
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wafxarpfvys5p2wsamadkv8j54ahrv9dwmlba9xsxb85n4q9ywm"))))
+        (base32 "09yhqhyaq5ikqm8afj09vr1v1ji7lwvd16mysr8hb1c6bnn7krh8"))))
     (build-system go-build-system)
     (arguments
      (list
