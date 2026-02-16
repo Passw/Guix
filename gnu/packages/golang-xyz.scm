@@ -18193,7 +18193,7 @@ Authentication Modules, PAM} application API.")
   (package
     (inherit go-github-com-msteinert-pam)
     (name "go-github-com-msteinert-pam-v2")
-    (version "2.0.0")
+    (version "2.1.0")
     (source
      (origin
        (method git-fetch)
@@ -18202,7 +18202,7 @@ Authentication Modules, PAM} application API.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1h02dcx00vgcsxgl5sly82dbixk8cimjb10q5p405bf4fz8z7q6k"))))
+        (base32 "0hkd5qz4may3rzwy4k9278q7w6ldyp6j0np5lj8880pxjw8z1rbz"))))
     (arguments
      (substitute-keyword-arguments
          (package-arguments go-github-com-msteinert-pam)
