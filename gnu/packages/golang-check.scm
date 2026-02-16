@@ -27,6 +27,7 @@
 ;;; Copyright © 2024 Roman Scherer <roman@burningswell.com>
 ;;; Copyright © 2025 Maxim Cournoyer <maxim@guixotic.coop>
 ;;; Copyright © 2025 Patrick Norton <patrick.147.norton@gmail.com>
+;;; Copyright © 2026 Carlos Durán Domínguez <wurt@wurt.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1325,7 +1326,7 @@ the purpose of fuzz testing.")
 (define-public go-github-com-google-pprof
   (package
     (name "go-github-com-google-pprof")
-    (version "0.0.0-20240402174815-29b9bb013b0f")
+    (version "0.0.0-20250317173921-a4b03ec1a45e")
     (source
      (origin
        (method git-fetch)
@@ -1334,7 +1335,7 @@ the purpose of fuzz testing.")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09l37q5dql0q0zj8amlnrynajfvp1vrp846q5vgiwsbwz9b78f18"))))
+        (base32 "1a9kp4clk1ar6nqi5bj6ix7ip99y97x6ls60xs1hbq89aaj811j3"))))
     (build-system go-build-system)
     (arguments
      (list
