@@ -47,6 +47,7 @@
 ;;; Copyright © 2025 Danny Milosavljevic <dannym@friendly-machines.com>
 ;;; Copyright © 2025 Patrick Norton <patrick.147.norton@gmail.com>
 ;;; Copyright © 2025 Jared Klingenberger <jkling@noreply.codeberg.org>
+;;; Copyright © 2026 Carlos Durán Domínguez <wurt@wurt.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3280,7 +3281,7 @@ conditions, metamorphic tests can identify bugs without requiring an oracle.")
 (define-public go-github-com-coder-websocket
   (package
     (name "go-github-com-coder-websocket")
-    (version "1.8.13")
+    (version "1.8.14")
     (source
      (origin
        (method git-fetch)
@@ -3289,7 +3290,7 @@ conditions, metamorphic tests can identify bugs without requiring an oracle.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ycphyxz8ap0l3sbwii650wz2p0a0wy7swikxr1sb39m5mw2amdi"))
+        (base32 "15i1sri7ym9mhl5z6nlps7hhr874nprk1cdic0aq3v8g7fyqmh2w"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
