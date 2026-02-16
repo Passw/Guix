@@ -6,6 +6,7 @@
 ;;; Copyright © 2025 Nicolas Graves <ngraves@ngraves.fr>
 ;;; Copyright © 2025 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2025 Artyom V. Poptsov <poptsov.artyom@gmail.com>
+;;; Copyright © 2026 Cayetano Santos <csantosb@inventati.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,13 +164,16 @@ from a single ECU up to whole cars.")
 (define-public ropgadget
   (package
     (name "ropgadget")
-    (version "7.6")
+    (version "7.7")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "ropgadget" version))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/JonathanSalwan/ROPgadget/")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1hvl25j3fbiwihqa2p8a5i27h97pgspxp2ndwwn3l1r78r7cb0w8"))))
+        (base32 "0g87qz8hfiajl1v5z5rxama4531hi9gabzbgkhrbavjj7v3xgavw"))))
     (build-system pyproject-build-system)
     (arguments
      (list
