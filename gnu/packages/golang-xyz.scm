@@ -29704,7 +29704,7 @@ parsers.")
 (define-public go-modernc-org-sqlite
   (package
     (name "go-modernc-org-sqlite")
-    (version "1.38.2")
+    (version "1.45.0")
     (source
      (origin
        (method git-fetch)
@@ -29713,11 +29713,13 @@ parsers.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0579vip4vn488jppjpadryxyimkw2jr8ywr4j0piqcm2zs40h509"))))
+        (base32 "11zcdbzvr43k9vy5ygmz7kwf77i6aa63azr1zn797fkybdb40xgi"))))
     (build-system go-build-system)
     (arguments
      (list
       #:import-path "modernc.org/sqlite"
+      ;; There are too many tests, so it may take more than 10 minutes.
+      #:test-flags #~(list "-short")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'check 'post-check-remove-test-data
