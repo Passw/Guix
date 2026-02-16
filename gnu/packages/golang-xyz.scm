@@ -15645,7 +15645,7 @@ arbitrary array and maps types.")
 (define-public go-github-com-lestrrat-go-strftime
   (package
     (name "go-github-com-lestrrat-go-strftime")
-    (version "1.0.6")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
@@ -15654,7 +15654,7 @@ arbitrary array and maps types.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1iqzxmj3ijldjf99acy44qrrzvfxzn0vza3m0c9bw46bg8v1wsyc"))))
+        (base32 "0j1lhf4d1hw653ndlzks83pjidbn9h674s3si0ahpww5wx0gik75"))))
     (build-system go-build-system)
     (arguments
      (list
