@@ -29573,7 +29573,7 @@ with ccgo-generated code.")
 (define-public go-modernc-org-memory
   (package
     (name "go-modernc-org-memory")
-    (version "1.8.0")
+    (version "1.11.0")
     (source
      (origin
        (method git-fetch)
@@ -29582,13 +29582,14 @@ with ccgo-generated code.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "066pzk0i1jxahialzp97ra0k0f191y1756sgppiw50zkpnpwzjxr"))))
+        (base32 "0wvhv15f7f229gb2imr8lg8yh14kxh6z7kiywv91bbzgrcbrnk1j"))))
     (build-system go-build-system)
     (arguments
      (list
       #:import-path "modernc.org/memory"))
     (propagated-inputs
-     (list go-modernc-org-mathutil))
+     (list go-golang-org-x-sys
+           go-modernc-org-mathutil))
     (home-page "https://gitlab.com/cznic/memory")
     (synopsis "Memory allocator implementation")
     (description "Package memory implements a memory allocator.")
