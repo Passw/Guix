@@ -545,6 +545,37 @@ file along with an index.html file.")
      "Package go-scfg parses scfg files.")
     (license license:expat)))
 
+(define-public go-codeberg-org-emersion-go-sqlite-fts5
+  (package
+    (name "go-codeberg-org-emersion-go-sqlite-fts5")
+    (version "0.0.0-20250706114632-932c754e63a6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://codeberg.org/emersion/go-sqlite3-fts5")
+              (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "19pviwn83yr4lmqs0b7p7blglq8f7gahb1hbbkxifhk716izl5j0"))))
+    (build-system go-build-system)
+    ;; XXX: fts5.c, fts5.h, generate.sh, sqlite3.h and sqlite3ext.h are
+    ;; obtained from
+    ;; <https://www.sqlite.org/2023/sqlite-preprocessed-3440000.zip>, check if
+    ;; they may be sourced from sqlite package.
+    (arguments
+     (list
+      #:import-path "codeberg.org/emersion/go-sqlite3-fts5"))
+    (propagated-inputs
+     (list go-github-com-mattn-go-sqlite3))
+    (home-page "https://codeberg.org/emersion/go-sqlite3-fts5")
+    (synopsis "FTS5 extension for go-sqlite3")
+    (description
+     "Standalone FTS5 extension for @url{https://github.com/mattn/go-sqlite3,
+go-sqlite3}, that provides full-text search functionality to database
+applications.")
+    (license license:expat)))
+
 (define-public go-dario-cat-mergo
   (package
     (name "go-dario-cat-mergo")
