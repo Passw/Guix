@@ -16782,7 +16782,7 @@ the @code{cpan} module @code{Parse::CommandLine}.")
 (define-public go-github-com-mattn-go-sqlite3
   (package
     (name "go-github-com-mattn-go-sqlite3")
-    (version "1.14.22")
+    (version "1.14.34")
     (source
      (origin
        (method git-fetch)
@@ -16791,7 +16791,7 @@ the @code{cpan} module @code{Parse::CommandLine}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05fcdh6likz0hkvxnrkz3r3l5gzxfjh93w5015m9hs1wi6qpdqyb"))))
+        (base32 "0zp6v3y8hg6b02b3g63x4bmz56yl0d00akvzw6bsfc5l6m3pgiix"))))
     (build-system go-build-system)
     (arguments
      (list
