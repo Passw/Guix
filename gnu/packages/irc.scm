@@ -1199,7 +1199,7 @@ seen, tell, and what.")
 (define-public soju
   (package
     (name "soju")
-    (version "0.9.0")
+    (version "0.10.1")
     (source
      (origin
        (method git-fetch)
@@ -1208,12 +1208,16 @@ seen, tell, and what.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09d4h2rchhccrh6qhgqwbv0s1vsfzkmbv3j9f3ayaf9a9ml97d59"))))
+        (base32 "1hl6djraalpyn6dkf748g2564lbz1lrp8nqddnyjdy3bah87prch"))))
     (build-system go-build-system)
     (arguments
      (list
       #:install-source? #f
       #:import-path "codeberg.org/emersion/soju"
+      #:build-flags
+      #~(list "GOFLAGS=-v -x -trimpath -tags=pam -tags=libsqlite3"
+              (string-append "SYSCONFDIR=" (string-append #$output "/etc"))
+              (string-append "PREFIX=" #$output))
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'adjust-makefile
@@ -1227,22 +1231,17 @@ seen, tell, and what.")
                   ;; Prevent creating /var/lib/soju.
                   ((".*sharedstatedir.*") "")))))
           (replace 'build
-            (lambda* (#:key import-path #:allow-other-keys)
+            (lambda* (#:key import-path build-flags #:allow-other-keys)
               (with-directory-excursion (string-append "src/" import-path)
-                (setenv "GOFLAGS" "-v -x -trimpath -tags=pam")
-                (setenv "SYSCONFDIR" (string-append #$output "/etc"))
-                (invoke "make"))))
+                (apply invoke "make" build-flags))))
           (replace 'install
-            (lambda* (#:key import-path #:allow-other-keys)
+            (lambda* (#:key import-path build-flags #:allow-other-keys)
               (with-directory-excursion (string-append "src/" import-path)
-                (setenv "PREFIX" #$output)
-                (invoke "make" "install")))))
-      #:test-flags #~(list "-vet=off")))
+                (apply invoke "make" "install" build-flags)))))))
     (native-inputs
      (list go-codeberg-org-emersion-go-scfg
-           go-git-sr-ht-emersion-go-sqlite3-fts5
+           go-codeberg-org-emersion-go-sqlite-fts5
            go-git-sr-ht-sircmpwn-go-bare
-           go-github-com-sherclockholmes-webpush-go
            go-github-com-coder-websocket
            go-github-com-emersion-go-sasl
            go-github-com-lib-pq
@@ -1250,10 +1249,13 @@ seen, tell, and what.")
            go-github-com-msteinert-pam-v2
            go-github-com-pires-go-proxyproto
            go-github-com-prometheus-client-golang
+           go-github-com-sherclockholmes-webpush-go
            go-golang-org-x-crypto
            go-golang-org-x-time
            go-gopkg-in-irc-v4
-           scdoc))
+           go-modernc-org-sqlite
+           scdoc
+           sqlite))
     (home-page "https://soju.im/")
     (synopsis "User-friendly IRC bouncer")
     (description
