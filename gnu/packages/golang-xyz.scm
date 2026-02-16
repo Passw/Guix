@@ -29316,7 +29316,7 @@ Backus–Naur form, EBNF} grammars.")
 (define-public go-modernc-org-fileutil
   (package
     (name "go-modernc-org-fileutil")
-    (version "1.3.0")
+    (version "1.3.40")
     (source
      (origin
        (method git-fetch)
@@ -29325,7 +29325,7 @@ Backus–Naur form, EBNF} grammars.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "10q5xbik9yk9jw2ziq1fw0hpjfbv5h3qm7rlxlkwj0qxyyb7b9bi"))))
+        (base32 "1kpyqdqiwixv7qy6pq3zknz59zcsqhc3y4hrsn1aj0kgw9xhfr29"))))
     (build-system go-build-system)
     (arguments
      (list
