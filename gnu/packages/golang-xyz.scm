@@ -29598,7 +29598,7 @@ with ccgo-generated code.")
 (define-public go-modernc-org-opt
   (package
     (name "go-modernc-org-opt")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method git-fetch)
@@ -29607,7 +29607,7 @@ with ccgo-generated code.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02jih8lgcyrm2v0vagdmq298rvhqkwi4pswg4nwlksdiayw356p5"))))
+        (base32 "0rfh7qwg2j9kd7sgxs8nx6vbpikz5w1y7dpsv8hrkv74vp9v1854"))))
     (build-system go-build-system)
     (arguments
      (list
