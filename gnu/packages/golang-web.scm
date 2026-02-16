@@ -12559,20 +12559,24 @@ STUN, TURN mDNS candidates
 (define-public go-github-com-pires-go-proxyproto
   (package
     (name "go-github-com-pires-go-proxyproto")
-    (version "0.7.0")
+    (version "0.11.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/pires/go-proxyproto")
-             (commit (string-append "v" version))))
+              (url "https://github.com/pires/go-proxyproto")
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1p18w555xp187fl807h1yd092cvs8jarp98pa76zl84rxlk4k2h4"))))
+        (base32 "09m0c632kzclamsq225mcg8xkfd4nbssml4125jdyfh9j8dcrkpb"))))
     (build-system go-build-system)
     (arguments
      (list
-      #:import-path "github.com/pires/go-proxyproto"))
+      #:import-path "github.com/pires/go-proxyproto"
+      ;; protocol_test.go: TestParse_unixStream: unable to listen unix.
+      #:test-flags #~(list "-skip" "TestParse_unixStream")))
+    (propagated-inputs
+     (list go-golang-org-x-net))
     (home-page "https://github.com/pires/go-proxyproto")
     (synopsis "Implementation of the PROXY protocol")
     (description
