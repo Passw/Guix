@@ -16,7 +16,7 @@
 ;;; Copyright © 2017, 2020, 2026 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018–2022, 2024 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2018, 2020, 2022 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2018, 2020, 2022, 2026 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
@@ -7198,7 +7198,7 @@ direct replacement for @command{xvfb-run} specifically.
 (define-public xwayland-satellite
   (package
     (name "xwayland-satellite")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7207,7 +7207,7 @@ direct replacement for @command{xvfb-run} specifically.
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10g21lfxhym8wi2hsy7mdkhdk128myp5j1vy39vf2196zd8nvvwv"))))
+                "10m99vjms9wbx9p9qcq7sjcspxllmp82ddyiw4rpmhjscyy5cga3"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f
