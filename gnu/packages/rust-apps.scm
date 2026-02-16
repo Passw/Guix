@@ -3711,7 +3711,7 @@ window manager.")
 (define-public tealdeer
   (package
     (name "tealdeer")
-    (version "1.7.2")
+    (version "1.8.1")
     (source
      (origin
        ;; Completions aren't in the release tarball.
@@ -3722,7 +3722,7 @@ window manager.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0yy0cvbw3n16whnqqycr54w18kiv6jlc3v0pl0276zvn9mc7p4qr"))))
+         "1d3877y9g1v6gi8a326d6wfz7z52qkrl70zi5ry7ybh5q6jha6a3"))))
     (build-system cargo-build-system)
     (arguments
      `(#:phases
@@ -3753,12 +3753,13 @@ window manager.")
          "--skip=test_markdown_rendering"
          "--skip=test_spaces_find_command"
          "--skip=test_autoupdate_cache"
+         "--skip=test_update_language_arg"
          "--skip=test_update_cache"
          "--skip=test_create_cache_directory_path")))
     (native-inputs
      (list pkg-config))
     (inputs
-     (cons openssl (cargo-inputs 'tealdeer)))
+     (cargo-inputs 'tealdeer))
     (home-page "https://github.com/dbrgn/tealdeer/")
     (synopsis "Fetch and show tldr help pages for many CLI commands")
     (description
