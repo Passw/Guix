@@ -29675,7 +29675,7 @@ parsers.")
 (define-public go-modernc-org-sortutil
   (package
     (name "go-modernc-org-sortutil")
-    (version "1.2.0")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -29684,7 +29684,7 @@ parsers.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01s9vil8lvaz526x6q9f12h6vpc3jc8zvpag7knz1bdx9b15yljc"))))
+        (base32 "0f3vppg1bfinjym4xvnf4h23c1dvzgc5y99bhnfsiarkwd87nkd7"))))
     (build-system go-build-system)
     (arguments
      (list
