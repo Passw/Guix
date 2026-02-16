@@ -10,6 +10,7 @@
 ;;; Copyright © 2022, 2023 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2024 Abhishek Cherath <abhi@quic.us>
 ;;; Copyright © 2025 Juliana Sims <juli@incana.org>
+;;; Copyright © 2026 Konstantin Suntsov <protvin@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -160,6 +161,7 @@ engine that uses Wayland for graphics output.")
               ;; webkitgtk.
               "-DENABLE_MINIBROWSER=ON"
               "-DUSE_LIBBACKTRACE=OFF"  ; XXX: circular dependency
+              "-DUSE_SYSTEM_MALLOC=ON"
               ;; The default lib installation prefix is lib64.
               (string-append "-DLIB_INSTALL_DIR=" #$output "/lib")
               ;; XXX: WebKitGTK makes use of elogind's systemd-compatible
