@@ -15741,7 +15741,7 @@ individual fields based on tags.  It's an alternative fork of
 (define-public go-github-com-lib-pq
   (package
     (name "go-github-com-lib-pq")
-    (version "1.2.0")
+    (version "1.11.2")
     (source
      (origin
        (method git-fetch)
@@ -15750,7 +15750,7 @@ individual fields based on tags.  It's an alternative fork of
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08j1smm6rassdssdks4yh9aspa1dv1g5nvwimmknspvhx8a7waqz"))))
+        (base32 "0zw95nb1rv0j2748hpp20pk9j1cimpyj4sxam12sawsrkh3j25q3"))))
     (build-system go-build-system)
     (arguments
      (list
