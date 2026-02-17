@@ -1189,21 +1189,19 @@ formats (PDF/XML/CSV).")
 (define-public python-globus-sdk
   (package
     (name "python-globus-sdk")
-    (version "3.56.0")
+    (version "4.4.0")
     (source
      (origin
-       (method git-fetch)               ;no tests in PyPI archive
+       (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/globus/globus-sdk-python")
-             (commit version)))
+              (url "https://github.com/globus/globus-sdk-python")
+              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11nljda2ir4gna4xa5vkj5nzxnjwadkh97qplkk9nrj44szphnzw"))))
+        (base32 "1d0zw9dkpdhsf9zdg3nk6b55gqwzc3v2rj76nj7999hjmq8350vh"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      #:test-flags
-      #~(list "--numprocesses" (number->string (min 8 (parallel-job-count))))
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'check 'pre-check
@@ -1212,10 +1210,8 @@ formats (PDF/XML/CSV).")
      (list python-flaky
            python-pytest
            python-pytest-randomly
-           python-pytest-xdist
            python-responses
-           python-setuptools
-           python-wheel))
+           python-setuptools))
     (propagated-inputs
      (list python-cryptography
            python-importlib-resources
