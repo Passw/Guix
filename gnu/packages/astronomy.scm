@@ -3954,7 +3954,7 @@ monochromatic sequential colormaps like @code{blue}, @code{green}, and
 (define-public python-cobaya
   (package
     (name "python-cobaya")
-    (version "3.6")
+    (version "3.6.1")
     (source
      (origin
        (method git-fetch)
@@ -3963,14 +3963,17 @@ monochromatic sequential colormaps like @code{blue}, @code{green}, and
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jws7kb3578mgbimxxanbhzkrxpmcby0jqxq9zlf04i5ilqn4s6m"))))
+        (base32 "1y2nyqxrp9yd8yrpgpw79z72h60yzxzczn1yybg1cww18ll79pr5"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 76 passed, 3 skipped, 93 xfailed, 2 warnings
+      ;; tests: 76 passed, 3 skipped, 94 xfailed, 2 warnings
       #:test-flags
       #~(list "--numprocesses" (number->string (min 8 (parallel-job-count)))
               "--skip-not-installed"
+              ;; cobaya.component.ComponentNotFoundError: 'planckpr4lensing'
+              ;; could not be found. Tried loading internal and external
+              ;; classes. No component path was given.
               "-k" "not test_planck_NPIPE_p_CamSpec_camb and not test_grid")
       #:phases
       #~(modify-phases %standard-phases
