@@ -3193,6 +3193,46 @@ data received from multiple sensors.  The look and feel of graphs can be
 customized by using themes or by adding custom items and labels to them.")
     (license license:gpl3)))
 
+(define-public qtgraphs
+  (package
+    (name "qtgraphs")
+    (version "6.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (qt-url name version))
+              (sha256
+               (base32
+                "0wsa4iar52dhiilyl053j7lmsw3xdn47b0pjrylb5a0ij1izp057"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:configure-flags
+           #~(list "-DQT_BUILD_TESTS=ON")
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-before 'check 'set-display
+                 (lambda _
+                   ;; Make Qt render "offscreen", required for tests.
+                   (setenv "QT_QPA_PLATFORM" "offscreen")))
+               (add-after 'install 'delete-installed-tests
+                 (lambda _
+                   (delete-file-recursively (string-append #$output
+                                                           "/tests"))))
+               (delete 'check) ;; move after the install phase
+               (add-after 'install 'check
+                 (assoc-ref %standard-phases 'check))
+               (add-before 'check 'set-QML_IMPORT_PATH
+                 (lambda _
+                   (setenv
+                    "QML_IMPORT_PATH"
+                    (string-append #$output "/lib/qt6/qml:"
+                                   (getenv "QML_IMPORT_PATH"))))))))
+    (inputs (list qtbase qtdeclarative qtquick3d qtshadertools))
+    (synopsis "Qt Graphs module")
+    (description "The Qt Graphs module enables you to visualize data in 2D and
+3D graphs.")
+    (home-page (package-home-page qtbase))
+    (license (package-license qtbase))))
+
 (define-public qtnetworkauth-5
   (package (inherit qtsvg-5)
     (name "qtnetworkauth")
