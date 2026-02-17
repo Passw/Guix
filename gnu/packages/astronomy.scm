@@ -2497,13 +2497,13 @@ specification.")
 (define-public python-astlib
   (package
     (name "python-astlib")
-    (version "0.13.1")
+    (version "0.13.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astlib" version))
        (sha256
-        (base32 "0iffjk05gm0kdksjw4kx3g231rq0dmp1vgvidj42bznfjq1z3iag"))))
+        (base32 "0kaqb6k5rsgggg8k00x30s8055l2w6f70bsqpqv82lgnrdwgkx7j"))))
     (build-system pyproject-build-system)
     (native-inputs
      (list python-pytest
