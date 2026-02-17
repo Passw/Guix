@@ -4610,14 +4610,15 @@ used with local NetDRMS sites.")
 (define-public python-dust-extinction
   (package
     (name "python-dust-extinction")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dust_extinction" version))
        (sha256
-        (base32 "01iap2k49izn53v23kwkkpr5j5xhgk79xlwx6cb6h5ng29274nq5"))))
+        (base32 "0r0hm0x750712m3v0qkl9i1hj28zq12d8bhjk8pfh8n68kyfl8f4"))))
     (build-system pyproject-build-system)
+    ;; tests: 365 passed, 41 skipped, 75 warnings
     (native-inputs
      (list python-pytest
            python-pytest-doctestplus
