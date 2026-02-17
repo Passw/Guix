@@ -8323,30 +8323,26 @@ wiggles are caused by resampling noise or aliasing artifacts.")
 (define-public python-rad
   (package
     (name "python-rad")
-    (version "0.29.0")
+    (version "0.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rad" version))
        (sha256
-        (base32 "1v28wm4lggk8lj8vlzf059v01mny7vk5njhmyyg4f8bl5syrj5qy"))))
+        (base32 "14zij7jbvpzc0i3h22n35b432j2a8dw5mrg4da1ph3c69hxs6cqq"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 1886 passed, 1 skipped, 17 xfailed
+      ;; tests: 5253 passed, 159 skipped, 21 xfailed
       #:test-flags
-      ;; Ignore tests requiring python-crds to break cycle:
-      ;; python-rad -> python-roman-datamodels -> python-crds -> python-rad
-      #~(list "--ignore=tests/test_schemas.py"
-              ;; E   git.exc.InvalidGitRepositoryError
-              "--ignore=tests/test_versioning.py"
-              ;; E TypeError: the JSON object must be str, bytes or bytearray,
-              ;; not NoneType
-              "--ignore=tests/test_latest.py")))
+      ;; Tests try to detec version by Git tag.
+      #~(list "--ignore=tests/test_versioning.py")))
     (native-inputs
      (list python-pytest
+           python-crds-minimal
            python-pytest-asdf-plugin
            python-pytest-doctestplus
+           python-deepdiff
            python-semantic-version
            python-setuptools
            python-setuptools-scm))
