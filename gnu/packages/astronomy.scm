@@ -3062,13 +3062,13 @@ constraints (i.e., altitude, airmass, moon separation/illumination, etc.)
 (define-public python-astropy
   (package
     (name "python-astropy")
-    (version "7.1.1")
+    (version "7.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astropy" version))
        (sha256
-        (base32 "1y5hip9pkndx13yrq9ssw4gcmr6hz65ld11l25q4zhz20l08y4kd"))
+        (base32 "0w1hih745aw76zqvfcg9bw8pl4rrmahizgclrl1vdbpyn4kbqj5f"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3084,17 +3084,11 @@ constraints (i.e., altitude, airmass, moon separation/illumination, etc.)
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 29347 passed, 373 skipped, 233 xfailed, 32 warnings
+      ;; tests: 31207 passed, 443 skipped, 226 xfailed
       #:test-flags
       #~(list "--pyargs" "astropy"
               ;; XXX: Tests are not thread save when they are more than 8.
-              "--numprocesses" (number->string (min 8 (parallel-job-count)))
-              "-k" (string-append
-                    ;; Fails with  assert 13 == 1.
-                    "not test_skip_meta"
-                    ;; Failed: DID NOT WARN. No warnings of type (<class
-                    ;; 'ResourceWarning'>,) were emitted.
-                    " and not test_ephemeris_local_file_not_ephemeris"))
+              "--numprocesses" (number->string (min 8 (parallel-job-count))))
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'install-coordinates/sites.json
@@ -3117,22 +3111,15 @@ constraints (i.e., altitude, airmass, moon separation/illumination, etc.)
               ;; Replace reference to external configobj.
               (substitute* "astropy/config/configuration.py"
                 (("from astropy.extern.configobj ") ""))))
-          ;; This file is opened in both install and check phases.
-          (add-before 'install 'writable-compiler
+          (add-before 'check 'pre-check
             (lambda _
-              (make-file-writable "astropy/_compiler.c")))
-          (replace 'check
-            (lambda* (#:key tests? test-flags #:allow-other-keys)
-              (when tests?
-                (setenv "HOME" "/tmp")
-                (setenv "OMP_NUM_THREADS" "1")
-                ;; Step out of the source directory to avoid interference; we
-                ;; want to run the installed code with extensions etc.
-                (with-directory-excursion #$output
-                  (apply invoke "pytest" "-vv" test-flags))))))))
+              (delete-file-recursively "astropy")
+              (setenv "HOME" "/tmp")
+              (setenv "OMP_NUM_THREADS" "1"))))))
     (native-inputs
      (list nss-certs-for-test
            pkg-config
+           python-array-api-strict
            python-cython
            python-extension-helpers
            python-objgraph
@@ -3158,15 +3145,6 @@ constraints (i.e., altitude, airmass, moon separation/illumination, etc.)
            python-pyerfa
            python-pyyaml
            ;; [optional]
-           python-matplotlib
-           python-scipy
-           ;; python-ipydatagrid         ;no packaged
-           python-ipykernel
-           python-ipython
-           python-ipywidgets
-           python-jupyter-core
-           python-pandas
-           python-asdf
            python-asdf-astropy
            python-beautifulsoup4
            python-bleach
@@ -3176,12 +3154,20 @@ constraints (i.e., altitude, airmass, moon separation/illumination, etc.)
            python-fsspec
            python-h5py
            python-html5lib
+           ;; python-ipydatagrid   ;not packaged yet in Guix
+           python-ipykernel
+           python-ipython
+           python-ipywidgets
            python-jplephem
+           python-jupyter-core
+           python-matplotlib
            python-mpmath
+           python-narwhals
            python-pandas
            python-pyarrow
            python-pytz
            python-s3fs
+           python-scipy
            python-sortedcontainers
            python-uncompresspy))
     (home-page "https://www.astropy.org/")
