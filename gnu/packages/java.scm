@@ -906,274 +906,271 @@ new Date();"))))
     (build-system gnu-build-system)
     (outputs '("out" "jdk" "doc"))
     (arguments
-     `(#:imported-modules
-       ((guix build ant-build-system)
-        ,@%default-gnu-imported-modules)
-       #:modules
-       ((guix build utils)
-        (guix build gnu-build-system)
-        (ice-9 popen))
-       #:tests? #f                      ; require jtreg
-       #:make-flags '("all")
-       #:disallowed-references
-       ,(list (this-package-native-input "icedtea")
-              (gexp-input (this-package-native-input "icedtea") "jdk"))
+     (list
+      #:imported-modules
+      (cons '(guix build ant-build-system)
+            %default-gnu-imported-modules)
+      #:modules
+      (append '((ice-9 match)
+                (ice-9 popen)
+                (srfi srfi-1)
+                (srfi srfi-26))
+              %default-gnu-modules)
+      #:tests? #f                       ; require jtreg
+      #:make-flags #~(list "all")
+      #:disallowed-references
+      (list (this-package-native-input "icedtea")
+            (gexp-input (this-package-native-input "icedtea") "jdk"))
 
-       #:phases
-       (modify-phases %standard-phases
-         ,@(if (target-aarch64?)
-               `((add-after 'unpack 'patch-for-aarch64
-                   (lambda _
-                     (substitute* "hotspot/src/cpu/aarch64/vm/interp_masm_aarch64.hpp"
-                       ;; This line is duplicated, so remove both occurrences,
-                       ;; then add back one occurrence by substituting a
-                       ;; comment that occurs once.
-                       (("using MacroAssembler::call_VM_leaf_base;") "")
-                       (("Interpreter specific version of call_VM_base")
-                        "Interpreter specific version of call_VM_base
+      #:phases
+      #~(modify-phases %standard-phases
+          #$@(if (target-aarch64?)
+                 #~((add-after 'unpack 'patch-for-aarch64
+                      (lambda _
+                        (substitute* "hotspot/src/cpu/aarch64/vm/interp_masm_aarch64.hpp"
+                          ;; This line is duplicated, so remove both occurrences,
+                          ;; then add back one occurrence by substituting a
+                          ;; comment that occurs once.
+                          (("using MacroAssembler::call_VM_leaf_base;") "")
+                          (("Interpreter specific version of call_VM_base")
+                           "Interpreter specific version of call_VM_base
   using MacroAssembler::call_VM_leaf_base;")))))
-               '())
-         (add-after 'patch-source-shebangs 'fix-java-shebangs
-           (lambda _
-             ;; This file was "fixed" by patch-source-shebangs, but it requires
-             ;; this exact first line.
-             (substitute* "jdk/make/data/blacklistedcertsconverter/blacklisted.certs.pem"
-               (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))))
-         (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; TODO: unbundle libpng and lcms
-             (invoke "bash" "./configure"
-                     ;; Add flags for compilation with gcc >= 10
-                     ,(string-append "--with-extra-cflags=-fcommon"
+                 #~())
+          (add-after 'patch-source-shebangs 'fix-java-shebangs
+            (lambda _
+              ;; This file was "fixed" by patch-source-shebangs, but it requires
+              ;; this exact first line.
+              (substitute* "jdk/make/data/blacklistedcertsconverter/blacklisted.certs.pem"
+                (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))))
+          (replace 'configure
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; TODO: unbundle libpng and lcms
+              (invoke "bash" "./configure"
+                      ;; Add flags for compilation with gcc >= 10
+                      (string-append "--with-extra-cflags=-fcommon"
                                      " -fno-delete-null-pointer-checks"
                                      " -fno-lifetime-dse"
                                      ;; flags for compilation with gcc >= 14.
                                      " -Wno-error=int-conversion")
-                     (string-append "--with-freetype="
-                                    (assoc-ref inputs "freetype"))
-                     "--disable-freetype-bundling"
-                     "--disable-warnings-as-errors"
-                     "--disable-hotspot-gtest"
-                     "--with-giflib=system"
-                     "--with-libjpeg=system"
-                     (string-append "--prefix=" (assoc-ref outputs "out")))))
-         (add-before 'build 'write-source-revision-file
-           (lambda _
-             (with-output-to-file ".src-rev"
-               (lambda _
-                 (display ,version)))))
-         (replace 'build
-           (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
-             (apply invoke "make"
-                    `(,@(if parallel-build?
-                            (list (string-append "JOBS="
-                                                 (number->string (parallel-job-count))))
-                            '("JOBS=1"))
-                      ,@make-flags))))
-         (add-after 'unpack 'patch-jni-libs
-           ;; Hardcode dynamically loaded libraries.
-           (lambda _
-             (define remove
-               (@ (srfi srfi-1) remove))
+                      (string-append "--with-freetype="
+                                     (assoc-ref inputs "freetype"))
+                      "--disable-freetype-bundling"
+                      "--disable-warnings-as-errors"
+                      "--disable-hotspot-gtest"
+                      "--with-giflib=system"
+                      "--with-libjpeg=system"
+                      (string-append "--prefix=" #$output))))
+          (add-before 'build 'write-source-revision-file
+            (lambda _
+              (with-output-to-file ".src-rev"
+                (lambda _
+                  (display #$(package-version this-package))))))
+          (replace 'build
+            (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+              (apply invoke "make"
+                     (format #f "JOBS=~a" (if parallel-build?
+                                              (parallel-job-count)
+                                              1))
+                     make-flags)))
+          (add-after 'unpack 'patch-jni-libs
+            ;; Hardcode dynamically loaded libraries.
+            (lambda _
+              (define (icedtea-or-openjdk? path)
+                (or (string-contains path "openjdk")
+                    (string-contains path "icedtea")))
 
-             (define (icedtea-or-openjdk? path)
-               (or (string-contains path "openjdk")
-                   (string-contains path "icedtea")))
+              (let* ((library-path (remove icedtea-or-openjdk?
+                                           (search-path-as-string->list
+                                            (getenv "LIBRARY_PATH"))))
+                     (find-library (lambda (name)
+                                     (or (search-path
+                                          library-path
+                                          (string-append "lib" name ".so"))
+                                         (string-append "lib" name ".so")))))
+                (for-each
+                 (lambda (file)
+                   (catch 'decoding-error
+                     (lambda ()
+                       (substitute* file
+                         (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
+                           _ name version)
+                          (string-append "\"" (find-library name) "\""))
+                         (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
+                          (string-append "\"" (find-library name) "\""))))
+                     (lambda _
+                       ;; Those are safe to skip.
+                       (format (current-error-port)
+                               "warning: failed to substitute: ~a~%"
+                               file))))
+                 (find-files "."
+                             "\\.c$|\\.h$")))))
+          ;; By default OpenJDK only generates an empty keystore.  In order to
+          ;; be able to use certificates in Java programs we need to generate a
+          ;; keystore from a set of certificates.  For convenience we use the
+          ;; certificates from the nss-certs package.
+          (add-after 'install 'install-keystore
+            (lambda* (#:key inputs #:allow-other-keys)
+              (use-modules (ice-9 rdelim))
+              (let* ((keystore  "cacerts")
+                     (certs-dir (search-input-directory inputs
+                                                        "etc/ssl/certs"))
+                     (keytool   (string-append #$output:jdk "/bin/keytool")))
+                (define (extract-cert file target)
+                  (call-with-input-file file
+                    (lambda (in)
+                      (call-with-output-file target
+                        (lambda (out)
+                          (let loop ((line (read-line in 'concat))
+                                     (copying? #f))
+                            (cond
+                             ((eof-object? line) #t)
+                             ((string-prefix? "-----BEGIN" line)
+                              (display line out)
+                              (loop (read-line in 'concat) #t))
+                             ((string-prefix? "-----END" line)
+                              (display line out)
+                              #t)
+                             (else
+                              (when copying? (display line out))
+                              (loop (read-line in 'concat) copying?)))))))))
+                (define (import-cert cert)
+                  (format #t "Importing certificate ~a\n" (basename cert))
+                  (let ((temp "tmpcert"))
+                    (extract-cert cert temp)
+                    (let ((port (open-pipe* OPEN_WRITE keytool
+                                            "-import"
+                                            "-alias" (basename cert)
+                                            "-keystore" keystore
+                                            "-storepass" "changeit"
+                                            "-file" temp)))
+                      (display "yes\n" port)
+                      (when (not (zero? (status:exit-val (close-pipe port))))
+                        (format #t "failed to import ~a\n" cert)))
+                    (delete-file temp)))
 
-             (let* ((library-path (remove icedtea-or-openjdk?
-                                          (search-path-as-string->list
-                                           (getenv "LIBRARY_PATH"))))
-                    (find-library (lambda (name)
-                                    (or (search-path
-                                         library-path
-                                         (string-append "lib" name ".so"))
-                                        (string-append "lib" name ".so")))))
-               (for-each
-                (lambda (file)
-                  (catch 'decoding-error
-                    (lambda ()
-                      (substitute* file
-                        (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
-                          _ name version)
-                         (string-append "\"" (find-library name) "\""))
-                        (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                         (string-append "\"" (find-library name) "\""))))
-                    (lambda _
-                      ;; Those are safe to skip.
-                      (format (current-error-port)
-                              "warning: failed to substitute: ~a~%"
-                              file))))
-                (find-files "."
-                            "\\.c$|\\.h$")))))
-         ;; By default OpenJDK only generates an empty keystore.  In order to
-         ;; be able to use certificates in Java programs we need to generate a
-         ;; keystore from a set of certificates.  For convenience we use the
-         ;; certificates from the nss-certs package.
-         (add-after 'install 'install-keystore
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (use-modules (ice-9 rdelim))
-             (let* ((keystore  "cacerts")
-                    (certs-dir (search-input-directory inputs
-                                                       "etc/ssl/certs"))
-                    (keytool   (string-append (assoc-ref outputs "jdk")
-                                              "/bin/keytool")))
-               (define (extract-cert file target)
-                 (call-with-input-file file
-                   (lambda (in)
-                     (call-with-output-file target
-                       (lambda (out)
-                         (let loop ((line (read-line in 'concat))
-                                    (copying? #f))
-                           (cond
-                            ((eof-object? line) #t)
-                            ((string-prefix? "-----BEGIN" line)
-                             (display line out)
-                             (loop (read-line in 'concat) #t))
-                            ((string-prefix? "-----END" line)
-                             (display line out)
-                             #t)
-                            (else
-                             (when copying? (display line out))
-                             (loop (read-line in 'concat) copying?)))))))))
-               (define (import-cert cert)
-                 (format #t "Importing certificate ~a\n" (basename cert))
-                 (let ((temp "tmpcert"))
-                   (extract-cert cert temp)
-                   (let ((port (open-pipe* OPEN_WRITE keytool
-                                           "-import"
-                                           "-alias" (basename cert)
-                                           "-keystore" keystore
-                                           "-storepass" "changeit"
-                                           "-file" temp)))
-                     (display "yes\n" port)
-                     (when (not (zero? (status:exit-val (close-pipe port))))
-                       (format #t "failed to import ~a\n" cert)))
-                   (delete-file temp)))
+                ;; This is necessary because the certificate directory contains
+                ;; files with non-ASCII characters in their names.
+                (setlocale LC_ALL "C.UTF-8")
+                (setenv "LC_ALL" "C.UTF-8")
 
-               ;; This is necessary because the certificate directory contains
-               ;; files with non-ASCII characters in their names.
-               (setlocale LC_ALL "C.UTF-8")
-               (setenv "LC_ALL" "C.UTF-8")
+                (copy-file (string-append #$output
+                                          "/lib/security/cacerts")
+                           keystore)
+                (chmod keystore #o644)
+                (for-each import-cert (find-files certs-dir "\\.pem$"))
+                (mkdir-p (string-append #$output "/lib/security"))
+                (mkdir-p (string-append #$output:jdk "/lib/security"))
 
-               (copy-file (string-append (assoc-ref outputs "out")
-                                         "/lib/security/cacerts")
-                          keystore)
-               (chmod keystore #o644)
-               (for-each import-cert (find-files certs-dir "\\.pem$"))
-               (mkdir-p (string-append (assoc-ref outputs "out")
-                                       "/lib/security"))
-               (mkdir-p (string-append (assoc-ref outputs "jdk")
-                                       "/lib/security"))
+                ;; The cacerts files we are going to overwrite are chmod'ed as
+                ;; read-only (444) in icedtea-8 (which derives from this
+                ;; package).  We have to change this so we can overwrite them.
+                (chmod (string-append #$output
+                                      "/lib/security/" keystore) #o644)
+                (chmod (string-append #$output:jdk
+                                      "/lib/security/" keystore) #o644)
 
-               ;; The cacerts files we are going to overwrite are chmod'ed as
-               ;; read-only (444) in icedtea-8 (which derives from this
-               ;; package).  We have to change this so we can overwrite them.
-               (chmod (string-append (assoc-ref outputs "out")
-                                     "/lib/security/" keystore) #o644)
-               (chmod (string-append (assoc-ref outputs "jdk")
-                                     "/lib/security/" keystore) #o644)
-
-               (install-file keystore
-                             (string-append (assoc-ref outputs "out")
-                                            "/lib/security"))
-               (install-file keystore
-                             (string-append (assoc-ref outputs "jdk")
-                                            "/lib/security")))))
-         ;; Some of the libraries in the lib/ folder link to libjvm.so.
-         ;; But that shared object is located in the server/ folder, so it
-         ;; cannot be found.  This phase creates a symbolic link in the
-         ;; lib/ folder so that the other libraries can find it.
-         ;;
-         ;; See:
-         ;; https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00169.html
-         ;;
-         ;; FIXME: Find the bug in the build system, so that this symlink is
-         ;; not needed.
-         (add-after 'install 'install-libjvm
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((lib-out (string-append (assoc-ref outputs "out")
-                                            "/lib"))
-                    (lib-jdk (string-append (assoc-ref outputs "jdk")
-                                            "/lib")))
-               (symlink (string-append lib-jdk "/server/libjvm.so")
-                        (string-append lib-jdk "/libjvm.so"))
-               (symlink (string-append lib-out "/server/libjvm.so")
-                        (string-append lib-out "/libjvm.so")))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (jdk (assoc-ref outputs "jdk"))
-                   (doc (assoc-ref outputs "doc"))
-                   (images (car (find-files "build" ".*-server-release"
-                                            #:directories? #t))))
-               (copy-recursively (string-append images "/images/jdk") jdk)
-               (copy-recursively (string-append images "/images/jre") out)
-               (copy-recursively (string-append images "/images/docs") doc))))
-         (add-after 'install 'strip-zip-timestamps
-           (lambda* (#:key outputs #:allow-other-keys)
-             (for-each
-              (lambda (zip)
-                (let ((dir (mkdtemp "zip-contents.XXXXXX")))
-                  (with-directory-excursion dir
-                    ;; This is an exact copy of the implementation of invoke,
-                    ;; but this accepts exit code 1 as OK.
-                    (let ((code (system* "unzip" "--" zip)))
-                      ;; jmod files are zip files with an extra header in
-                      ;; front.  unzip will warn about that -- but otherwise
-                      ;; work.
-                      (when (> (status:exit-val code) 1) ; 1 is just a warning
-                        (raise
-                         (condition
-                          (&invoke-error
-                           (program "unzip")
-                           (arguments (list "--" zip))
-                           (exit-status (status:exit-val code))
-                           (term-signal (status:term-sig code))
-                           (stop-signal (status:stop-sig code))))))))
-                  (delete-file zip)
-                  (for-each (lambda (file)
-                              (let ((s (lstat file)))
-                                (format #t "reset ~a~%" file)
-                                (utime file 1 1 0 0
-                                       AT_SYMLINK_NOFOLLOW)))
-                            (find-files dir #:directories? #t))
-                  (with-directory-excursion dir
-                    (let ((files (cons "./META-INF/MANIFEST.MF"
-                                       (append
-                                        (find-files "./META-INF" ".*")
-                                        ;; for jmod:
-                                        (list "./classes/module-info.class")
-                                        (find-files "." ".*")))))
-                      (apply invoke "zip" "--symlinks" "-0" "-X" zip files)
-                      (when (string-suffix? ".jmod" zip)
-                        (let ((new-zip (string-append zip "n"))
-                              (contents (call-with-input-file zip
-                                          (@ (ice-9 binary-ports)
-                                             get-bytevector-all))))
-                          (call-with-output-file new-zip
-                            (lambda (output-port)
-                              ((@ (ice-9 binary-ports) put-bytevector)
-                               output-port
-                               #vu8(#x4a #x4d #x01 #x00)) ; JM
-                              ((@ (ice-9 binary-ports) put-bytevector)
-                               output-port
-                               contents)))
-                          (rename-file new-zip zip)))))))
-              (append (find-files (string-append
-                                   (assoc-ref outputs "doc")
-                                   "/api")
-                                  "\\.zip$")
-                      (find-files (assoc-ref outputs "doc") "src\\.zip$")
-                      (find-files (assoc-ref outputs "jdk") "src\\.zip$")
-                      (find-files (assoc-ref outputs "jdk") "\\.jmod$")
-                      (find-files (assoc-ref outputs "jdk") "\\.diz$")
-                      (find-files (assoc-ref outputs "out") "\\.diz$")
-
-                      (list (string-append (assoc-ref outputs "jdk")
-                                           "/lib/jrt-fs.jar"))
-                      (find-files (string-append (assoc-ref outputs "jdk")
-                                                 "/demo")
-                                  "\\.jar$"))))))))
+                (install-file keystore
+                              (string-append #$output
+                                             "/lib/security"))
+                (install-file keystore
+                              (string-append #$output:jdk
+                                             "/lib/security")))))
+          ;; Some of the libraries in the lib/ folder link to libjvm.so.
+          ;; But that shared object is located in the server/ folder, so it
+          ;; cannot be found.  This phase creates a symbolic link in the
+          ;; lib/ folder so that the other libraries can find it.
+          ;;
+          ;; See:
+          ;; https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00169.html
+          ;;
+          ;; FIXME: Find the bug in the build system, so that this symlink is
+          ;; not needed.
+          (add-after 'install 'install-libjvm
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let* ((lib-out (string-append #$output "/lib"))
+                     (lib-jdk (string-append #$output:jdk "/lib")))
+                (symlink (string-append lib-jdk "/server/libjvm.so")
+                         (string-append lib-jdk "/libjvm.so"))
+                (symlink (string-append lib-out "/server/libjvm.so")
+                         (string-append lib-out "/libjvm.so")))))
+          (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((images (car (find-files "build" ".*-server-release"
+                                             #:directories? #t))))
+                (copy-recursively (string-append images "/images/jdk")
+                                  #$output:jdk)
+                (copy-recursively (string-append images "/images/jre") #$output)
+                (copy-recursively (string-append images "/images/docs")
+                                  #$output:doc))))
+          (add-after 'install 'remove-extraneous-files
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; Remove the *.diz and src.zip files for space considerations.
+              ;; The former are compressed debuginfo files not typically
+              ;; shipped with Java distributions, while the later corresponds
+              ;; to Java core API source files.
+              (for-each delete-file
+                        (append-map (cut find-files <> "(^src\\.zip|\\.diz)$")
+                                    (map (match-lambda
+                                           ((name . dir)
+                                            dir))
+                                         outputs)))))
+          (add-after 'remove-extraneous-files 'strip-zip-timestamps
+            (lambda* (#:key outputs #:allow-other-keys)
+              (for-each
+               (lambda (zip)
+                 (let ((dir (mkdtemp "zip-contents.XXXXXX")))
+                   (with-directory-excursion dir
+                     ;; This is an exact copy of the implementation of invoke,
+                     ;; but this accepts exit code 1 as OK.
+                     (let ((code (system* "unzip" "--" zip)))
+                       ;; jmod files are zip files with an extra header in
+                       ;; front.  unzip will warn about that -- but otherwise
+                       ;; work.
+                       (when (> (status:exit-val code) 1) ; 1 is just a warning
+                         (raise
+                          (condition
+                           (&invoke-error
+                            (program "unzip")
+                            (arguments (list "--" zip))
+                            (exit-status (status:exit-val code))
+                            (term-signal (status:term-sig code))
+                            (stop-signal (status:stop-sig code))))))))
+                   (delete-file zip)
+                   (for-each (lambda (file)
+                               (let ((s (lstat file)))
+                                 (format #t "reset ~a~%" file)
+                                 (utime file 1 1 0 0
+                                        AT_SYMLINK_NOFOLLOW)))
+                             (find-files dir #:directories? #t))
+                   (with-directory-excursion dir
+                     (let ((files (cons "./META-INF/MANIFEST.MF"
+                                        (append
+                                         (find-files "./META-INF" ".*")
+                                         ;; for jmod:
+                                         (list "./classes/module-info.class")
+                                         (find-files "." ".*")))))
+                       (apply invoke "zip" "--symlinks" "-0" "-X" zip files)
+                       (when (string-suffix? ".jmod" zip)
+                         (let ((new-zip (string-append zip "n"))
+                               (contents (call-with-input-file zip
+                                           (@ (ice-9 binary-ports)
+                                              get-bytevector-all))))
+                           (call-with-output-file new-zip
+                             (lambda (output-port)
+                               ((@ (ice-9 binary-ports) put-bytevector)
+                                output-port
+                                #vu8(#x4a #x4d #x01 #x00)) ; JM
+                               ((@ (ice-9 binary-ports) put-bytevector)
+                                output-port
+                                contents)))
+                           (rename-file new-zip zip)))))))
+               (append (find-files (string-append #$output:doc "/api")
+                                   "\\.zip$")
+                       (find-files #$output:jdk "\\.jmod$")
+                       (list (string-append #$output:jdk
+                                            "/lib/jrt-fs.jar"))
+                       (find-files (string-append #$output:jdk "/demo")
+                                   "\\.jar$"))))))))
     (inputs
      (list alsa-lib
            cups
