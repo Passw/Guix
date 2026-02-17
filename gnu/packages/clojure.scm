@@ -423,9 +423,9 @@ designs.")
                    (let ((coreutils (assoc-ref inputs "coreutils-minimal"))
                          (jdk (assoc-ref inputs "openjdk")))
                      (wrap-script (string-append #$output "/bin/clojure")
-                       `("JAVA_HOME" = (,jdk))
-                       ;; Ensure that coreutils is accessible.
-                       `("PATH" suffix (,(string-append coreutils "/bin"))))))))))
+                       ;; Ensure that coreutils and java are accessible.
+                       `("PATH" suffix (,(string-append coreutils "/bin")
+                                        ,(string-append jdk "/bin"))))))))))
     (inputs (list clojure
                   clojure-tools-deps
                   coreutils-minimal
