@@ -2381,17 +2381,17 @@ implementation package such as asdf-astropy.")
 (define-public python-asdf-standard
   (package
     (name "python-asdf-standard")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "asdf_standard" version))
        (sha256
-        (base32 "1p7x5j8ym70c2cmgnv0113i4q465jbrqg8311mwbfz5q1lfi4pqc"))))
+        (base32 "0rjrzqrqx18k3qkkrnyif62y837lqxrl6j1lyrr9zws3s7vwlhjr"))))
     (build-system pyproject-build-system)
+    ;; tests: 470 passed, 19 skipped
     (native-inputs
      (list python-asdf-bootstrap
-           python-asdf-transform-schemas-bootstrap
            python-packaging
            python-pytest
            python-pytest-asdf-plugin
@@ -2440,18 +2440,6 @@ up-front for extensibility.")
 Users should not need to install this directly; instead, install an
 implementation package such as asdf-astropy.")
     (license license:bsd-3)))
-
-(define-public python-asdf-transform-schemas-bootstrap
-  (hidden-package
-   (package/inherit python-asdf-transform-schemas
-     (arguments
-      (list #:tests? #f
-            #:phases #~(modify-phases %standard-phases
-                         (delete 'sanity-check))))
-     (native-inputs
-      (list python-setuptools
-            python-wheel))
-     (propagated-inputs '()))))
 
 (define-public python-asdf-wcs-schemas
   (package
