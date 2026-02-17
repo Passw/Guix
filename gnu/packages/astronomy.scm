@@ -5966,17 +5966,17 @@ observationally-derived galaxy merger catalogs.")
 (define-public python-irispy-lmsal
   (package
     (name "python-irispy-lmsal")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "irispy_lmsal" version))
        (sha256
-        (base32 "131n2wvb5pdg0qx5chfwkcvcy025840cs01pvcg5i4nlqv995h1q"))))
+        (base32 "0mri5l1xwwzibzfq2fywzwb8kv3xm9yv9f3qfv31zac2fd1xzbna"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 65 passed, 2 skipped, 9 deselected
+      ;; tests: 67 passed, 2 skipped, 7 deselected
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'sanity-check 'set-home
