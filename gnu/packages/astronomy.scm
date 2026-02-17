@@ -2617,44 +2617,64 @@ astronomical images, especially when there is no WCS information available.")
 (define-public python-astrocut
   (package
     (name "python-astrocut")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astrocut" version))
        (sha256
-        (base32 "1i8cpghk31cds9ipgap2ffws7jqy0smgk6w6kihxwpcw34jkr8h4"))))
+        (base32 "1mq8vwjyinzzvmaadmn5ijj6618qa90w4nyq8iszw2zz0fq13028"))))
     (build-system pyproject-build-system)
     (arguments
      (list
+      ;; tests: 126 passed, 2 skipped, 39 deselected, 1 xfailed, 205 warnings
       #:test-flags
-      #~(list "-k" (string-join
-                    ;; Tests requiring network access.
-                    (list "not index.rst"
-                          "test_cube_cut_from_footprint"
-                          "test_fits_cut[SPOC]"
-                          "test_fits_cut[TICA]"
-                          "test_fits_cutout_cloud"
-                          "test_multithreading"
-                          "test_s3_cube_cut"
-                          "test_tess_cube_cutout_s3"
-                          "test_tess_cube_cutout_threads"
-                          "test_tess_footprint_cutout[SPOC]"
-                          "test_tess_footprint_cutout[TICA]"
-                          "test_tess_footprint_cutout_all_sequences"
-                          "test_tess_footprint_cutout_invalid_sequence"
-                          "test_tess_footprint_cutout_multi_sequence"
-                          "test_tess_footprint_cutout_outside_coords"
-                          "test_tess_footprint_cutout_write_as_tpf"
-                          ;; Some NumPy compatability errors during tests.
-                          "test_get_cutout_limits"
-                          "test_get_cutout_wcs"
-                          ;; botocore.exceptions.EndpointConnectionError:
-                          ;; Could not connect to the endpoint URL:
-                          ;; "https://stpubdata.s3.amazonaws.com/tess/public/\
-                          ;; footprints/tess_ffi_footprint_cache.json"
-                          "test_tess_footprint_cutout")
-                    " and not "))
+      #~(list "--deselect=docs/astrocut/index.rst::index.rst"
+              #$@(map (lambda (ls)
+                        (string-append "--deselect="
+                                       "astrocut/tests/"
+                                       (string-join ls "::")))
+                      ;; botocore.exceptions.EndpointConnectionError: Could
+                      ;; not connect to the endpoint URL:
+                      ;; "https://stpubdata.s3.amazonaws.com/<...>"
+                      '(("test_cube_cut.py" "test_s3_cube_cut")
+                        ("test_cube_cut.py" "test_multithreading")
+                        ("test_cutouts.py" "test_fits_cut")
+                        ("test_fits_cutout.py" "test_fits_cutout_cloud")
+                        ("test_tess_cube_cutout.py"
+                         "test_tess_cube_cutout_s3")
+                        ("test_tess_cube_cutout.py"
+                         "test_tess_cube_cutout_threads")
+                        ("test_tess_footprint_cutout.py"
+                         "test_cube_cut_from_footprint")
+                        ("test_tess_footprint_cutout.py"
+                         "test_get_tess_sectors")
+                        ("test_tess_footprint_cutout.py"
+                         "test_get_tess_sectors_invalid_coordinates")
+                        ("test_tess_footprint_cutout.py"
+                         "test_get_tess_sectors_no_matches")
+                        ("test_tess_footprint_cutout.py"
+                         "test_ra_dec_crossmatch_point")
+                        ("test_tess_footprint_cutout.py"
+                         "test_ra_dec_crossmatch_poly")
+                        ("test_tess_footprint_cutout.py"
+                         "test_tess_footprint_cutout")
+                        ("test_tess_footprint_cutout.py"
+                         "test_tess_footprint_cutout_all_sequences")
+                        ("test_tess_footprint_cutout.py"
+                         "test_tess_footprint_cutout_invalid_sequence")
+                        ("test_tess_footprint_cutout.py"
+                         "test_tess_footprint_cutout_multi_sequence")
+                        ("test_tess_footprint_cutout.py"
+                         "test_tess_footprint_cutout_outside_coords")
+                        ("test_tess_footprint_cutout.py"
+                         "test_tess_footprint_cutout_write_as_tpf")
+                        ;; assert (np.int64(16) - np.int64(12)) == 5
+                        ("test_utils.py" "test_get_cutout_limits")
+                        ;; assert np.False_ where np.False_ = <built-in
+                        ;; method all of numpy.ndarray object at
+                        ;; 0x7fff553cde90>()
+                        ("test_utils.py" "test_get_cutout_wcs"))))
       #:phases
       #~(modify-phases %standard-phases
           ;; TODO: Report upstream: ModuleNotFoundError: No module named
@@ -2662,7 +2682,6 @@ astronomical images, especially when there is no WCS information available.")
           (add-after 'unpack 'fix-setup.cfg
             (lambda _
               (substitute* "setup.cfg"
-                (("console_scripts =") "")
                 (("astropy-package-template-example.*") "")))))))
     (native-inputs
      (list nss-certs-for-test
@@ -2670,8 +2689,7 @@ astronomical images, especially when there is no WCS information available.")
            python-astroquery
            python-pytest-astropy
            python-setuptools
-           python-setuptools-scm
-           python-wheel))
+           python-setuptools-scm))
     (propagated-inputs
      (list python-asdf
            python-astropy
