@@ -2312,36 +2312,35 @@ Frame},@url{http://facebook.github.io/zstd/, Zstandard}.")
     (license license:bsd-3)))
 
 (define-public python-asdf-coordinates-schemas
-  (hidden-package
-   (package
-     (name "python-asdf-coordinates-schemas")
-     (version "0.4.0")
-     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "asdf_coordinates_schemas" version))
-        (sha256
-         (base32 "1i5w1v74b84ygbd9pw9cs35bjaqs35f5iavazhjpbycqr1pf8rvh"))))
-     (build-system pyproject-build-system)
-     (arguments
-      (list
-       #:test-flags
-       #~(list "--numprocesses" (number->string (parallel-job-count)))))
-     (native-inputs
-      (list python-pytest
-            python-pytest-xdist
-            python-setuptools
-            python-setuptools-scm
-            python-wheel))
-     (propagated-inputs
-      (list python-asdf))
-     (home-page "https://github.com/asdf-format/asdf-coordinates-schemas")
-     (synopsis "ASDF coordinates schemas")
-     (description
-      "This package provides ASDF schemas for validating coordinates tags.
+  (package
+    (name "python-asdf-coordinates-schemas")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asdf_coordinates_schemas" version))
+       (sha256
+        (base32 "1i5w1v74b84ygbd9pw9cs35bjaqs35f5iavazhjpbycqr1pf8rvh"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags
+      #~(list "--numprocesses" (number->string (parallel-job-count)))))
+    (native-inputs
+     (list python-pytest
+           python-pytest-xdist
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
+    (propagated-inputs
+     (list python-asdf))
+    (home-page "https://github.com/asdf-format/asdf-coordinates-schemas")
+    (synopsis "ASDF coordinates schemas")
+    (description
+     "This package provides ASDF schemas for validating coordinates tags.
 Users should not need to install this directly; instead, install an
 implementation package such as asdf-astropy.")
-     (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public python-asdf-fits-schemas
   (hidden-package
