@@ -4654,13 +4654,13 @@ Instead, all GUI interactions are invoked by simple function calls.")
 (define-public python-echo
   (package
     (name "python-echo")
-    (version "0.8.0")
+    (version "0.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "echo" version))
        (sha256
-        (base32 "1hr2kgjmf5gcjbg1mry03ca1dayfwy8mi8as42jfg0apsa3bfvvj"))))
+        (base32 "038jfhgnakccn4gz7w07yf0cspyz0h81nmgp3cmiavlacac1kvqp"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -4677,10 +4677,8 @@ Instead, all GUI interactions are invoked by simple function calls.")
            python-pyqt-6))
     (native-inputs
      (list python-pytest
-           python-pytest-cov
            python-setuptools
            python-setuptools-scm
-           python-wheel
            xorg-server-for-tests))
     (home-page "https://github.com/glue-viz/echo")
     (synopsis "Callback Properties in Python")
