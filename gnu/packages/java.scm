@@ -1236,66 +1236,67 @@ new Date();"))))
                         "openjdk-currency-time-bomb2.patch"))))
     (arguments
      (substitute-keyword-arguments (package-arguments openjdk9)
-       ((#:phases phases)
-        `(modify-phases ,phases
-         ,@(if (target-aarch64?)
-               `((replace 'patch-for-aarch64
-                   (lambda _
-                     (substitute* "src/hotspot/cpu/aarch64/interp_masm_aarch64.hpp"
-                       ;; This line is duplicated, so remove both occurrences,
-                       ;; then add back one occurrence by substituting a
-                       ;; comment that occurs once.
-                       (("using MacroAssembler::call_VM_leaf_base;") "")
-                       (("Interpreter specific version of call_VM_base")
-                        (string-append "Interpreter specific version of call_VM_base\n"
-                                       "  using MacroAssembler::call_VM_leaf_base;"))))))
-               '())
-           (replace 'fix-java-shebangs
-             (lambda _
-               ;; This file was "fixed" by patch-source-shebangs, but it requires
-               ;; this exact first line.
-               (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
-                 (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))))
-           (add-after 'unpack 'remove-timestamping
-             (lambda _
-               (substitute* "./src/hotspot/share/runtime/vm_version.cpp"
-                 (("__DATE__") "")
-                 (("__TIME__") ""))))
-           (replace 'configure
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (invoke "bash" "./configure"
-                       ;; Add flags for compilation with gcc >= 10
-                       ,(string-append "--with-extra-cflags=-fcommon"
+       ((#:phases phases '%standard-phases)
+        #~(modify-phases #$phases
+            #$@(if (target-aarch64?)
+                   #~((replace 'patch-for-aarch64
+                        (lambda _
+                          (substitute* "src/hotspot/cpu/aarch64/interp_masm_aarch64.hpp"
+                            ;; This line is duplicated, so remove both occurrences,
+                            ;; then add back one occurrence by substituting a
+                            ;; comment that occurs once.
+                            (("using MacroAssembler::call_VM_leaf_base;") "")
+                            (("Interpreter specific version of call_VM_base")
+                             (string-append "Interpreter specific version of call_VM_base\n"
+                                            "  using MacroAssembler::call_VM_leaf_base;"))))))
+                   #~())
+            (replace 'fix-java-shebangs
+              (lambda _
+                ;; This file was "fixed" by patch-source-shebangs, but it requires
+                ;; this exact first line.
+                (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
+                  (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))))
+            (add-after 'unpack 'remove-timestamping
+              (lambda _
+                (substitute* "./src/hotspot/share/runtime/vm_version.cpp"
+                  (("__DATE__") "")
+                  (("__TIME__") ""))))
+            (replace 'configure
+              (lambda* (#:key inputs #:allow-other-keys)
+                (invoke "bash" "./configure"
+                        ;; Add flags for compilation with gcc >= 10
+                        (string-append "--with-extra-cflags=-fcommon"
                                        " -fno-delete-null-pointer-checks"
                                        " -fno-lifetime-dse"
                                        ;; flags for compilation with gcc >= 14.
                                        " -Wno-error=int-conversion")
-                       (string-append "--with-freetype="
-                                      (assoc-ref inputs "freetype"))
-                       "--disable-freetype-bundling"
-                       "--disable-warnings-as-errors"
-                       "--disable-hotspot-gtest"
-                       "--with-giflib=system"
-                       "--with-libjpeg=system"
-                       "--with-native-debug-symbols=zipped"
-                       (string-append "--prefix=" (assoc-ref outputs "out")))))
-           (add-after 'unpack 'disable-warnings-as-errors
-             (lambda _
-               ;; It looks like the "--disable-warnings-as-errors" option of
-               ;; the 'configure' phase is not working.
-               (substitute* "make/autoconf/generated-configure.sh"
-                 (("-Werror") ""))))))
-       ((#:disallowed-references _ '())
-        `(,(this-package-native-input "openjdk9")
-          ,(gexp-input (this-package-native-input "openjdk9") "jdk")))))
+                        (string-append "--with-freetype="
+                                       (assoc-ref inputs "freetype"))
+                        "--disable-freetype-bundling"
+                        "--disable-warnings-as-errors"
+                        "--disable-hotspot-gtest"
+                        "--with-giflib=system"
+                        "--with-libjpeg=system"
+                        "--with-native-debug-symbols=zipped"
+                        (string-append "--prefix=" #$output))))
+            (add-after 'unpack 'disable-warnings-as-errors
+              (lambda _
+                ;; It looks like the "--disable-warnings-as-errors" option of
+                ;; the 'configure' phase is not working.
+                (substitute* "make/autoconf/generated-configure.sh"
+                  (("-Werror") ""))))))
+       ((#:disallowed-references refs '())
+        (cons* (this-package-native-input "openjdk")
+               (gexp-input (this-package-native-input "openjdk") "jdk")
+               refs))))
     (native-inputs
-     `(("openjdk9" ,openjdk9)
-       ("openjdk9:jdk" ,openjdk9 "jdk")
-       ("make@4.2" ,gnu-make-4.2)
-       ("nss-certs" ,nss-certs)
-       ("unzip" ,unzip)
-       ("which" ,which)
-       ("zip" ,zip)))))
+     (list gnu-make-4.2
+           openjdk9
+           `(,openjdk9 "jdk")
+           nss-certs
+           unzip
+           which
+           zip))))
 
 (define-public openjdk11
   (package
