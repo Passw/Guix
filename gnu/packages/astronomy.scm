@@ -222,21 +222,17 @@ reused in several astronomical applications, such as @code{wsclean},
       (license license:gpl3+))))
 
 (define-public aoflagger
-  ;; 3.4.0 was released in 2023, there are a lot of changes and compatibility
-  ;; for EveryBeam.
-  (let ((commit "b97943fd4c809f73ce1de2129a529d702cb133aa")
-        (revision "1"))
     (package
       (name "aoflagger")
-      (version (git-version "3.4.0" revision commit))
+      (version "3.5.0")
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                 (url "https://gitlab.com/aroffringa/aoflagger")
-                (commit commit)))
+                (commit (string-append "v" version))))
          (sha256
-          (base32 "1m391a5dg0vlnblqc2l5r3pyys2zjl9v6c66hxibaq1rmlj7b41m"))
+          (base32 "08r36xjw6hf3zc7w6qyk8bm049bzyl264ah0g03shzsci91lp8q9"))
          (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
@@ -282,7 +278,7 @@ reused in several astronomical applications, such as @code{wsclean},
 interference (RFI) in radio astronomical observations.  It can make use of Lua
 scripts to make flagging strategies flexible, and the tools are applicable to a
 wide set of telescopes.")
-      (license license:gpl3+))))
+      (license license:gpl3+)))
 
 (define-public astroterm
   (package
