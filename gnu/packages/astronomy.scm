@@ -4392,17 +4392,17 @@ Cesium.")
 (define-public python-dkist
   (package
     (name "python-dkist")
-    (version "1.16.0")
+    (version "1.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dkist" version))
        (sha256
-        (base32 "1n0qr28linf72xri5l26m0dgciczk5nc60yysg19iijwfh7y0m1x"))))
+        (base32 "1i1pyliz1yjgm0c6v8lwl9nc1b5ihmkjn8syydg2am5l4lgsn5pz"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 443 passed, 7 skipped
+      ;; tests: 455 passed, 7 skipped
       #:test-flags
       #~(list "--numprocesses" (number->string (min 8 (parallel-job-count)))
               ;; When python-pytest-benchmark is added: Benchmarks are
@@ -4414,9 +4414,11 @@ Cesium.")
               "--deselect=dkist/net/tests/test_client.py::test_fetch_with_headers")
       #:phases
       #~(modify-phases %standard-phases
-          ;; XXX: It fails to check SunPy's optional inputs versions.
-          (delete 'sanity-check)
-          (add-before 'check 'pre-check
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "pyproject.toml"
+               (("platformdirs>=4.5") "platformdirs>=4.3.6"))))
+          (add-before 'sanity-check 'set-home-env
             (lambda _
               (setenv "HOME" "/tmp"))))))
     (native-inputs
