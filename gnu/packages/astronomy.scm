@@ -8188,7 +8188,7 @@ spectra, and data.")
 (define-public python-pyvo
   (package
     (name "python-pyvo")
-    (version "1.8")
+    (version "1.8.1")
     (source
      (origin
        (method git-fetch)
@@ -8197,29 +8197,13 @@ spectra, and data.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ks1542i85y042yny3ka6gsrgy7pyv0xdaclirmvqrkakikhv70b"))))
+        (base32 "1cizipvfaqcjli1jirm2pc9fm2j8jrjrpdnzwar8lzvzpkyc7hm6"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 430 passed, 56 skipped, 1 xfailed
+      ;; tests: 441 passed, 56 skipped, 1 xfailed
       #:test-flags
-      #~(list "--pyargs" "pyvo")
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'install 'include-package-data
-            ;; FIXME: Check why pyproject-build-system ignores coping some
-            ;; package data files during build/install phases.
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (for-each
-               (lambda (file)
-                 (install-file file
-                            (string-append (site-packages inputs outputs)
-                                           "/pyvo/mivot/writer/")))
-               (find-files "pyvo/mivot/writer" "\\.xsd$"))))
-          (add-before 'check 'post-check
-            (lambda _
-              (for-each delete-file-recursively
-                        (find-files #$output "__pycache__" #:directories? #t)))))))
+      #~(list "--pyargs" "pyvo")))
     (native-inputs
      (list python-pytest-astropy
            python-pytest-doctestplus
@@ -8228,9 +8212,10 @@ spectra, and data.")
            python-setuptools-scm))
     (propagated-inputs
      (list python-astropy
-           python-defusedxml ; extra requirements
-           python-pillow     ; extra requirements
-           python-requests))
+           python-requests
+           ;; [optioal]
+           python-defusedxml
+           python-pillow))
     (home-page "https://github.com/astropy/pyvo")
     (synopsis "Access Virtual Observatory data and services")
     (description
