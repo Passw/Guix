@@ -13,7 +13,7 @@
 ;;; Copyright © 2019, 2020, 2021 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020, 2025 Janneke Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
-;;; Copyright © 2020, 2022, 2025 Maxim Cournoyer <maxim@guixotic.coop>
+;;; Copyright © 2020, 2022, 2025-2026 Maxim Cournoyer <maxim@guixotic.coop>
 ;;; Copyright © 2021 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2021 Pierre Langlois <pierre.langlois@gmx.com>
@@ -103,9 +103,23 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages texinfo)
-  #:use-module ((srfi srfi-1) #:select (fold alist-delete))
+  #:use-module ((srfi srfi-1) #:select (first fold alist-delete))
   #:use-module (srfi srfi-11)
   #:use-module (ice-9 match))
+
+(define* (system->icedtea-arch #:optional (system (or (%current-target-system)
+                                                      (%current-system))))
+  "Return the Icedtea architecture string, such as \"ppc64le\", of SYSTEM."
+  ;; See INSTALL_ARCH_DIR in the configure script of icedtea.
+  (match system
+    ("i686-linux" "i386")
+    ("x86_64-linux" "amd64")
+    ("armhf-linux" "arm")
+    ("powerpc-linux" "ppc")
+    ("powerpc64le-linux" "ppc64le")
+    (system
+     ;; Turn e.g. "aarch64-linux" into "aarch64".
+     (first (string-split system #\-)))))
 
 (define-public icedtea-7
   (let* ((version "2.6.13")
@@ -130,492 +144,458 @@
                   "1w331rdqx1dcx2xb0fmjmrkdc71xqn20fxsgw8by4xhiblh88khh"))
                 (modules '((guix build utils)))
                 (snippet
-                 '(begin
-                    (substitute* "Makefile.in"
-                      ;; do not leak information about the build host
-                      (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
-                       "DISTRIBUTION_ID=\"\\\"guix\\\"\""))
-                    #t))))
+                 '(substitute* "Makefile.in"
+                    ;; do not leak information about the build host
+                    (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
+                     "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
       (build-system gnu-build-system)
-      (outputs '("out"   ; Java Runtime Environment
-                 "jdk"   ; Java Development Kit
-                 "doc")) ; all documentation
+      (outputs '("out"                  ; Java Runtime Environment
+                 "jdk"                  ; Java Development Kit
+                 "doc"))                ; all documentation
       (arguments
-       `(;; There are many test failures.  Some are known to
-         ;; fail upstream, others relate to not having an X
-         ;; server running at test time, yet others are a
-         ;; complete mystery to me.
+       (list
+        ;; There are many test failures.  Some are known to fail upstream,
+        ;; others relate to not having an X server running at test time, yet
+        ;; others are a complete mystery to me.
 
-         ;; hotspot:   passed: 241; failed: 45; error: 2
-         ;; langtools: passed: 1,934; failed: 26
-         ;; jdk:       unknown
-         #:tests? #f
-
-         ;; The DSOs use $ORIGIN to refer to each other, but (guix build
-         ;; gremlin) doesn't support it yet, so skip this phase.
-         #:validate-runpath? #f
-
-         #:modules ((guix build utils)
+        ;; hotspot:   passed: 241; failed: 45; error: 2
+        ;; langtools: passed: 1,934; failed: 26
+        ;; jdk:       unknown
+        #:tests? #f
+        ;; The validate-runpath phase fails on internal libraries depending on
+        ;; libraries found under e.g. 'lib/amd64' on x86_64, and the build
+        ;; system blissfully ignores LDFLAGS; disable it.
+        #:validate-runpath? #f
+        #:modules '((guix build utils)
                     (guix build gnu-build-system)
                     (ice-9 match)
                     (ice-9 popen)
                     (srfi srfi-19)
                     (srfi srfi-26))
+        #:configure-flags
+        ;; TODO: package sctp and add to inputs
+        #~(list "--disable-system-sctp"
+                "--enable-system-pcsc"
+                "--enable-system-lcms"
+                "--enable-bootstrap"
+                "--enable-nss"
+                "--without-rhino"
+                (string-append "--with-parallel-jobs="
+                               (number->string (parallel-job-count)))
+                "--disable-downloading"
+                "--disable-tests"     ;they are run in the check phase instead
+                "--with-openjdk-src-dir=./openjdk.src"
+                (string-append
+                 "--with-ecj=" (search-input-file %build-inputs "bin/javac"))
+                (string-append "--with-jdk-home="
+                               #$(this-package-native-input "classpath"))
+                (string-append "--with-java="
+                               (search-input-file %build-inputs "bin/jamvm"))
+                (string-append "--with-jar="
+                               (search-input-file %build-inputs "/bin/gjar")))
+        #:phases
+        #~(modify-phases %standard-phases
+            (replace 'unpack
+              (lambda* (#:key source inputs #:allow-other-keys)
+                (let ((target (string-append "icedtea-"
+                                             #$(package-version this-package)))
+                      (unpack (lambda* (name #:optional dir)
+                                (let ((dir (or dir
+                                               (string-drop-right name 5))))
+                                  (mkdir dir)
+                                  (invoke "tar" "xvf"
+                                          (assoc-ref inputs name)
+                                          "-C" dir
+                                          "--strip-components=1")))))
+                  (mkdir target)
+                  (invoke "tar" "xvf" source
+                          "-C" target "--strip-components=1")
+                  (chdir target)
+                  (unpack "openjdk-src" "openjdk.src")
+                  (with-directory-excursion "openjdk.src"
+                    (for-each unpack
+                              (filter (cut string-suffix? "-drop" <>)
+                                      (map (match-lambda
+                                             ((name . _) name))
+                                           inputs)))))))
+            (add-after 'unpack 'use-classpath
+              (lambda* (#:key inputs #:allow-other-keys)
+                (let ((tools  (search-input-file inputs
+                                                 "share/classpath/tools.zip"))
+                      (rt.jar (search-input-file inputs "lib/rt.jar")))
+                  ;; GNU Classpath does not provide rt.jar, but jamvm provides
+                  ;; Classpath's glibj.zip as rt.jar, so we just use that.
+                  (substitute* "Makefile.in"
+                    (("\\$\\(SYSTEM_JDK_DIR\\)/jre/lib/rt.jar") rt.jar))
+                  ;; Make sure we can find all classes.
+                  (setenv "CLASSPATH"
+                          (string-append rt.jar ":" tools))
+                  (setenv "JAVACFLAGS"
+                          (string-append "-cp " rt.jar ":" tools)))))
+            (add-after 'unpack 'patch-bitrot
+              (lambda _
+                (substitute*
+                    '("patches/boot/revert-6973616.patch"
+                      "openjdk.src/jdk/make/common/shared/Defs-versions.gmk")
+                  (("REQUIRED_FREETYPE_VERSION = 2.2.1")
+                   "REQUIRED_FREETYPE_VERSION = 2.10.1"))
+                ;; As of attr 2.4.48 this header is no longer
+                ;; included.  It is provided by the libc instead.
+                (substitute* '("configure"
+                               "openjdk.src/jdk/src/solaris/native/sun/\
+nio/fs/LinuxNativeDispatcher.c")
+                  (("attr/xattr.h") "sys/xattr.h"))))
+            (add-after 'unpack 'fix-openjdk
+              (lambda _
+                (with-directory-excursion "openjdk.src"
+                  (substitute* "jdk/make/common/Defs-linux.gmk"
+                    (("CFLAGS_COMMON   = -fno-strict-aliasing" all)
+                     (string-append all
+                                    " -fcommon"
+                                    " -Wno-error=implicit-function-declaration"
+                                    " -Wno-error=implicit-int"
+                                    " -Wno-error=incompatible-pointer-types"
+                                    " -Wno-error=int-conversion")))
+                  (substitute*
+                      '("jdk/src/solaris/native/java/net/PlainSocketImpl.c"
+                        "jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c")
+                    (("#include <sys/sysctl.h>")
+                     "#include <linux/sysctl.h>"))
 
-         #:configure-flags
-         ;; TODO: package sctp and add to inputs
-         `("--disable-system-sctp"
-           "--enable-system-pcsc"
-           "--enable-system-lcms"
-           "--enable-bootstrap"
-           "--enable-nss"
-           "--without-rhino"
-           ,(string-append "--with-parallel-jobs="
-                           (number->string (parallel-job-count)))
-           "--disable-downloading"
-           "--disable-tests"        ;they are run in the check phase instead
-           "--with-openjdk-src-dir=./openjdk.src"
-           ,(string-append "--with-ecj="
-                           (assoc-ref %build-inputs "ecj4-javac-wrapper")
-                           "/bin/javac")
-           ,(string-append "--with-jdk-home="
-                           (assoc-ref %build-inputs "classpath"))
-           ,(string-append "--with-java="
-                           (assoc-ref %build-inputs "jamvm")
-                           "/bin/jamvm")
-           ,(string-append "--with-jar="
-                           (assoc-ref %build-inputs "classpath")
-                           "/bin/gjar"))
-         #:phases
-         (modify-phases %standard-phases
-           (replace 'unpack
-             (lambda* (#:key source inputs #:allow-other-keys)
-               (let ((target (string-append "icedtea-" ,version))
-                     (unpack (lambda* (name #:optional dir)
-                               (let ((dir (or dir
-                                              (string-drop-right name 5))))
-                                 (mkdir dir)
-                                 (invoke "tar" "xvf"
-                                         (assoc-ref inputs name)
-                                         "-C" dir
-                                         "--strip-components=1")))))
-                 (mkdir target)
-                 (invoke "tar" "xvf" source
-                         "-C" target "--strip-components=1")
-                 (chdir target)
-                 (unpack "openjdk-src" "openjdk.src")
-                 (with-directory-excursion "openjdk.src"
-                   (for-each unpack
-                             (filter (cut string-suffix? "-drop" <>)
-                                     (map (match-lambda
-                                            ((name . _) name))
-                                          inputs)))))))
-           (add-after 'unpack 'use-classpath
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((tools  (search-input-file inputs "/share/classpath/tools.zip"))
-                     (rt.jar (search-input-file inputs "/lib/rt.jar")))
-                 ;; GNU Classpath does not provide rt.jar, but jamvm provides
-                 ;; Classpath's glibj.zip as rt.jar, so we just use that.
-                 (substitute* "Makefile.in"
-                   (("\\$\\(SYSTEM_JDK_DIR\\)/jre/lib/rt.jar") rt.jar))
-                 ;; Make sure we can find all classes.
-                 (setenv "CLASSPATH"
-                         (string-append rt.jar ":" tools))
-                 (setenv "JAVACFLAGS"
-                         (string-append "-cp " rt.jar ":" tools)))))
-           (add-after 'unpack 'patch-bitrot
-             (lambda _
-               (substitute* '("patches/boot/revert-6973616.patch"
-                              "openjdk.src/jdk/make/common/shared/Defs-versions.gmk")
-                 (("REQUIRED_FREETYPE_VERSION = 2.2.1")
-                  "REQUIRED_FREETYPE_VERSION = 2.10.1"))
-               ;; As of attr 2.4.48 this header is no longer
-               ;; included.  It is provided by the libc instead.
-               (substitute* '("configure"
-                              "openjdk.src/jdk/src/solaris/native/sun/nio/fs/LinuxNativeDispatcher.c")
-                 (("attr/xattr.h") "sys/xattr.h"))))
-           (add-after 'unpack 'fix-openjdk
-             (lambda _
-               (substitute* "openjdk.src/jdk/make/common/Defs-linux.gmk"
-                 (("CFLAGS_COMMON   = -fno-strict-aliasing" all)
-                  (string-append all
-                                 " -fcommon"
-                                 " -Wno-error=implicit-function-declaration"
-                                 " -Wno-error=implicit-int"
-                                 " -Wno-error=incompatible-pointer-types"
-                                 " -Wno-error=int-conversion")))
-               (substitute*
-                   '("openjdk.src/jdk/src/solaris/native/java/net/PlainSocketImpl.c"
-                     "openjdk.src/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c")
-                 (("#include <sys/sysctl.h>")
-                  "#include <linux/sysctl.h>"))
+                  ;; XXX 'ldd' in glibc 2.35 segfaults upon reading
+                  ;;   openjdk.build-boot/lib/amd64/libnio.so (!).
+                  ;; It is only used as a verification step, so ignore it; try
+                  ;; removing this substitution for newer versions of glibc.
+                  (substitute* "jdk/make/common/shared/Defs-linux.gmk"
+                    (("\\$\\(LDD\\) \\$1 &&")
+                     ""))
 
-               ;; XXX 'ldd' in glibc 2.35 segfaults upon reading
-               ;;   openjdk.build-boot/lib/amd64/libnio.so (!).
-               ;; It is only used as a verification step, so ignore it;
-               ;; try removing this substitution for newer versions of glibc.
-               (substitute* "openjdk.src/jdk/make/common/shared/Defs-linux.gmk"
-                 (("\\$\\(LDD\\) \\$1 &&")
-                  ""))
+                  ;; It looks like the "h = 31 * h + c" line of the jsum()
+                  ;; function gets miscompiled. After a few iterations of the
+                  ;; loop the result of "31 * h" is always 0x8000000000000000.
+                  ;; Disable optimizations of dump.cpp as a workaround.
+                  (substitute* "hotspot/make/linux/makefiles/gcc.make"
+                    (("OPT_CFLAGS/NOOPT.*" all)
+                     (string-append all "\n"
+                                    "OPT_CFLAGS/dump.o += -O0"))))))
+            (add-after 'unpack 'fix-x11-extension-include-path
+              (lambda* (#:key inputs #:allow-other-keys)
+                (substitute* "openjdk.src/jdk/make/sun/awt/mawt.gmk"
+                  (((string-append "\\$\\(firstword \\$\\(wildcard "
+                                   "\\$\\(OPENWIN_HOME\\)"
+                                   "/include/X11/extensions\\).*$"))
+                   (string-append #$(this-package-input "libxrender")
+                                  "/include/X11/extensions"
+                                  " -I" #$(this-package-input "libxtst")
+                                  "/include/X11/extensions"
+                                  " -I" #$(this-package-input "libxinerama")
+                                  "/include/X11/extensions"))
+                  (("\\$\\(wildcard /usr/include/X11/extensions\\)\\)") ""))))
+            (add-after 'unpack 'patch-paths
+              (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                ;; buildtree.make generates shell scripts, so we need to replace
+                ;; the generated shebang.
+                (with-directory-excursion "openjdk.src"
+                  (substitute* "hotspot/make/linux/makefiles/buildtree.make"
+                    (("/bin/sh") (which "bash")))
 
-               ;; It looks like the "h = 31 * h + c" line of the jsum()
-               ;; function gets miscompiled. After a few iterations of the loop
-               ;; the result of "31 * h" is always 0x8000000000000000.
-               ;; Disable optimizations of dump.cpp as a workaround.
-               (substitute* "openjdk.src/hotspot/make/linux/makefiles/gcc.make"
-                 (("OPT_CFLAGS/NOOPT.*" all)
-                  (string-append all "\n"
-                                 "OPT_CFLAGS/dump.o += -O0")))))
-           (add-after 'unpack 'fix-x11-extension-include-path
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "openjdk.src/jdk/make/sun/awt/mawt.gmk"
-                 (((string-append "\\$\\(firstword \\$\\(wildcard "
-                                  "\\$\\(OPENWIN_HOME\\)"
-                                  "/include/X11/extensions\\).*$"))
-                  (string-append (assoc-ref inputs "libxrender")
-                                 "/include/X11/extensions"
-                                 " -I" (assoc-ref inputs "libxtst")
-                                 "/include/X11/extensions"
-                                 " -I" (assoc-ref inputs "libxinerama")
-                                 "/include/X11/extensions"))
-                 (("\\$\\(wildcard /usr/include/X11/extensions\\)\\)") ""))))
-           (add-after 'unpack 'patch-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; buildtree.make generates shell scripts, so we need to replace
-               ;; the generated shebang
-               (substitute* '("openjdk.src/hotspot/make/linux/makefiles/buildtree.make")
-                 (("/bin/sh") (which "bash")))
+                  (let ((corebin (dirname (search-input-file
+                                           (or native-inputs inputs)
+                                           "bin/cp")))) ;coreutils
+                    (substitute* '("jdk/make/common/shared/Defs-linux.gmk"
+                                   "corba/make/common/shared/Defs-linux.gmk")
+                      (("UNIXCOMMAND_PATH  = /bin")
+                       (string-append "UNIXCOMMAND_PATH = " corebin))
+                      (("USRBIN_PATH  = /usr/bin")
+                       (string-append "USRBIN_PATH = " corebin))
+                      (("DEVTOOLS_PATH *= */usr/bin")
+                       (string-append "DEVTOOLS_PATH = " corebin))
+                      (("COMPILER_PATH *= */usr/bin")
+                       (string-append "COMPILER_PATH = "
+                                      (dirname (search-input-file
+                                                (or native-inputs inputs)
+                                                "bin/gcc"))))
+                      (("DEF_OBJCOPY *=.*objcopy")
+                       (string-append "DEF_OBJCOPY = " (which "objcopy"))))
 
-               (let ((corebin (string-append
-                               (assoc-ref inputs "coreutils") "/bin/"))
-                     (binbin  (string-append
-                               (assoc-ref inputs "binutils") "/bin/"))
-                     (grepbin (string-append
-                               (assoc-ref inputs "grep") "/bin/")))
-                 (substitute* '("openjdk.src/jdk/make/common/shared/Defs-linux.gmk"
-                                "openjdk.src/corba/make/common/shared/Defs-linux.gmk")
-                   (("UNIXCOMMAND_PATH  = /bin/")
-                    (string-append "UNIXCOMMAND_PATH = " corebin))
-                   (("USRBIN_PATH  = /usr/bin/")
-                    (string-append "USRBIN_PATH = " corebin))
-                   (("DEVTOOLS_PATH *= */usr/bin/")
-                    (string-append "DEVTOOLS_PATH = " corebin))
-                   (("COMPILER_PATH *= */usr/bin/")
-                    (string-append "COMPILER_PATH = "
-                                   (assoc-ref inputs "gcc") "/bin/"))
-                   (("DEF_OBJCOPY *=.*objcopy")
-                    (string-append "DEF_OBJCOPY = " (which "objcopy"))))
+                    ;; Fix path to alsa header.
+                    (substitute* "jdk/make/common/shared/Sanity.gmk"
+                      (("ALSA_INCLUDE=/usr/include/alsa/version.h")
+                       (string-append "ALSA_INCLUDE="
+                                      (search-input-file
+                                       inputs "include/alsa/version.h"))))
 
-                 ;; fix path to alsa header
-                 (substitute* "openjdk.src/jdk/make/common/shared/Sanity.gmk"
-                   (("ALSA_INCLUDE=/usr/include/alsa/version.h")
-                    (string-append "ALSA_INCLUDE="
-                                   (assoc-ref inputs "alsa-lib")
-                                   "/include/alsa/version.h")))
+                    ;; Fix hard-coded utility paths.
+                    (substitute* '("jdk/make/common/shared/Defs-utils.gmk"
+                                   "corba/make/common/shared/Defs-utils.gmk")
+                      (("ECHO *=.*echo")
+                       (string-append "ECHO = " (which "echo")))
+                      (("^GREP *=.*grep")
+                       (string-append "GREP = " (which "grep")))
+                      (("EGREP *=.*egrep")
+                       (string-append "EGREP = " (which "egrep")))
+                      (("CPIO *=.*cpio")
+                       (string-append "CPIO = " (which "cpio")))
+                      (("READELF *=.*readelf")
+                       (string-append "READELF = " (which "readelf")))
+                      (("^ *AR *=.*ar")
+                       (string-append "AR = " (which "ar")))
+                      (("^ *TAR *=.*tar")
+                       (string-append "TAR = " (which "tar")))
+                      (("AS *=.*as")
+                       (string-append "AS = " (which "as")))
+                      (("LD *=.*ld")
+                       (string-append "LD = " (which "ld")))
+                      (("STRIP *=.*strip")
+                       (string-append "STRIP = " (which "strip")))
+                      (("NM *=.*nm")
+                       (string-append "NM = " (which "nm")))
+                      (("^SH *=.*sh")
+                       (string-append "SH = " (which "bash")))
+                      (("^FIND *=.*find")
+                       (string-append "FIND = " (which "find")))
+                      (("LDD *=.*ldd")
+                       (string-append "LDD = " (which "ldd")))
+                      (("NAWK *=.*(n|g)awk")
+                       (string-append "NAWK = " (which "gawk")))
+                      (("XARGS *=.*xargs")
+                       (string-append "XARGS = " (which "xargs")))
+                      (("UNZIP *=.*unzip")
+                       (string-append "UNZIP = " (which "unzip")))
+                      (("ZIPEXE *=.*zip")
+                       (string-append "ZIPEXE = " (which "zip")))
+                      (("SED *=.*sed")
+                       (string-append "SED = " (which "sed"))))
 
-                 ;; fix hard-coded utility paths
-                 (substitute* '("openjdk.src/jdk/make/common/shared/Defs-utils.gmk"
-                                "openjdk.src/corba/make/common/shared/Defs-utils.gmk")
-                   (("ECHO *=.*echo")
-                    (string-append "ECHO = " (which "echo")))
-                   (("^GREP *=.*grep")
-                    (string-append "GREP = " (which "grep")))
-                   (("EGREP *=.*egrep")
-                    (string-append "EGREP = " (which "egrep")))
-                   (("CPIO *=.*cpio")
-                    (string-append "CPIO = " (which "cpio")))
-                   (("READELF *=.*readelf")
-                    (string-append "READELF = " (which "readelf")))
-                   (("^ *AR *=.*ar")
-                    (string-append "AR = " (which "ar")))
-                   (("^ *TAR *=.*tar")
-                    (string-append "TAR = " (which "tar")))
-                   (("AS *=.*as")
-                    (string-append "AS = " (which "as")))
-                   (("LD *=.*ld")
-                    (string-append "LD = " (which "ld")))
-                   (("STRIP *=.*strip")
-                    (string-append "STRIP = " (which "strip")))
-                   (("NM *=.*nm")
-                    (string-append "NM = " (which "nm")))
-                   (("^SH *=.*sh")
-                    (string-append "SH = " (which "bash")))
-                   (("^FIND *=.*find")
-                    (string-append "FIND = " (which "find")))
-                   (("LDD *=.*ldd")
-                    (string-append "LDD = " (which "ldd")))
-                   (("NAWK *=.*(n|g)awk")
-                    (string-append "NAWK = " (which "gawk")))
-                   (("XARGS *=.*xargs")
-                    (string-append "XARGS = " (which "xargs")))
-                   (("UNZIP *=.*unzip")
-                    (string-append "UNZIP = " (which "unzip")))
-                   (("ZIPEXE *=.*zip")
-                    (string-append "ZIPEXE = " (which "zip")))
-                   (("SED *=.*sed")
-                    (string-append "SED = " (which "sed"))))
+                    ;; Some of these timestamps cause problems as they are more than
+                    ;; 10 years ago, failing the build process.
+                    (substitute* "jdk/src/share/classes/java/util/\
+CurrencyData.properties"
+                      (("AZ=AZM;2005-12-31-20-00-00;AZN") "AZ=AZN")
+                      (("MZ=MZM;2006-06-30-22-00-00;MZN") "MZ=MZN")
+                      (("RO=ROL;2005-06-30-21-00-00;RON") "RO=RON")
+                      (("TR=TRL;2004-12-31-22-00-00;TRY") "TR=TRY"))))))
+            (add-before 'configure 'set-additional-paths
+              (lambda* (#:key inputs #:allow-other-keys)
+                (setenv "CC" "gcc")
+                (setenv "CPATH"
+                        (string-append #$(this-package-input "libxcomposite")
+                                       "/include/X11/extensions" ":"
+                                       #$(this-package-input "libxrender")
+                                       "/include/X11/extensions" ":"
+                                       #$(this-package-input "libxtst")
+                                       "/include/X11/extensions" ":"
+                                       #$(this-package-input "libxinerama")
+                                       "/include/X11/extensions" ":"
+                                       (or (getenv "CPATH") "")))
+                (setenv "ALT_OBJCOPY" (which "objcopy"))
+                (setenv "ALT_CUPS_HEADERS_PATH"
+                        (string-append #$(this-package-input "cups")
+                                       "/include"))
+                (setenv "ALT_FREETYPE_HEADERS_PATH"
+                        (string-append #$(this-package-input "freetype")
+                                       "/include"))
+                (setenv "ALT_FREETYPE_LIB_PATH"
+                        (string-append #$(this-package-input "freetype")
+                                       "/lib"))))
+            (add-before 'build 'disable-os-version-check
+              ;; allow build on linux major version change
+              (lambda _
+                (setenv "DISABLE_HOTSPOT_OS_VERSION_CHECK" "ok")))
+            (add-before 'check 'fix-test-framework
+              (lambda _
+                ;; Fix PATH in test environment
+                (substitute* "test/jtreg/com/sun/javatest/regtest/Main.java"
+                  (("PATH=/bin:/usr/bin")
+                   (string-append "PATH=" (getenv "PATH"))))
+                (substitute* "test/jtreg/com/sun/javatest/util/SysEnv.java"
+                  (("/usr/bin/env") (which "env")))
+                (substitute* "openjdk.src/hotspot/test/test_env.sh"
+                  (("/bin/rm") (which "rm"))
+                  (("/bin/cp") (which "cp"))
+                  (("/bin/mv") (which "mv")))))
+            (add-before 'check 'fix-hotspot-tests
+              (lambda _
+                (with-directory-excursion "openjdk.src/hotspot/test/"
+                  (substitute* "jprt.config"
+                    (("PATH=\"\\$\\{path4sdk\\}\"")
+                     (string-append "PATH=" (getenv "PATH")))
+                    (("make=/usr/bin/make")
+                     (string-append "make=" (which "make"))))
+                  (substitute* '("runtime/6626217/Test6626217.sh"
+                                 "runtime/7110720/Test7110720.sh")
+                    (("/bin/rm") (which "rm"))
+                    (("/bin/cp") (which "cp"))
+                    (("/bin/mv") (which "mv"))))))
+            (add-before 'check 'fix-jdk-tests
+              (lambda _
+                (with-directory-excursion "openjdk.src/jdk/test/"
+                  (substitute* "com/sun/jdi/JdbReadTwiceTest.sh"
+                    (("/bin/pwd") (which "pwd")))
+                  (substitute* "com/sun/jdi/ShellScaffold.sh"
+                    (("/bin/kill") (which "kill")))
+                  (substitute* "start-Xvfb.sh"
+                    ;;(("/usr/bin/X11/Xvfb") (which "Xvfb"))
+                    (("/usr/bin/nohup")    (which "nohup")))
+                  (substitute* "javax/security/auth/Subject/doAs/Test.sh"
+                    (("/bin/rm") (which "rm")))
+                  (substitute* "tools/launcher/MultipleJRE.sh"
+                    (("echo \"#!/bin/sh\"")
+                     (string-append "echo \"#!" (which "rm") "\""))
+                    (("/usr/bin/zip") (which "zip")))
+                  (substitute* "com/sun/jdi/OnThrowTest.java"
+                    (("#!/bin/sh") (string-append "#!" (which "sh"))))
+                  (substitute* "java/lang/management/OperatingSystemMXBean/GetSystemLoadAverage.java"
+                    (("/usr/bin/uptime") (which "uptime")))
+                  (substitute* "java/lang/ProcessBuilder/Basic.java"
+                    (("/usr/bin/env") (which "env"))
+                    (("/bin/false") (which "false"))
+                    (("/bin/true") (which "true"))
+                    (("/bin/cp") (which "cp"))
+                    (("/bin/sh") (which "sh")))
+                  (substitute* "java/lang/ProcessBuilder/FeelingLucky.java"
+                    (("/bin/sh") (which "sh")))
+                  (substitute* "java/lang/ProcessBuilder/Zombies.java"
+                    (("/usr/bin/perl") (which "perl"))
+                    (("/bin/ps") (which "ps"))
+                    (("/bin/true") (which "true")))
+                  (substitute* "java/lang/Runtime/exec/ConcurrentRead.java"
+                    (("/usr/bin/tee") (which "tee")))
+                  (substitute* "java/lang/Runtime/exec/ExecWithDir.java"
+                    (("/bin/true") (which "true")))
+                  (substitute* "java/lang/Runtime/exec/ExecWithInput.java"
+                    (("/bin/cat") (which "cat")))
+                  (substitute* "java/lang/Runtime/exec/ExitValue.java"
+                    (("/bin/sh") (which "sh"))
+                    (("/bin/true") (which "true"))
+                    (("/bin/kill") (which "kill")))
+                  (substitute* "java/lang/Runtime/exec/LotsOfDestroys.java"
+                    (("/usr/bin/echo") (which "echo")))
+                  (substitute* "java/lang/Runtime/exec/LotsOfOutput.java"
+                    (("/usr/bin/cat") (which "cat")))
+                  (substitute* "java/lang/Runtime/exec/SleepyCat.java"
+                    (("/bin/cat") (which "cat"))
+                    (("/bin/sleep") (which "sleep"))
+                    (("/bin/sh") (which "sh")))
+                  (substitute* "java/lang/Runtime/exec/StreamsSurviveDestroy.java"
+                    (("/bin/cat") (which "cat")))
+                  (substitute* "java/rmi/activation/CommandEnvironment/SetChildEnv.java"
+                    (("/bin/chmod") (which "chmod")))
+                  (substitute* "java/util/zip/ZipFile/Assortment.java"
+                    (("/bin/sh") (which "sh"))))))
+            (replace 'check
+              (lambda* (#:key tests? #:allow-other-keys)
+                ;; The "make check-*" targets always return zero, so we need to
+                ;; check for errors in the associated log files to determine
+                ;; whether any tests have failed.
+                (when tests?
+                  (use-modules (ice-9 rdelim))
+                  (let* ((error-pattern (make-regexp "^(Error|FAILED):.*"))
+                         (checker (lambda (port)
+                                    (let loop ()
+                                      (let ((line (read-line port)))
+                                        (cond
+                                         ((eof-object? line) #t)
+                                         ((regexp-exec error-pattern line)
+                                          (error "test failed"))
+                                         (else (loop)))))))
+                         (run-test (lambda (test)
+                                     (invoke "make" test)
+                                     (call-with-input-file
+                                         (string-append "test/" test ".log")
+                                       checker))))
+                    (run-test "check-hotspot")
+                    (run-test "check-langtools")
+                    (run-test "check-jdk")))))
+            (replace 'install
+              (lambda _
+                (copy-recursively "openjdk.build/docs"
+                                  (string-append #$output:doc
+                                                 "/share/doc/icedtea"))
+                (copy-recursively "openjdk.build/j2re-image" #$output)
+                (copy-recursively "openjdk.build/j2sdk-image" #$output:jdk)))
+            (add-after 'install 'install-libjvm
+              ;; Some of the libraries in the lib/amd64 folder link to libjvm.so.
+              ;; But that shared object is located in the server/ folder, so it
+              ;; cannot be found.  This phase creates a symbolic link in the
+              ;; lib/amd64 folder so that the other libraries can find it.
+              ;;
+              ;; See:
+              ;; https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00169.html
+              ;;
+              ;; FIXME: Find the bug in the build system, so that this symlink is
+              ;; not needed.
+              (lambda _
+                (let ((lib-path (string-append #$output "/lib/"
+                                               #$(system->icedtea-arch))))
+                  (symlink (string-append lib-path "/server/libjvm.so")
+                           (string-append lib-path "/libjvm.so")))))
+            ;; By default IcedTea only generates an empty keystore.  In order to
+            ;; be able to use certificates in Java programs we need to generate a
+            ;; keystore from a set of certificates.  For convenience we use the
+            ;; certificates from the nss-certs package.
+            (add-after 'install 'install-keystore
+              (lambda* (#:key inputs #:allow-other-keys)
+                (use-modules (ice-9 rdelim))
+                (let* ((keystore  "cacerts")
+                       (certs-dir (search-input-directory inputs
+                                                          "etc/ssl/certs"))
+                       (keytool   (string-append #$output:jdk "/bin/keytool")))
+                  (define (extract-cert file target)
+                    (call-with-input-file file
+                      (lambda (in)
+                        (call-with-output-file target
+                          (lambda (out)
+                            (let loop ((line (read-line in 'concat))
+                                       (copying? #f))
+                              (cond
+                               ((eof-object? line) #t)
+                               ((string-prefix? "-----BEGIN" line)
+                                (display line out)
+                                (loop (read-line in 'concat) #t))
+                               ((string-prefix? "-----END" line)
+                                (display line out)
+                                #t)
+                               (else
+                                (when copying? (display line out))
+                                (loop (read-line in 'concat) copying?)))))))))
+                  (define (import-cert cert)
+                    (format #t "Importing certificate ~a\n" (basename cert))
+                    (let ((temp "tmpcert"))
+                      (extract-cert cert temp)
+                      (let ((port (open-pipe* OPEN_WRITE keytool
+                                              "-import"
+                                              "-alias" (basename cert)
+                                              "-keystore" keystore
+                                              "-storepass" "changeit"
+                                              "-file" temp)))
+                        (display "yes\n" port)
+                        (when (not (zero? (status:exit-val (close-pipe port))))
+                          (format #t "failed to import ~a\n" cert)))
+                      (delete-file temp)))
 
-                 ;; Some of these timestamps cause problems as they are more than
-                 ;; 10 years ago, failing the build process.
-                 (substitute*
-                     "openjdk.src/jdk/src/share/classes/java/util/CurrencyData.properties"
-                   (("AZ=AZM;2005-12-31-20-00-00;AZN") "AZ=AZN")
-                   (("MZ=MZM;2006-06-30-22-00-00;MZN") "MZ=MZN")
-                   (("RO=ROL;2005-06-30-21-00-00;RON") "RO=RON")
-                   (("TR=TRL;2004-12-31-22-00-00;TRY") "TR=TRY")))))
-           (add-before 'configure 'set-additional-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "openjdk.src/jdk/make/common/shared/Sanity.gmk"
-                 (("ALSA_INCLUDE=/usr/include/alsa/version.h")
-                  (string-append "ALSA_INCLUDE="
-                                 (assoc-ref inputs "alsa-lib")
-                                 "/include/alsa/version.h")))
-               (setenv "CC" "gcc")
-               (setenv "CPATH"
-                       (string-append (assoc-ref inputs "libxcomposite")
-                                      "/include/X11/extensions" ":"
-                                      (assoc-ref inputs "libxrender")
-                                      "/include/X11/extensions" ":"
-                                      (assoc-ref inputs "libxtst")
-                                      "/include/X11/extensions" ":"
-                                      (assoc-ref inputs "libxinerama")
-                                      "/include/X11/extensions" ":"
-                                      (or (getenv "CPATH") "")))
-               (setenv "ALT_OBJCOPY" (which "objcopy"))
-               (setenv "ALT_CUPS_HEADERS_PATH"
-                       (string-append (assoc-ref inputs "cups")
-                                      "/include"))
-               (setenv "ALT_FREETYPE_HEADERS_PATH"
-                       (string-append (assoc-ref inputs "freetype")
-                                      "/include"))
-               (setenv "ALT_FREETYPE_LIB_PATH"
-                       (string-append (assoc-ref inputs "freetype")
-                                      "/lib"))))
-           (add-before 'build 'disable-os-version-check
-             ;; allow build on linux major version change
-             (lambda _
-               (setenv "DISABLE_HOTSPOT_OS_VERSION_CHECK" "ok")))
-           (add-before 'check 'fix-test-framework
-             (lambda _
-               ;; Fix PATH in test environment
-               (substitute* "test/jtreg/com/sun/javatest/regtest/Main.java"
-                 (("PATH=/bin:/usr/bin")
-                  (string-append "PATH=" (getenv "PATH"))))
-               (substitute* "test/jtreg/com/sun/javatest/util/SysEnv.java"
-                 (("/usr/bin/env") (which "env")))
-               (substitute* "openjdk.src/hotspot/test/test_env.sh"
-                 (("/bin/rm") (which "rm"))
-                 (("/bin/cp") (which "cp"))
-                 (("/bin/mv") (which "mv")))))
-           (add-before 'check 'fix-hotspot-tests
-             (lambda _
-               (with-directory-excursion "openjdk.src/hotspot/test/"
-                 (substitute* "jprt.config"
-                   (("PATH=\"\\$\\{path4sdk\\}\"")
-                    (string-append "PATH=" (getenv "PATH")))
-                   (("make=/usr/bin/make")
-                    (string-append "make=" (which "make"))))
-                 (substitute* '("runtime/6626217/Test6626217.sh"
-                                "runtime/7110720/Test7110720.sh")
-                   (("/bin/rm") (which "rm"))
-                   (("/bin/cp") (which "cp"))
-                   (("/bin/mv") (which "mv"))))))
-           (add-before 'check 'fix-jdk-tests
-             (lambda _
-               (with-directory-excursion "openjdk.src/jdk/test/"
-                 (substitute* "com/sun/jdi/JdbReadTwiceTest.sh"
-                   (("/bin/pwd") (which "pwd")))
-                 (substitute* "com/sun/jdi/ShellScaffold.sh"
-                   (("/bin/kill") (which "kill")))
-                 (substitute* "start-Xvfb.sh"
-                   ;;(("/usr/bin/X11/Xvfb") (which "Xvfb"))
-                   (("/usr/bin/nohup")    (which "nohup")))
-                 (substitute* "javax/security/auth/Subject/doAs/Test.sh"
-                   (("/bin/rm") (which "rm")))
-                 (substitute* "tools/launcher/MultipleJRE.sh"
-                   (("echo \"#!/bin/sh\"")
-                    (string-append "echo \"#!" (which "rm") "\""))
-                   (("/usr/bin/zip") (which "zip")))
-                 (substitute* "com/sun/jdi/OnThrowTest.java"
-                   (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                 (substitute* "java/lang/management/OperatingSystemMXBean/GetSystemLoadAverage.java"
-                   (("/usr/bin/uptime") (which "uptime")))
-                 (substitute* "java/lang/ProcessBuilder/Basic.java"
-                   (("/usr/bin/env") (which "env"))
-                   (("/bin/false") (which "false"))
-                   (("/bin/true") (which "true"))
-                   (("/bin/cp") (which "cp"))
-                   (("/bin/sh") (which "sh")))
-                 (substitute* "java/lang/ProcessBuilder/FeelingLucky.java"
-                   (("/bin/sh") (which "sh")))
-                 (substitute* "java/lang/ProcessBuilder/Zombies.java"
-                   (("/usr/bin/perl") (which "perl"))
-                   (("/bin/ps") (which "ps"))
-                   (("/bin/true") (which "true")))
-                 (substitute* "java/lang/Runtime/exec/ConcurrentRead.java"
-                   (("/usr/bin/tee") (which "tee")))
-                 (substitute* "java/lang/Runtime/exec/ExecWithDir.java"
-                   (("/bin/true") (which "true")))
-                 (substitute* "java/lang/Runtime/exec/ExecWithInput.java"
-                   (("/bin/cat") (which "cat")))
-                 (substitute* "java/lang/Runtime/exec/ExitValue.java"
-                   (("/bin/sh") (which "sh"))
-                   (("/bin/true") (which "true"))
-                   (("/bin/kill") (which "kill")))
-                 (substitute* "java/lang/Runtime/exec/LotsOfDestroys.java"
-                   (("/usr/bin/echo") (which "echo")))
-                 (substitute* "java/lang/Runtime/exec/LotsOfOutput.java"
-                   (("/usr/bin/cat") (which "cat")))
-                 (substitute* "java/lang/Runtime/exec/SleepyCat.java"
-                   (("/bin/cat") (which "cat"))
-                   (("/bin/sleep") (which "sleep"))
-                   (("/bin/sh") (which "sh")))
-                 (substitute* "java/lang/Runtime/exec/StreamsSurviveDestroy.java"
-                   (("/bin/cat") (which "cat")))
-                 (substitute* "java/rmi/activation/CommandEnvironment/SetChildEnv.java"
-                   (("/bin/chmod") (which "chmod")))
-                 (substitute* "java/util/zip/ZipFile/Assortment.java"
-                   (("/bin/sh") (which "sh"))))))
-           (replace 'check
-             (lambda* (#:key tests? #:allow-other-keys)
-               ;; The "make check-*" targets always return zero, so we need to
-               ;; check for errors in the associated log files to determine
-               ;; whether any tests have failed.
-               (when tests?
-                 (use-modules (ice-9 rdelim))
-                 (let* ((error-pattern (make-regexp "^(Error|FAILED):.*"))
-                        (checker (lambda (port)
-                                   (let loop ()
-                                     (let ((line (read-line port)))
-                                       (cond
-                                        ((eof-object? line) #t)
-                                        ((regexp-exec error-pattern line)
-                                         (error "test failed"))
-                                        (else (loop)))))))
-                        (run-test (lambda (test)
-                                    (invoke "make" test)
-                                    (call-with-input-file
-                                        (string-append "test/" test ".log")
-                                      checker))))
-                   (run-test "check-hotspot")
-                   (run-test "check-langtools")
-                   (run-test "check-jdk")))))
-           (replace 'install
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((doc (string-append (assoc-ref outputs "doc")
-                                         "/share/doc/icedtea"))
-                     (jre (assoc-ref outputs "out"))
-                     (jdk (assoc-ref outputs "jdk")))
-                 (copy-recursively "openjdk.build/docs" doc)
-                 (copy-recursively "openjdk.build/j2re-image" jre)
-                 (copy-recursively "openjdk.build/j2sdk-image" jdk))))
-           ;; Some of the libraries in the lib/amd64 folder link to libjvm.so.
-           ;; But that shared object is located in the server/ folder, so it
-           ;; cannot be found.  This phase creates a symbolic link in the
-           ;; lib/amd64 folder so that the other libraries can find it.
-           ;;
-           ;; See:
-           ;; https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00169.html
-           ;;
-           ;; FIXME: Find the bug in the build system, so that this symlink is
-           ;; not needed.
-           (add-after 'install 'install-libjvm
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((lib-path (string-append (assoc-ref outputs "out")
-                                               ;; See 'INSTALL_ARCH_DIR' in
-                                               ;; 'configure'.
-                                               ,(match (%current-system)
-                                                  ("i686-linux"
-                                                   "/lib/i386")
-                                                  ("x86_64-linux"
-                                                   "/lib/amd64")
-                                                  ("armhf-linux"
-                                                   "/lib/arm")
-                                                  ("aarch64-linux"
-                                                   "/lib/aarch64")
-                                                  ("powerpc-linux"
-                                                   "/lib/ppc")
-                                                  ("powerpc64le-linux"
-                                                   "/lib/ppc64le")
-                                                  ;; We need a catch-all, dropping
-                                                  ;; '-linux' works in most cases.
-                                                  (_
-                                                    (string-append
-                                                      "/lib/"
-                                                      (string-drop-right
-                                                        (%current-system) 6)))))))
-                 (symlink (string-append lib-path "/server/libjvm.so")
-                          (string-append lib-path "/libjvm.so")))))
-           ;; By default IcedTea only generates an empty keystore.  In order to
-           ;; be able to use certificates in Java programs we need to generate a
-           ;; keystore from a set of certificates.  For convenience we use the
-           ;; certificates from the nss-certs package.
-           (add-after 'install 'install-keystore
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (use-modules (ice-9 rdelim))
-               (let* ((keystore  "cacerts")
-                      (certs-dir (search-input-directory inputs
-                                                         "etc/ssl/certs"))
-                      (keytool   (string-append (assoc-ref outputs "jdk")
-                                                "/bin/keytool")))
-                 (define (extract-cert file target)
-                   (call-with-input-file file
-                     (lambda (in)
-                       (call-with-output-file target
-                         (lambda (out)
-                           (let loop ((line (read-line in 'concat))
-                                      (copying? #f))
-                             (cond
-                              ((eof-object? line) #t)
-                              ((string-prefix? "-----BEGIN" line)
-                               (display line out)
-                               (loop (read-line in 'concat) #t))
-                              ((string-prefix? "-----END" line)
-                               (display line out)
-                               #t)
-                              (else
-                               (when copying? (display line out))
-                               (loop (read-line in 'concat) copying?)))))))))
-                 (define (import-cert cert)
-                   (format #t "Importing certificate ~a\n" (basename cert))
-                   (let ((temp "tmpcert"))
-                     (extract-cert cert temp)
-                     (let ((port (open-pipe* OPEN_WRITE keytool
-                                             "-import"
-                                             "-alias" (basename cert)
-                                             "-keystore" keystore
-                                             "-storepass" "changeit"
-                                             "-file" temp)))
-                       (display "yes\n" port)
-                       (when (not (zero? (status:exit-val (close-pipe port))))
-                         (format #t "failed to import ~a\n" cert)))
-                     (delete-file temp)))
+                  ;; This is necessary because the certificate directory contains
+                  ;; files with non-ASCII characters in their names.
+                  (setlocale LC_ALL "C.UTF-8")
+                  (setenv "LC_ALL" "C.UTF-8")
 
-                 ;; This is necessary because the certificate directory contains
-                 ;; files with non-ASCII characters in their names.
-                 (setlocale LC_ALL "C.UTF-8")
-                 (setenv "LC_ALL" "C.UTF-8")
+                  (for-each import-cert (find-files certs-dir "\\.pem$"))
+                  (mkdir-p (string-append #$output "/lib/security"))
+                  (mkdir-p (string-append #$output:jdk "/jre/lib/security"))
 
-                 (for-each import-cert (find-files certs-dir "\\.pem$"))
-                 (mkdir-p (string-append (assoc-ref outputs "out")
-                                         "/lib/security"))
-                 (mkdir-p (string-append (assoc-ref outputs "jdk")
-                                         "/jre/lib/security"))
+                  ;; The cacerts files we are going to overwrite are chmod'ed as
+                  ;; read-only (444) in icedtea-8 (which derives from this
+                  ;; package).  We have to change this so we can overwrite them.
+                  (chmod (string-append #$output "/lib/security/" keystore)
+                         #o644)
+                  (chmod (string-append #$output:jdk
+                                        "/jre/lib/security/" keystore) #o644)
 
-                 ;; The cacerts files we are going to overwrite are chmod'ed as
-                 ;; read-only (444) in icedtea-8 (which derives from this
-                 ;; package).  We have to change this so we can overwrite them.
-                 (chmod (string-append (assoc-ref outputs "out")
-                                       "/lib/security/" keystore) #o644)
-                 (chmod (string-append (assoc-ref outputs "jdk")
-                                       "/jre/lib/security/" keystore) #o644)
-
-                 (install-file keystore
-                               (string-append (assoc-ref outputs "out")
-                                              "/lib/security"))
-                 (install-file keystore
-                               (string-append (assoc-ref outputs "jdk")
-                                              "/jre/lib/security"))))))))
+                  (install-file keystore
+                                (string-append #$output "/lib/security"))
+                  (install-file keystore
+                                (string-append #$output:jdk
+                                               "/jre/lib/security"))))))))
       (native-inputs
        ;; XXX: Compiling with gcc-14 will encounter the following error:
        ;; BUILD FAILED:
@@ -675,7 +655,7 @@
          ("libxslt" ,libxslt)           ;for xsltproc
          ("nss-certs" ,nss-certs)
          ("perl" ,perl)
-         ("procps" ,procps)))  ;for "free", even though I'm not sure we should use it
+         ("procps" ,procps))) ;for "free", even though I'm not sure we should use it
       (inputs
        (list alsa-lib
              cups
