@@ -8595,17 +8595,17 @@ changing the pixel resolution, orientation, coordinate system.")
 (define-public python-roman-datamodels
   (package
     (name "python-roman-datamodels")
-    (version "0.29.0")
+    (version "0.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "roman_datamodels" version))
        (sha256
-        (base32 "0vcs635gkccbya649dscqp8wwksmqckxsz5v51nyx1bs6h55ldma"))))
+        (base32 "1fhw4fdlzjyjgyvwcgvqi3dnywj8pprw5jmqhw8dxdahi32j34p0"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 4659 passed, 1 skipped
+      ;; tests: 4949 passed, 1 skipped
       #:test-flags
       #~(list "--numprocesses" (number->string (min 8 (parallel-job-count))))
       #:phases
