@@ -4972,7 +4972,7 @@ CFITSIO library.  Among other things, it can
 (define-public python-galsim
   (package
     (name "python-galsim")
-    (version "2.7.2")
+    (version "2.8.3")
     (source
      (origin
        (method git-fetch)
@@ -4981,11 +4981,11 @@ CFITSIO library.  Among other things, it can
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1phrxmxwwr72hs4yq6c5yjf3gcpqz8psah74vij5l8zlv4d71qc3"))))
+        (base32 "0anirrwhw9vwv58d0v1i289s66a2h68hjjicwccgwfzb5ng5g4s1"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 232 passed
+      ;; tests: 234 passed
       #:test-flags
       #~(list "--numprocesses" (number->string (min 8 (parallel-job-count)))
               "--ignore=devel/"
