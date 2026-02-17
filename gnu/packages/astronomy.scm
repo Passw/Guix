@@ -2412,36 +2412,35 @@ up-front for extensibility.")
     (license license:bsd-3)))
 
 (define-public python-asdf-transform-schemas
-  (hidden-package
-   (package
-     (name "python-asdf-transform-schemas")
-     (version "0.6.0")
-     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "asdf_transform_schemas" version))
-        (sha256
-         (base32 "0clp3a2ldfhvsh5c7zqd7nr2bvv62a89aaf8p4a2vzgzjvhghl0g"))))
-     (build-system pyproject-build-system)
-     (arguments
-      (list
-       ;; XXX: Check why all tests fail in this file.
-       #:test-flags #~(list "--deselect=tests/test_invalid.py")))
-     (native-inputs
-      (list python-asdf-bootstrap
-            python-pytest
-            python-setuptools
-            python-setuptools-scm
-            python-wheel))
-     (propagated-inputs
-      (list python-asdf-standard))
-     (home-page "https://github.com/asdf-format/asdf-transform-schemas")
-     (synopsis "ASDF schemas for transforms")
-     (description
-      "This package provides ASDF schemas for validating transform tags.
+  (package
+    (name "python-asdf-transform-schemas")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asdf_transform_schemas" version))
+       (sha256
+        (base32 "0clp3a2ldfhvsh5c7zqd7nr2bvv62a89aaf8p4a2vzgzjvhghl0g"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      ;; XXX: Check why all tests fail in this file.
+      #:test-flags #~(list "--deselect=tests/test_invalid.py")))
+    (native-inputs
+     (list python-asdf-bootstrap
+           python-pytest
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
+    (propagated-inputs
+     (list python-asdf-standard))
+    (home-page "https://github.com/asdf-format/asdf-transform-schemas")
+    (synopsis "ASDF schemas for transforms")
+    (description
+     "This package provides ASDF schemas for validating transform tags.
 Users should not need to install this directly; instead, install an
 implementation package such as asdf-astropy.")
-     (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public python-asdf-transform-schemas-bootstrap
   (hidden-package
