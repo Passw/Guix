@@ -6023,21 +6023,29 @@ satellite.")
 (define-public python-jplephem
   (package
     (name "python-jplephem")
-    (version "2.23")
+    (version "2.24")
     (source
      (origin
-       (method git-fetch)       ;no tests data in the PyPI tarball
+       (method git-fetch)
        (uri (git-reference
               (url "https://github.com/brandon-rhodes/python-jplephem")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mmd30cymb9f259c657d7jd65plirdsngnk14fbyjxd9vbryn2qa"))))
+        (base32 "1z4nhf5fq0hsyxfkbbxdyi2z2ip79qj3bnwn015rysmh6xiqa5w6"))))
     (build-system pyproject-build-system)
     (arguments
      (list
+      ;; tests: 51 run, 14 skipped
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'unpack 'disable-failing-tests
+            ;; See:
+            ;; <https://github.com/brandon-rhodes/python-jplephem/issues/65>.
+            (lambda _
+              (substitute* "ci/test.py"
+                (("def test_excerpt_command")
+                 "def __off_test_excerpt_command"))))
           (replace 'check
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests?
