@@ -4178,20 +4178,18 @@ cosmological parameters e.g. redshift or luminosity-distance.")
 (define-public python-costools
   (package
     (name "python-costools")
-    (version "1.2.6")
+    (version "1.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "costools" version))
        (sha256
-        (base32 "0w0hgm847qsq5q30j5nshxwf7bdj503h6r1y3b6hvlf55gzlscnd"))))
+        (base32 "1ij503zshjf3hynhhqgvkyrgzma8a77v9nghvgij8xr852p2lqdy"))))
     (build-system pyproject-build-system)
     (native-inputs
      (list python-pytest
-           python-pytest-cov
            python-setuptools
-           python-setuptools-scm
-           python-wheel))
+           python-setuptools-scm))
     (propagated-inputs
      (list python-astropy
            python-calcos
