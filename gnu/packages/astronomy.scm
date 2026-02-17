@@ -3529,10 +3529,6 @@ software system for the operations and analysis of the ESA satelite Herschel.")
                ;; "A backport of the get_terminal_size function from Python
                ;; 3.3's shutil."
                ((".*backports.shutil_get_terminal_size.*") ""))))
-          (add-before 'build 'set-version
-            (lambda _
-              (setenv "SETUPTOOLS_SCM_PRETEND_VERSION"
-                      #$(version-major+minor+point version))))
           (replace 'check
             (lambda* (#:key tests? test-flags #:allow-other-keys)
               (when tests?
