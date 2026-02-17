@@ -3895,30 +3895,19 @@ application.")
 (define-public python-ci-watson
   (package
     (name "python-ci-watson")
-    (version "0.10.0")
+    (version "0.11.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ci_watson" version))
        (sha256
-        (base32 "0dlys7yr11c59zl0smy2hb3bw5r6vyrmx8s97f1942i7zjnyb1zx"))))
+        (base32 "0rwmfzgbfazfb511fq6ipcwr5n2n4ngz4whxjd7kbcyj56580dg6"))))
     (build-system pyproject-build-system)
-    (arguments
-     (list
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'patch-pypojrect-toml
-            (lambda _
-              (substitute* "setup.cfg"
-                ;; ImportError: Error importing plugin " no:legacypath": No
-                ;; module named ' no:legacypath'
-                (("-p no:legacypath") "")))))))
     (native-inputs
      (list python-pytest-astropy-header
            python-pytest
            python-setuptools
-           python-setuptools-scm
-           python-wheel))
+           python-setuptools-scm))
     (propagated-inputs
      (list python-colorama
            python-crds
