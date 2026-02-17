@@ -3567,27 +3567,24 @@ Python scripts.")
 (define-public python-calcos
   (package
     (name "python-calcos")
-    (version "3.6.1")
+    (version "3.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "calcos" version))
        (sha256
-        (base32 "0mfyinbbrps1ryjnqkjj7h7117clx762q7jvl7raycf1wj0g2zs0"))))
+        (base32 "0f0idd6kdkzyq99zs3202d0nm2fjcdyjnk6wd1zy0w86vc8vmsx8"))))
     (build-system pyproject-build-system)
     (native-inputs
      (list python-ci-watson
            python-numpy
            python-pytest
-           python-pytest-cov
            python-setuptools
-           python-setuptools-scm
-           python-wheel))
+           python-setuptools-scm))
     (propagated-inputs
      (list python-astropy
            python-numpy
-           python-scipy
-           python-stsci-tools))
+           python-scipy))
     (home-page "https://hst-docs.stsci.edu/cosdhb/chapter-3-cos-calibration")
     (synopsis "Calibration software for Cosmic Origins Spectrograph")
     (description
