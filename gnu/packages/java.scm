@@ -700,7 +700,8 @@ IcedTea build harness.")
                          "/icedtea8/" version "/" name ".tar.xz"))
                    (sha256 (base32 hash))
                    (patches patches)))))
-    (package (inherit icedtea-7)
+    (package
+      (inherit icedtea-7)
       (version "3.19.0")
       (source (origin
                 (method url-fetch)
@@ -721,126 +722,122 @@ IcedTea build harness.")
                     (("DIST_NAME=\"\\$build_os\"")
                      "DIST_NAME=\"guix\"")))))
       (arguments
-       `(#:imported-modules
-         ((guix build ant-build-system)
-          ,@%default-gnu-imported-modules)
-
-         #:disallowed-references ,(list (gexp-input
-                                         (this-package-native-input "jdk")
-                                         "jdk"))
-
-         ,@(substitute-keyword-arguments (package-arguments icedtea-7)
-             ((#:modules modules)
-              `((guix build utils)
-                (guix build gnu-build-system)
-                ((guix build ant-build-system) #:prefix ant:)
-                (ice-9 match)
-                (ice-9 popen)
-                (srfi srfi-19)
-                (srfi srfi-26)))
-             ((#:configure-flags flags)
-              `(let ((jdk (assoc-ref %build-inputs "jdk")))
-                 `(,(string-append "CFLAGS=-fcommon"
+       (substitute-keyword-arguments (package-arguments icedtea-7)
+         ((#:imported-modules modules %default-gnu-imported-modules)
+          (cons '(guix build ant-build-system) modules))
+         ((#:disallowed-references refs '())
+          (cons (gexp-input
+                 (this-package-native-input "jdk")
+                 "jdk")
+                refs))
+         ((#:modules modules %default-gnu-modules)
+          (append '(((guix build ant-build-system) #:prefix ant:)
+                    (ice-9 match)
+                    (ice-9 popen)
+                    (srfi srfi-1)
+                    (srfi srfi-19)
+                    (srfi srfi-26))
+                  modules))
+         ((#:configure-flags _ '())
+          #~(let ((jdk (assoc-ref %build-inputs "jdk")))
+              (list (string-append "CFLAGS=-fcommon"
                                    " -Wno-error=implicit-function-declaration"
                                    " -Wno-error=implicit-int"
                                    " -Wno-error=incompatible-pointer-types"
                                    " -Wno-error=int-conversion")
-                   "CXXFLAGS=-fcommon"
-                   "--enable-bootstrap"
-                   "--enable-nss"
-                   ,(string-append "--with-parallel-jobs="
+                    "CXXFLAGS=-fcommon"
+                    "--enable-bootstrap"
+                    "--enable-nss"
+                    (string-append "--with-parallel-jobs="
                                    (number->string (parallel-job-count)))
-                   ;; Java Flight Recorder isn't supported on some architectures.
-                   ,@(if ,(target-ppc32?)
-                       `("--enable-jfr=no")
-                       '())
-                   "--disable-docs"     ; This phase can take hours on slow machines.
-                   "--disable-downloading"
-                   "--disable-system-pcsc"
-                   "--disable-system-sctp"
-                   "--disable-tests"  ;they are run in the check phase instead
-                   "--with-openjdk-src-dir=./openjdk.src"
-                   ,(string-append "--with-jdk-home=" jdk))))
-             ((#:phases phases)
-              `(modify-phases ,phases
-                 (delete 'fix-x11-extension-include-path)
-                 (delete 'patch-paths)
-                 (delete 'set-additional-paths)
-                 (delete 'patch-patches)
-                 (delete 'patch-bitrot)
-                 (delete 'use-classpath)
-                 ;; Prevent passing -j (parallel-job-count) to make
-                 (replace 'build
-                   (lambda* (#:key (make-flags '()) #:allow-other-keys)
-                     (apply invoke "make" make-flags)))
-                 ;; Prevent the keytool from recording the current time when
-                 ;; adding certificates at build time.
-                 (add-after 'unpack 'patch-keystore
-                   (lambda _
-                     (substitute* "openjdk.src/jdk/src/share/classes/sun/security/provider/JavaKeyStore.java"
-                       (("date = new Date\\(\\);")
-                        "\
+                    ;; Java Flight Recorder isn't supported on some architectures.
+                    #$@(if (target-ppc32?)
+                           #~("--enable-jfr=no")
+                           #~())
+                    "--disable-docs" ; This phase can take hours on slow machines.
+                    "--disable-downloading"
+                    "--disable-system-pcsc"
+                    "--disable-system-sctp"
+                    "--disable-tests" ;they are run in the check phase instead
+                    "--with-openjdk-src-dir=./openjdk.src"
+                    (string-append "--with-jdk-home=" jdk))))
+         ((#:phases phases '%standard-phases)
+          #~(modify-phases #$phases
+              (delete 'fix-x11-extension-include-path)
+              (delete 'patch-paths)
+              (delete 'set-additional-paths)
+              (delete 'patch-patches)
+              (delete 'patch-bitrot)
+              (delete 'use-classpath)
+              (replace 'build
+                (lambda* (#:key (make-flags '()) #:allow-other-keys)
+                  ;; Prevent passing -j (parallel-job-count) to make, which
+                  ;; is rejected by the build Makefiles; this does *not*
+                  ;; disable parallel builds.
+                  (apply invoke "make" make-flags)))
+              ;; Prevent the keytool from recording the current time when
+              ;; adding certificates at build time.
+              (add-after 'unpack 'patch-keystore
+                (lambda _
+                  (substitute* "openjdk.src/jdk/src/share/classes/sun/security/provider/JavaKeyStore.java"
+                    (("date = new Date\\(\\);")
+                     "\
 date = (System.getenv(\"SOURCE_DATE_EPOCH\") != null) ?\
 new Date(Long.parseLong(System.getenv(\"SOURCE_DATE_EPOCH\"))) :\
-new Date();"))
-                     #t))
-                 (add-after 'unpack 'patch-jni-libs
-                   ;; Hardcode dynamically loaded libraries.
-                   (lambda _
-                     (define remove
-                       (@ (srfi srfi-1) remove))
+new Date();"))))
+              (add-after 'unpack 'patch-jni-libs
+                ;; Hardcode dynamically loaded libraries.
+                (lambda _
+                  (define (icedtea-or-openjdk? path)
+                    (or (string-contains path "openjdk")
+                        (string-contains path "icedtea")))
 
-                     (define (icedtea-or-openjdk? path)
-                       (or (string-contains path "openjdk")
-                           (string-contains path "icedtea")))
-
-                     (let* ((library-path (remove icedtea-or-openjdk?
-                                                  (search-path-as-string->list
-                                                   (getenv "LIBRARY_PATH"))))
-                            (find-library (lambda (name)
-                                            (or (search-path
-                                                 library-path
-                                                 (string-append "lib" name ".so"))
-                                                (string-append "lib" name ".so")))))
-                       (for-each
-                        (lambda (file)
-                          (catch 'decoding-error
-                            (lambda ()
-                              (substitute* file
-                                (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
-                                  _ name version)
-                                 (string-append "\"" (find-library name) "\""))
-                                (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
-                                 (string-append "\"" (find-library name) "\""))))
-                            (lambda _
-                              ;; Those are safe to skip.
-                              (format (current-error-port)
-                                      "warning: failed to substitute: ~a~%"
-                                      file))))
-                        (find-files "openjdk.src/jdk/src/solaris/native"
-                                    "\\.c|\\.h")))))
-                 (replace 'fix-openjdk
-                   (lambda _
-                     (substitute*
-                         '("openjdk.src/jdk/src/solaris/native/java/net/PlainSocketImpl.c"
-                           "openjdk.src/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c")
-                       (("#include <sys/sysctl.h>")
-                        "#include <linux/sysctl.h>"))))
-                 (replace 'install
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let ((doc (string-append (assoc-ref outputs "doc")
-                                               "/share/doc/icedtea"))
-                           (jre (assoc-ref outputs "out"))
-                           (jdk (assoc-ref outputs "jdk")))
-                       (copy-recursively "openjdk.build/docs" doc)
-                       (copy-recursively "openjdk.build/images/j2re-image" jre)
-                       (copy-recursively "openjdk.build/images/j2sdk-image" jdk)
-                       ;; Install the nss.cfg file to JRE to enable SSL/TLS
-                       ;; support via NSS.
-                       (copy-file (string-append jdk "/jre/lib/security/nss.cfg")
-                                  (string-append jre "/lib/security/nss.cfg")))))
-                 (add-after 'install 'strip-jar-timestamps
-                   (assoc-ref ant:%standard-phases 'strip-jar-timestamps)))))))
+                  (let* ((library-path (remove icedtea-or-openjdk?
+                                               (search-path-as-string->list
+                                                (getenv "LIBRARY_PATH"))))
+                         (find-library (lambda (name)
+                                         (or (search-path
+                                              library-path
+                                              (string-append "lib" name ".so"))
+                                             (string-append "lib" name ".so")))))
+                    (for-each
+                     (lambda (file)
+                       (catch 'decoding-error
+                         (lambda ()
+                           (substitute* file
+                             (("VERSIONED_JNI_LIB_NAME\\(\"(.*)\", \"(.*)\"\\)"
+                               _ name version)
+                              (string-append "\"" (find-library name) "\""))
+                             (("JNI_LIB_NAME\\(\"(.*)\"\\)" _ name)
+                              (string-append "\"" (find-library name) "\""))))
+                         (lambda _
+                           ;; Those are safe to skip.
+                           (format (current-error-port)
+                                   "warning: failed to substitute: ~a~%"
+                                   file))))
+                     (find-files "openjdk.src/jdk/src/solaris/native"
+                                 "\\.c|\\.h")))))
+              (replace 'fix-openjdk
+                (lambda _
+                  (substitute*
+                      '("openjdk.src/jdk/src/solaris/native/java/net/PlainSocketImpl.c"
+                        "openjdk.src/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c")
+                    (("#include <sys/sysctl.h>")
+                     "#include <linux/sysctl.h>"))))
+              (replace 'install
+                (lambda _
+                  (copy-recursively "openjdk.build/docs"
+                                    (string-append #$output:doc
+                                                   "/share/doc/icedtea"))
+                  (copy-recursively "openjdk.build/images/j2re-image" #$output)
+                  (copy-recursively "openjdk.build/images/j2sdk-image" #$output:jdk)
+                  ;; Install the nss.cfg file to JRE to enable SSL/TLS
+                  ;; support via NSS.
+                  (copy-file (string-append #$output:jdk
+                                            "/jre/lib/security/nss.cfg")
+                             (string-append #$output "/lib/security/nss.cfg"))))
+              (add-after 'install 'strip-jar-timestamps
+                (assoc-ref ant:%standard-phases 'strip-jar-timestamps))))))
       (native-inputs
        `(("jdk" ,icedtea-7 "jdk")
          ("openjdk-src"
