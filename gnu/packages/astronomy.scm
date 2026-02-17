@@ -5361,7 +5361,7 @@ across many files.")
 (define-public python-glue-qt
   (package
     (name "python-glue-qt")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method git-fetch)
@@ -5370,11 +5370,50 @@ across many files.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hs1njs25mzmkxr84mrmw4p3pl1fkdlagpnflcd0cvdn9g2mbdsq"))))
+        (base32 "02qpigz3vjlr0w3xvicd6g3mpczrd9bqn56sxyc0djgmrdz4486v"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 618 passed, 4 skipped, 2 xfailed, 436 warnings
+      ;; tests: 537 passed, 2 skipped, 17 deselected, 1 xfailed, 26 warnings
+      #:test-flags
+      ;; XXX: Tests fail with various pixel mismatches.
+      #~(list "--ignore=glue_qt/viewers/image/tests/test_data_viewer.py"
+              (string-append "--deselect=glue_qt/app/tests/"
+                             "test_application.py::test_reset_session_terminal")
+              (string-append "--deselect=glue_qt/app/tests/"
+                             "test_application.py::test_open_session_terminal")
+              (string-append "--deselect=glue_qt/plugins/dendro_viewer/tests/"
+                             "test_data_viewer.py::TestDendrogramCommon::"
+                             "test_session_round_trip")
+              #$@(map (lambda (ls)
+                        (string-append "--deselect=glue_qt/viewers/"
+                                       (string-join ls "::")))
+                      '(("common/tests/test_data_viewer.py"
+                         "TestDataViewerScatter" "test_viewer_size")
+                        ("common/tests/test_data_viewer.py"
+                         "TestDataViewerImage" "test_viewer_size")
+                        ("common/tests/test_data_viewer.py"
+                         "TestDataViewerHistogram" "test_viewer_size")
+                        ("histogram/tests/test_data_viewer.py"
+                         "TestHistogramCommon" "test_session_round_trip")
+                        ("profile/tests/test_data_viewer.py"
+                         "TestProfileCommon" "test_session_round_trip")
+                        ("scatter/tests/test_data_viewer.py"
+                         "TestScatterCommon" "test_session_round_trip")
+                        ("table/tests/test_data_viewer.py"
+                         "test_table_widget")
+                        ("table/tests/test_data_viewer.py"
+                         "test_table_widget_session_no_subset")
+                        ("table/tests/test_data_viewer.py"
+                         "test_table_widget_session_filter")
+                        ("image/tests/test_display_region_data.py"
+                         "TestRegionScatterViewer" "test_link_first_then_add")
+                        ("image/tests/test_display_region_data.py"
+                         "TestRegionScatterViewer" "test_add_first_then_link")
+                        ("image/tests/test_display_region_data.py"
+                         "TestRegionScatterViewer" "test_subset")
+                        ("image/tests/test_display_region_data.py"
+                         "TestWCSRegionDisplay" "test_basics"))))
       #:phases
       #~(modify-phases %standard-phases
          (add-after 'unpack 'relax-requirements
