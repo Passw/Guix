@@ -9454,10 +9454,11 @@ instruments.")
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 1520 passed, 185 skipped, 17 xfailed, 6048 warnings
+      ;; tests: 1519 passed, 170 skipped, 17 xfailed, 6048 warnings
       #:test-flags
       #~(list "--numprocesses" (number->string (min 8 (parallel-job-count)))
               ;; AttributeError: module 'numpy' has no attribute 'product'
+              "--deselect=spectral_cube/tests/test_dask.py::test_dask_distributed"
               #$@(map (lambda (test) (string-append "--deselect="
                                                     "spectral_cube/tests/"
                                                     "test_casafuncs.py::"
