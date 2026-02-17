@@ -5266,17 +5266,20 @@ astronomy-specific functionality")
 (define-public python-glue-core
   (package
     (name "python-glue-core")
-    (version "1.24.1")
+    (version "1.25.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "glue_core" version))
        (sha256
-        (base32 "062l4bhh1dvsazrlnjc4kr3qj9g3s8qmcs0kqb1libiimy6rdbkk"))))
+        (base32 "0wmz67wlkd2qr9dlb5g96q80cqhfynhbmrqzr7r6kj3v8629ydf0"))))
     (build-system pyproject-build-system)
     (arguments
-     ;; XXX: This test is flaky, it can fail if the CI system is slow.
-     (list #:test-flags #~(list "-k" "not test_combine_slices_hypot")))
+     ;; tests: 1556 passed, 1 deselected, 6 xfailed, 1 xpassed, 41 warnings
+     (list
+      #:test-flags
+      ;; XXX: This test is flaky, it can fail if the CI system is slow.
+      #~(list "-k" "not test_combine_slices_hypot")))
     (native-inputs
      (list python-pytest
            python-pytest-mpl
