@@ -5486,15 +5486,15 @@ specifically pulsar timing array signals.")
 (define-public python-gwcs-1
   (package
     (name "python-gwcs")
-    (version "1.0.0")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gwcs" version))
        (sha256
-        (base32 "08s7blad5idafx565745my72hjsxz4dqrg2kzppqw2isgr7bs8gr"))))
+        (base32 "0jhizh8m2bd8hcq4biinnya0xfl62rg0cix0jhyl7x7slaq87k67"))))
     (build-system pyproject-build-system)
-    ;; tests: 1038 passed, 6 skipped, 10 warnings
+    ;; tests: 1061 passed, 12 skipped, 10 warnings
     (native-inputs
      (list python-pytest
            python-pytest-astropy
