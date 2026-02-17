@@ -2454,38 +2454,37 @@ implementation package such as asdf-astropy.")
      (propagated-inputs '()))))
 
 (define-public python-asdf-wcs-schemas
-  (hidden-package
-   (package
-     (name "python-asdf-wcs-schemas")
-     (version "0.5.0")
-     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "asdf_wcs_schemas" version))
-        (sha256
-         (base32 "1dar2pzf2plwyl1rbmnv8fqvx1ljgpf3z39d4ybmn690djjdsyxg"))))
-     (build-system pyproject-build-system)
-     (arguments
-      (list
-       #:test-flags #~(list "tests")))
-     (native-inputs
-      (list python-asdf
-            python-pytest
-            python-pytest-openfiles
-            python-setuptools
-            python-setuptools-scm
-            python-wheel))
-     (propagated-inputs
-      (list python-asdf-coordinates-schemas
-            python-asdf-standard
-            python-asdf-transform-schemas))
-     (home-page "https://github.com/asdf-format/asdf-wcs-schemas")
-     (synopsis "ASDF WCS Schemas")
-     (description
-      "This package provides ASDF schemas for validating World Coordinate
+  (package
+    (name "python-asdf-wcs-schemas")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asdf_wcs_schemas" version))
+       (sha256
+        (base32 "1dar2pzf2plwyl1rbmnv8fqvx1ljgpf3z39d4ybmn690djjdsyxg"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:test-flags #~(list "tests")))
+    (native-inputs
+     (list python-asdf
+           python-pytest
+           python-pytest-openfiles
+           python-setuptools
+           python-setuptools-scm
+           python-wheel))
+    (propagated-inputs
+     (list python-asdf-coordinates-schemas
+           python-asdf-standard
+           python-asdf-transform-schemas))
+    (home-page "https://github.com/asdf-format/asdf-wcs-schemas")
+    (synopsis "ASDF WCS Schemas")
+    (description
+     "This package provides ASDF schemas for validating World Coordinate
 System (WCS) tags.  Users should not need to install this directly; instead,
 install an implementation package such as gwcs.")
-     (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public python-asdf-zarr
   (package
