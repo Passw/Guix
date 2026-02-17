@@ -5607,33 +5607,28 @@ ConsistentTrees).")
 (define-public python-halotools
   (package
     (name "python-halotools")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "halotools" version))
        (sha256
-        (base32 "004nqlyiv6gyzmjk840a1hl3j4sgi5xwbfibankwi7281gq4hx3d"))))
+        (base32 "1zwa2pbfk944kf415s3bdyq4cql9alicls56dw82gvwd8mkg9567"))))
     (build-system pyproject-build-system)
     (arguments
      (list
       #:phases
       #~(modify-phases %standard-phases
-          ;; Use built library for tests.
-          (replace 'check
-            (lambda* (#:key tests? test-flags #:allow-other-keys)
-              (when tests?
-                (with-directory-excursion #$output
-                  (setenv "HOME" "/tmp")
-                  (apply invoke "pytest" "-vv" test-flags))))))))
+          (add-before 'check 'remove-local-source
+            (lambda _
+              (delete-file-recursively "halotools"))))))
     (native-inputs
      (list python-cython
            python-extension-helpers
            python-pytest
            python-pytest-astropy
            python-setuptools
-           python-setuptools-scm
-           python-wheel))
+           python-setuptools-scm))
     (propagated-inputs
      (list python-astropy
            python-beautifulsoup4
