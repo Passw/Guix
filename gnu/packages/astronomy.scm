@@ -2314,26 +2314,28 @@ Frame},@url{http://facebook.github.io/zstd/, Zstandard}.")
 (define-public python-asdf-coordinates-schemas
   (package
     (name "python-asdf-coordinates-schemas")
-    (version "0.4.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "asdf_coordinates_schemas" version))
        (sha256
-        (base32 "1i5w1v74b84ygbd9pw9cs35bjaqs35f5iavazhjpbycqr1pf8rvh"))))
+        (base32 "1qilyzmb0nzpj7ss22xqwvi2dy7b706f2v4y5f7wn9rg67y75kyr"))))
     (build-system pyproject-build-system)
     (arguments
      (list
+      ;; tests: 257 passed
       #:test-flags
-      #~(list "--numprocesses" (number->string (parallel-job-count)))))
+      #~(list "--numprocesses" (number->string (min 8 (parallel-job-count))))))
     (native-inputs
      (list python-pytest
+           python-pytest-asdf-plugin
            python-pytest-xdist
            python-setuptools
-           python-setuptools-scm
-           python-wheel))
+           python-setuptools-scm))
     (propagated-inputs
-     (list python-asdf))
+     (list python-asdf
+           python-asdf-standard))
     (home-page "https://github.com/asdf-format/asdf-coordinates-schemas")
     (synopsis "ASDF coordinates schemas")
     (description
