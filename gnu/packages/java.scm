@@ -1386,9 +1386,6 @@ new Date();"))))
           (add-after 'unpack 'patch-jni-libs
             ;; Hardcode dynamically loaded libraries.
             (lambda _
-              (define remove
-                (@ (srfi srfi-1) remove))
-
               (define (icedtea-or-openjdk? path)
                 (or (string-contains path "openjdk")
                     (string-contains path "icedtea")))
@@ -1421,26 +1418,24 @@ new Date();"))))
             (lambda _
               (with-output-to-file ".src-rev"
                 (lambda _
-                  (display #$version)))))
+                  (display #$(package-version this-package))))))
           (replace 'build
-            (lambda* (#:key parallel-build? make-flags #:allow-other-keys)
+            (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
               (apply invoke "make" "all"
-                     `(,@(if parallel-build?
-                             (list (string-append "JOBS="
-                                                  (number->string (parallel-job-count))))
-                             '("JOBS=1"))
-                       ,@make-flags))))
+                     (format #f "JOBS=~a" (if parallel-build?
+                                              (parallel-job-count)
+                                              1))
+                     make-flags)))
           ;; jdk 11 does not build jre by default any more; so explicitly build
           ;; it (see:
           ;; https://github.com/AdoptOpenJDK/openjdk-build/issues/356).
           (add-after 'build 'build-jre
             (lambda* (#:key parallel-build? make-flags #:allow-other-keys)
               (apply invoke "make" "legacy-jre-image"
-                     `(,@(if parallel-build?
-                             (list (string-append "JOBS="
-                                                  (number->string (parallel-job-count))))
-                             '("JOBS=1"))
-                       ,@make-flags))))
+                     (format #f "JOBS=~a" (if parallel-build?
+                                              (parallel-job-count)
+                                              1))
+                     make-flags)))
           (replace 'install
             (lambda _
               (let ((images (car (find-files "build" "-server-release"
@@ -1469,28 +1464,7 @@ new Date();"))))
                          (string-append lib-jdk "/libjvm.so"))
                 (symlink (string-append lib-out "/server/libjvm.so")
                          (string-append lib-out "/libjvm.so")))))
-          (add-after 'install 'strip-character-data-timestamps
-            (lambda _
-              (let ((archive (string-append #$output:jdk "/lib/src.zip"))
-                    (dir (mkdtemp "zip-contents.XXXXXX")))
-                (with-directory-excursion dir
-                  (invoke "unzip" archive))
-                (delete-file archive)
-                (with-directory-excursion dir
-                  (let ((char-data-files (find-files "." "CharacterData")))
-                    (for-each (lambda (file)
-                                (substitute* file
-                                  (((string-append "This file was generated "
-                                                   "AUTOMATICALLY from a template "
-                                                   "file.*"))
-                                   (string-append "This file was generated "
-                                                  "AUTOMATICALLY from a template "
-                                                  "file"))))
-                              char-data-files)))
-                (with-directory-excursion dir
-                  (let ((files (find-files "." #:directories? #t)))
-                    (apply invoke "zip" "-0" "-X" archive files))))))
-          (add-after 'strip-character-data-timestamps 'remove-extraneous-files
+          (add-after 'install 'remove-extraneous-files
             (lambda* (#:key outputs #:allow-other-keys)
               ;; Remove the *.diz and src.zip files for space considerations.
               ;; The former are compressed debuginfo files not typically
