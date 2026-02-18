@@ -535,6 +535,8 @@
                                                    "/lib/aarch64")
                                                   ("powerpc-linux"
                                                    "/lib/ppc")
+                                                  ("powerpc64le-linux"
+                                                   "/lib/ppc64le")
                                                   ;; We need a catch-all, dropping
                                                   ;; '-linux' works in most cases.
                                                   (_
