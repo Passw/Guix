@@ -1016,6 +1016,12 @@ HTTP-PORT."
                  #:times 10
                  #:delay 2)))
 
+            (test-assert "Miniflux configuration action returns an existing file path"
+	      (marionette-eval '(with-shepherd-action 'miniflux ('configuration)
+	                                              results
+	                          (file-exists? (car results)))
+	                       marionette))
+
             (test-end)))))
   (gexp->derivation (string-append name "-test") test))
 

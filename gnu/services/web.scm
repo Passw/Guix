@@ -2460,7 +2460,10 @@ Use absolute path like @code{\"/var/run/miniflux/miniflux.sock\"} for a Unix soc
                               "-config-file"
                               #$config-file)
 		        #:log-file #$log-file))
-              (stop #~(make-kill-destructor)))))))
+              (stop #~(make-kill-destructor))
+              (actions
+	       (list
+	        (shepherd-configuration-action config-file))))))))
 
 (define (miniflux-accounts config)
   (match-record config <miniflux-configuration>
