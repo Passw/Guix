@@ -2168,22 +2168,18 @@ generates strong passphrases, inspired by
                    license:mpl1.1)))) ;portuguese word list
 
 (define-public himitsu
-  ;; As of time of packaging, a side channel attack was fixed but not yet
-  ;; included in a numbered version.
-  (let ((commit "270cc4b8816fd7dd2020896ced04d2c83f48c4fc")
-        (revision "0"))
-    (package
+  (package
       (name "himitsu")
-      (version (git-version "0.9" revision commit))
+      (version "0.10")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                        (url "https://git.sr.ht/~sircmpwn/himitsu")
-                       (commit commit)))
+                       (commit version)))
                 (file-name (git-file-name name version))
                 (sha256
                   (base32
-                    "111cf31vymxb752777gjingwhqdnwhr3zn1x59kg798nl88nikp7"))))
+                    "1753cvfzhr7pppf4w13qbi54bkih70rzdgd63w5ax2kl0v4g8vlq"))))
       (build-system hare-build-system)
       (native-inputs (list scdoc))
       (supported-systems %hare-supported-systems)
@@ -2195,7 +2191,7 @@ requested either through clients such as @code{himitsu-ssh} or through the
 included @code{hiq} tool.  Upon request, the user is prompted to authorize
 access for that process to that specific secret.  Himitsu uses the Hare
 cryptographic library, which has not been audited.")
-      (license license:gpl3))))
+      (license license:gpl3)))
 
 (define-public hiprompt-gtk
   (let ((commit "2a45540af9da35967f93d1a1a32d57a494ab318c")

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2025 jgart <jgart@dismail.de>
+;;; Copyright © 2026 Nemin <bergengocia@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
