@@ -1225,7 +1225,7 @@ files mistakenly overwritten or destroyed just a few seconds ago.")
     (native-inputs
      (list pkg-config))
     (inputs
-     (list fuse-3.18 attr))
+     (list fuse attr))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure))  ; no configure script

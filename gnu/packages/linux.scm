@@ -4926,16 +4926,16 @@ or kill them altogether.")
 (define-public fuse
   (package
     (name "fuse")
-    (version "3.10.5")
+    (version "3.18.1")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://github.com/libfuse/libfuse/releases/"
                               "download/fuse-" version
-                              "/fuse-" version ".tar.xz"))
+                              "/fuse-" version ".tar.gz"))
               (sha256
                (base32
-                "0rlnnsiw614qcmgy8xz67044gqc1pbvvf2yxjv44lh27bm487qmj"))))
+                "0b1jp5gp2gv40gv6cvmv86rcr4l0mdh050qbvnxl0xcwya45qffx"))))
     (build-system meson-build-system)
     (inputs
      (list bash-minimal util-linux))
@@ -4995,21 +4995,6 @@ part of this problem by allowing users to run file system implementations as
 user-space processes.")
     (license (list license:lgpl2.1      ; library
                    license:gpl2+))))    ; command-line utilities
-
-(define-public fuse-3.18
-  (package
-    (inherit fuse)
-    (name "fuse")
-    (version "3.18.1")
-    (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/libfuse/libfuse/releases/"
-                              "download/fuse-" version
-                              "/fuse-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0b1jp5gp2gv40gv6cvmv86rcr4l0mdh050qbvnxl0xcwya45qffx"))))))
 
 (define-public fuse-2
   (package
