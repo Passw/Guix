@@ -1343,6 +1343,7 @@ new Date();"))))
       ;; TODO package jtreg
       #:configure-flags
       #~(list
+         "--disable-hotspot-gtest"      ;not currently running tests
          ;; Add flags for compilation with gcc >= 10.
          #$(string-append "--with-extra-cflags=-fcommon"
                           " -fno-delete-null-pointer-checks"
@@ -1716,6 +1717,11 @@ blacklisted.certs.pem"
    (inputs
     (modify-inputs (package-inputs base)
       (append libxcursor)))             ;for our patch to work
+   (arguments
+    (substitute-keyword-arguments (package-arguments base)
+      ((#:configure-flags flags '%standard-phases)
+       #~(cons "--without-gtest"        ;this replaces...
+               (delete "--disable-hotspot-gtest" #$flags))))) ;... this
    (native-inputs
     (modify-inputs (package-native-inputs base)
       (delete "make"                    ;remove old gnu-make-4.2
