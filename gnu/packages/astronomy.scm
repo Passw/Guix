@@ -8939,30 +8939,50 @@ orbits described in TLE files.")
 (define-public python-sirilic
   (package
     (name "python-sirilic")
-    (version "1.15.12")
+    (version "2.0.7")
     (source
      (origin
-       (method git-fetch) ; not published on PyPI
+       (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.com/free-astro/sirilic")
-             (commit (string-append "V" version))))
+              (url "https://gitlab.com/free-astro/sirilic")
+              (commit (string-append "V." version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08j7gkyc5jd3kavffdxcr9b1ckmsswsvm61f301kvdqk2xcsh0gb"))))
+        (base32 "0d7j6ji06gd16z2569k1jkl53yigi3c17qq5bgvj3pqb77valdqs"))))
     (build-system pyproject-build-system)
     (arguments
-     (list #:tests? #f)) ; no tests
+     (list
+      #:tests? #f ;no tests
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'prepare-python-module-setuptools
+            (lambda _
+              (call-with-output-file "pyproject.toml"
+                (lambda (port)
+                  (format port "[build-system]
+requires = ['setuptools']
+build-backend = 'setuptools.build_meta'
+[project]
+name = 'sirilic'
+version = ~s
+description = ~s
+[tool.setuptools.packages.find]
+include = ['sirilic*']
+namespaces = true"
+                          #$version
+                          #$(package-description this-package)))))))))
     (native-inputs
-     (list nss-certs-for-test
-           python-setuptools
-           python-wheel))
+     (list python-setuptools))
     (propagated-inputs
      (list python-requests
            python-wxpython))
-    (home-page "https://siril.org/tutorials/pysiril/")
+    (home-page "https://gitlab.com/free-astro/sirilic")
     (synopsis "Acquisition files preparation software to process with SiriL")
     (description
-     "SiriLic (SiriL's Interactif Companion) is a software for preparing
+     "This package provides a plugin for SiriL, see the installation guide on
+the project's @url{https://gitlab.com/free-astro/sirilic/-/wikis/home, Wiki}.
+
+SiriLic (SiriL's Interactif Companion) is a software for preparing
 acquisition files (raw, Biases, Flat and Dark) for processing with SiriL
 software.
 
