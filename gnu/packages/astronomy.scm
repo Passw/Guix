@@ -7627,7 +7627,7 @@ angular units for lensing computations with lenstronomy.")
            python-setuptools-scm))
     (propagated-inputs
      (list python-astropy
-           ;; python-gammapy    ;not packaged yet in Guix
+           python-gammapy
            python-numpy
            python-packaging
            python-scipy
@@ -7635,8 +7635,9 @@ angular units for lensing computations with lenstronomy.")
     (home-page "https://github.com/cta-observatory/pyirf")
     (synopsis "Python IRF builder")
     (description
-     "This package provides a python library to calculate IACT IRFs
-and Sensitivities.")
+     "This package provides a python library to calculate @acronym{IACT,
+Imaging Atmospheric Cherenkov Telescopes} @acronym{IRF, Instrument Response
+Function} and Sensitivities.")
     (license license:expat)))
 
 (define-public python-pynbody
