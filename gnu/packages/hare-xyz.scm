@@ -74,7 +74,7 @@
 (define-public hare-json
   (package
     (name "hare-json")
-    (version "0.25.2.0")
+    (version "0.26.0.0")
     (source
      (origin
        (method git-fetch)
@@ -83,7 +83,7 @@
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dkvjkxap4vm5lc04y22mdk7mn8ainljak6wc4bhjf0zq6la2w0v"))))
+        (base32 "1qzxp3lj7wxqyf67aw8jddmldcbrnjal42znwk6arhc5078za15w"))))
     (build-system hare-build-system)
     (supported-systems %hare-supported-systems)
     (home-page "https://sr.ht/~sircmpwn/hare-json")
