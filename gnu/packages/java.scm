@@ -1570,7 +1570,11 @@ new Date();"))))
     (synopsis "Java development kit")
     (description
      "This package provides the Java development kit OpenJDK.")
-    (license license:gpl2+)))
+    (license license:gpl2+)
+    (properties
+     ;; At least on a Blackbird powerpc64le machine, the build takes more than
+     ;; the default 3600s of silent timeout.
+     `((max-silent-time . ,(* 3600 2))))))
 
 (define-syntax make-openjdk
   ;; Return an OpenJDK package at VERSION with checksum HASH, using BOOTSTRAP,
