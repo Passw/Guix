@@ -2220,27 +2220,29 @@ request user consent for application access to stored secrets.")
     (license license:gpl3)))
 
 (define-public himitsu-ssh
-  (package
-    (name "himitsu-ssh")
-    (version "0.9.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://git.sr.ht/~sircmpwn/himitsu-ssh")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-                (base32
-                  "07l152rdmp1sn9jvdvad0knkgh2pj77fia4ml9r4jj392gzv30vx"))))
-    (build-system hare-build-system)
-    (inputs (list himitsu hare-ssh))
-    (native-inputs (list scdoc))
-    (supported-systems %hare-supported-systems)
-    (home-page "https://git.sr.ht/~sircmpwn/himitsu-ssh")
-    (synopsis "Himitsu ssh-agent")
-    (description "This package provides an ssh-agent implementation that
+  (let ((commit "446ff5f0529e1f837381c79d540045e829801d36")
+        (revision "0"))
+    (package
+      (name "himitsu-ssh")
+      (version (git-version "0.10.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://git.sr.ht/~sircmpwn/himitsu-ssh")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0q9vd7c5pf8v073isa0y9mpwq1jibg8fkv8cs2jcp4vq1dykamg0"))))
+      (build-system hare-build-system)
+      (inputs (list himitsu hare-ssh hare-ev))
+      (native-inputs (list scdoc))
+      (supported-systems %hare-supported-systems)
+      (home-page "https://git.sr.ht/~sircmpwn/himitsu-ssh")
+      (synopsis "Himitsu ssh-agent")
+      (description "This package provides an ssh-agent implementation that
 stores and secures keys through Himitsu.")
-    (license license:gpl3)))
+      (license license:gpl3))))
 
 (define-public himitsu-git
   (package
