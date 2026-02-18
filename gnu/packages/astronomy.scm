@@ -8770,17 +8770,17 @@ observations from the Nancy Grace Roman Space Telescope.")
 (define-public python-romanisim
   (package
     (name "python-romanisim")
-    (version "0.11.2")
+    (version "0.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "romanisim" version))
        (sha256
-        (base32 "10rrr4mkpxz9wrhxlzxhn5mrswnlz7fqln7zkfims22a95kl4ldz"))))
+        (base32 "1yld0112k57wjppljrchvll9lvh164a5r4l2dffq7hncsrllvamn"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 87 passed, 2 skipped, 8 deselected
+      ;; tests: 100 passed, 2 skipped, 8 deselected
       #:test-flags
       #~(list "--pyargs" "romanisim"
               ;; TODO: python-stpsf needs to be packaged with test data:
@@ -8804,11 +8804,6 @@ observations from the Nancy Grace Roman Space Telescope.")
                     " and not "))
       #:phases
       #~(modify-phases %standard-phases
-          ;; See: <https://github.com/spacetelescope/romanisim/pull/279>.
-          (add-after 'unpack 'relax-requirements
-            (lambda _
-              (substitute* "pyproject.toml"
-                ((".*Cython >=0.29.21.*") ""))))
           (add-before 'check 'pre-check
             (lambda _
               (setenv "HOME" "/tmp"))))))
