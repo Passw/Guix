@@ -2194,32 +2194,30 @@ cryptographic library, which has not been audited.")
       (license license:gpl3)))
 
 (define-public hiprompt-gtk
-  (let ((commit "2a45540af9da35967f93d1a1a32d57a494ab318c")
-        (revision "0"))
-    (package
-      (name "hiprompt-gtk")
-      (version (git-version "0.9" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://git.sr.ht/~sircmpwn/hiprompt-gtk")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                  (base32
-                    "0l79cmyks54kh49dbl0byz80gkydr5226rdgwvzqc0bkh933vwg4"))))
-      (build-system hare-build-system)
-      (arguments
-        (list #:tests? #f
-              #:make-flags #~(list (string-append "CC=" #$(cc-for-target)))))
-      (inputs (list himitsu hare-gi hare-adwaita hare-gtk4-layer-shell))
-      (native-inputs (list (list glib "bin") pkg-config))
-      (supported-systems %hare-supported-systems)
-      (home-page "https://git.sr.ht/~sircmpwn/hiprompt-gtk")
-      (synopsis "GTK prompter for Himitsu")
-      (description "This package provides a GTK prompter for Himitsu, used to
+  (package
+    (name "hiprompt-gtk")
+    (version "0.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://git.sr.ht/~sircmpwn/hiprompt-gtk")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0306nqrix9pfd5zkpf8fs3ih5z7fadm84fa9yzbxbdahx3g8ilv0"))))
+    (build-system hare-build-system)
+    (arguments
+     (list #:tests? #f
+           #:make-flags #~(list (string-append "CC=" #$(cc-for-target)))))
+    (inputs (list himitsu hare-gi hare-adwaita hare-gtk4-layer-shell))
+    (native-inputs (list (list glib "bin") pkg-config))
+    (supported-systems %hare-supported-systems)
+    (home-page "https://git.sr.ht/~sircmpwn/hiprompt-gtk")
+    (synopsis "GTK prompter for Himitsu")
+    (description "This package provides a GTK prompter for Himitsu, used to
 request user consent for application access to stored secrets.")
-      (license license:gpl3))))
+    (license license:gpl3)))
 
 (define-public himitsu-ssh
   (package
