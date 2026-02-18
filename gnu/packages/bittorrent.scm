@@ -99,17 +99,19 @@
 (define-public transmission
   (package
     (name "transmission")
-    (version "4.1.0")
+    (version "4.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/transmission/transmission")
                     (commit version)
+                    ;; TODO: Unbundle more available inputs, see:
+                    ;; <https://codeberg.org/guix/guix/pulls/6542#issuecomment-10935599>.
                     (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bhvl0axkd5cqbm7dfwhzvxyiz5f32gp74bdyj5jr35y9rmv0nc2"))))
+                "1v5qjarqvd26v757mj56yyw75mn3ydvhxl5hdkw8hn3idr1lww3k"))))
     (build-system cmake-build-system)
     (outputs '("out"                      ; library and command-line interface
                "gui"))                    ; graphical user interface
