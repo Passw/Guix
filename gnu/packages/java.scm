@@ -1829,8 +1829,8 @@ blacklisted.certs.pem"
 
 (define-public openjdk25
   (make-openjdk
-   openjdk24 "25"
-   "15yzj370qgkh7jfcm2jzr8g7ah9x0p8m85ang7q4y6lnzk23ni76"))
+   openjdk24 "25.0.2"
+   "03aa34lscr3qbdl6qz3gqyp0nzkqfj02362mzmpkiq3y2g5xdnrj"))
 
 ;;; Convenience alias to point to the latest version of OpenJDK.
 (define-public openjdk openjdk25)
