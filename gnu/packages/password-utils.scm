@@ -2247,7 +2247,7 @@ stores and secures keys through Himitsu.")
 (define-public himitsu-git
   (package
     (name "himitsu-git")
-    (version "0.9.0")
+    (version "0.10.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2256,7 +2256,7 @@ stores and secures keys through Himitsu.")
               (file-name (git-file-name name version))
               (sha256
                 (base32
-                  "09ww866k4ns9cpyqm9vixlyadwk3q8y24pxhqs0zxc3i4i3168yz"))))
+                  "1m3n2j1sahks3sn4wb8wxnd1q05fc4acqpylk0fna5i28kn61m47"))))
     (build-system hare-build-system)
     (arguments (list #:tests? #f)) ; no tests
     (inputs (list himitsu))
