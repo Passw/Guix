@@ -2663,7 +2663,7 @@ modules for building a Wayland compositor.")
 (define-public wl-mirror
   (package
     (name "wl-mirror")
-    (version "0.18.3")
+    (version "0.18.5")
     (source
      (origin
        (method git-fetch)
@@ -2672,7 +2672,7 @@ modules for building a Wayland compositor.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1acx42p74p1bz569l3whk1mw0s3ki229jz6072n0hc6yy5j84gy6"))))
+        (base32 "04psbw98aw1i56m3frl3ji0mcwinnxzwxvgc1m0v3929vycb8i19"))))
     (build-system cmake-build-system)
     (arguments
      (list
