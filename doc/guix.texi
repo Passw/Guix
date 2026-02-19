@@ -54601,6 +54601,13 @@ of downgrading your home---be careful!
 
 @cindex documentation, searching for
 @cindex searching for documentation
+Documentation for Guix itself is @uref{https://guix.gnu.org/manual/devel,
+available online} and documentation for a number of ``Guix-adjacent
+packages'' is available from @uref{https://doc.guix.gnu.org, the
+Documentation Center}.  These provide an easy way to browse
+documentation online, but you can also access it locally on your
+computer, as we will see below.
+
 @cindex Info, documentation format
 @cindex man pages
 @cindex manual pages
