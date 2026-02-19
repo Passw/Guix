@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013-2020, 2022-2023, 2025 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013-2020, 2022-2023, 2025-2026 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020, 2023 Efraim Flashner <efraim@flashner.co.il>
@@ -211,7 +211,13 @@ XTerm*metaSendsEscape: true\n"))
 
 (define %default-gdbinit
   (plain-file "gdbinit"
-              "# Tell GDB where to look for separate debugging files.
+              "\
+# Record command history.
+set history filename ~/.cache/gdb/history
+set history save on
+set history size 50000
+
+# Tell GDB where to look for separate debugging files.
 guile
 (use-modules (gdb))
 (execute (string-append \"set debug-file-directory \"
@@ -291,6 +297,12 @@ for a colorful Guile experience.\\n\\n\"))))\n"))
 
 home-config"))
 
+(define gdb-history-placeholder
+  ;; Since GDB will not create ~/.cache/gdb by itself when attempting to save
+  ;; its history file, add a placeholder that ensures this directory exists.
+  (plain-file "gdb-history"
+              "# GDB command history.\n"))
+
 (define (default-skeletons)
   "Return the default skeleton files for /etc/skel.  These files are copied by
 'useradd' in the home directory of newly created user accounts."
@@ -308,6 +320,7 @@ home-config"))
       (".Xdefaults" ,xdefaults)
       (".guile" ,%default-dotguile)
       (".config/gdb/gdbinit" ,gdbinit)
+      (".cache/gdb/history" ,gdb-history-placeholder)
       ("guix-home-config.scm" ,%default-skeleton-home-config))))
 
 (define (skeleton-directory skeletons)
