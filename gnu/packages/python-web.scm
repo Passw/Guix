@@ -88,6 +88,7 @@
 ;;; Copyright © 2025, 2026 Allan Adair <allan@adair.no>
 ;;; Copyright © 2025 Aaron Covrig <aaron.covrig.us@ieee.org>
 ;;; Copyright © 2026 Daniel Khodabakhsh <d@niel.khodabakh.sh>
+;;; Copyright © 2026 mst <mstenek@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -218,6 +219,48 @@ Constrained Application Protocol}, http://coap.space/}.  It facilitates
 writing applications that talk to network enabled embedded
 @acronym{IoT,Internet of Things} devices.")
     (license license:expat)))
+
+(define-public python-alpaca-py
+  (package
+    (name "python-alpaca-py")
+    (version "0.43.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/alpacahq/alpaca-py")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0majn27r2s2z5nbqvkpmw04kswhj9xkmvmm0rkvb3fga9lwwivlb"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'build 'set-version
+            (lambda _
+              (setenv "POETRY_DYNAMIC_VERSIONING_BYPASS"
+                      #$(version-major+minor+point version)))))))
+    (native-inputs
+     (list python-poetry-core
+           python-poetry-dynamic-versioning
+           python-pytest
+           python-pytest-asyncio
+           python-requests-mock))
+    (propagated-inputs
+     (list python-msgpack
+           python-pandas
+           python-pydantic
+           python-requests
+           python-sseclient-py
+           python-websockets))
+    (home-page "https://alpaca.markets/sdks/python/")
+    (synopsis "Alpaca API official Python SDK")
+    (description
+     "Alpaca-py provides an interface to REST, WebSocket and SSE endpoints
+that allow interaction with the @url{https://alpaca.markets/, Alpaca} API.")
+    (license license:asl2.0)))
 
 (define-public python-anaconda-client
   (package
