@@ -216,14 +216,14 @@ guile
 (use-modules (gdb))
 (execute (string-append \"set debug-file-directory \"
                         (string-join
-                          (filter file-exists?
-                                  (append
-                                    (if (getenv \"GDB_DEBUG_FILE_DIRECTORY\")
-                                      (list (getenv \"GDB_DEBUG_FILE_DIRECTORY\"))
-                                      '())
-                                    (list \"~/.guix-home/profile/lib/debug\"
-                                          \"~/.guix-profile/lib/debug\"
-                                          \"/run/current-system/profile/lib/debug\")))
+                          (append
+                            (if (getenv \"GDB_DEBUG_FILE_DIRECTORY\")
+                              (list (getenv \"GDB_DEBUG_FILE_DIRECTORY\"))
+                              '())
+                            ;; Note: GDB performs tilde expansion.
+                            (list \"~/.guix-home/profile/lib/debug\"
+                                  \"~/.guix-profile/lib/debug\"
+                                  \"/run/current-system/profile/lib/debug\"))
                           \":\")))
 end
 
