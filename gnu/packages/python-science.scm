@@ -4540,19 +4540,18 @@ docs dependency in support of other libraries.")
 (define-public python-unyt
   (package
     (name "python-unyt")
-    (version "3.0.4")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "unyt" version))
        (sha256
-        (base32 "04qjjv5zga7dh355ygsvkckfqi86nf03w6ckw5zm0120xw9p1shp"))))
+        (base32 "07g5rasgikp8a4x0cylz8xxzgh3536djdjppcadiqlhygyl845bp"))))
     (build-system pyproject-build-system)
-    ;; tests: 647 passed, 56 skipped, 2 xfailed
+    ;; tests: 764 passed, 37 skipped, 2 xfailed
     (native-inputs
-     (list python-pytest
-           python-setuptools
-           python-setuptools-scm))
+     (list python-flit-core
+           python-pytest))
     (propagated-inputs
      (list python-numpy
            python-packaging
