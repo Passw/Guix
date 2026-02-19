@@ -6246,6 +6246,36 @@ with a @code{.argosmodel} extension.  This package provides
 the Python library and the command-line program.")
     (license license:expat)))
 
+(define-public argos-translate-gui
+  ;; The Git repository is not tagged.
+  (let ((commit "06aafde3faf1709080471c94914382a566f6f775")
+        (revision "0"))
+    (package
+      (name "argos-translate-gui")
+      (version (git-version "1.6.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/argosopentech/argos-translate-gui")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0g251fgwwbk96f8n11c8gzidqgfkrkwpldxk9zq0kkhm729b9yyw"))))
+      (build-system pyproject-build-system)
+      (arguments '(#:tests? #f))        ;no test
+      (native-inputs (list python-setuptools))
+      (inputs (list python-argostranslate python-pyqt))
+      (home-page "https://www.argosopentech.com")
+      (synopsis "Graphical user interface for Argos Translate")
+      (description
+       "Argos Translate uses OpenNMT for translations and can be used
+as either a Python library, command-line, or GUI application.
+It supports installing language model packages which are ZIP archives
+with a @code{.argosmodel} extension.  This package provides
+a Qt interface for Argos Translate.")
+      (license license:expat))))
+
 (define-public python-hmmlearn
   (package
     (name "python-hmmlearn")
