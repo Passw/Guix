@@ -5550,7 +5550,7 @@ default) to world coordinates.")
 
 ;; Not all of the dependeds are ready to use 1.X.X, pin on the highest 0.X.X
 ;; for now.
-(define-public python-gwcs python-gwcs-0)
+(define-public python-gwcs python-gwcs-1)
 
 (define-public python-halo-analysis
   (package
