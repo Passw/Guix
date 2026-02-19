@@ -6575,13 +6575,16 @@ supports only the basic features of the original.")
 (define-public python-lsstdesc-coord
   (package
     (name "python-lsstdesc-coord")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "LSSTDESC.Coord" version))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/LSSTDESC/Coord")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1gk6vx8j0sx15b41l3sci62ckgmq7y5qsbn97v3dwwllw7qqznjh"))))
+        (base32 "1r3igmdj4yigpayk3j609030jkx5ba9x0l4mryn0aj9jh6x4pmkh"))))
     (build-system pyproject-build-system)
     (native-inputs
      (list python-astropy-minimal
