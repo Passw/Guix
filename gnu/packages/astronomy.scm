@@ -10026,18 +10026,25 @@ task}.")
 (define-public python-stsci-skypac
   (package
     (name "python-stsci-skypac")
-    (version "1.0.11")
+    (version "1.0.12")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "stsci_skypac" version))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/spacetelescope/stsci.skypac")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1pfgcgcgwvlil4m0v7d6raya70s74knimfh8yn634kapf24xxy1k"))))
+        (base32 "09gq2cw4xi1wh4hkzxjlmxilhgigirjpz7wqyl283zyp65i5ar31"))))
     (build-system pyproject-build-system)
     (arguments
-     (list #:tests? #f)) ; no tests in PyPI or git
+     ;; TODO: I could not make doctest to find package by pyassing "--pyargs"
+     ;; with "stsci.skypac", "stsci:skypac" or "stsci/skypac.
+     (list #:tests? #f))
     (native-inputs
-     (list python-setuptools
+     (list ;; python-pytest
+           ;; python-pytest-doctestplus
+           python-setuptools
            python-setuptools-scm))
     (propagated-inputs
      (list python-astropy
