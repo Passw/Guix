@@ -99,6 +99,27 @@
              '(file-exists? #$(%readymedia-default-log-file))
              marionette))
 
+          ;; Pid directory and file
+          (test-assert "pid directory exists"
+            (marionette-eval
+             '(eq? (stat:type (stat #$%readymedia-default-pid-directory))
+                   'directory)
+             marionette))
+          (test-assert "pid directory has correct ownership"
+            (marionette-eval
+             '(let ((pid-dir (stat #$%readymedia-default-pid-directory))
+                    (user (getpwnam #$%readymedia-user-account)))
+                (and (eqv? (stat:uid pid-dir) (passwd:uid user))
+                     (eqv? (stat:gid pid-dir) (passwd:gid user))))
+             marionette))
+          (test-assert "pid directory has expected permissions"
+            (marionette-eval
+             '(eqv? (stat:perms (stat #$%readymedia-default-pid-directory))
+                    #o755)
+             marionette))
+          (test-assert "containerd PID file present"
+            (wait-for-file #$(%readymedia-pid-file) marionette))
+
           ;; Service
           (test-assert "ReadyMedia service is running"
             (marionette-eval

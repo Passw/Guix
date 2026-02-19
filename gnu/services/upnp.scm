@@ -33,6 +33,8 @@
   #:use-module (ice-9 match)
   #:export (%readymedia-default-cache-directory
             %readymedia-default-log-file
+            %readymedia-default-pid-directory
+            %readymedia-pid-file
             %readymedia-user-account
             %readymedia-user-group
             readymedia-configuration
@@ -68,6 +70,13 @@
           (use-modules (shepherd support)) ;for %user-log-dir
           (string-append %user-log-dir "/readymedia.log"))
       "/var/log/readymedia.log"))
+(define %readymedia-default-pid-directory "/var/run/readymedia")
+(define* (%readymedia-pid-file #:key (home-service? #f) (name "minidlna.pid"))
+  (if home-service?
+      #~(begin
+          (use-modules (shepherd support)) ;for %user-runtime-dir
+          (string-append %user-runtime-dir "/readymedia/" #$name))
+      (string-append %readymedia-default-pid-directory "/" name)))
 (define %readymedia-user-group "readymedia")
 (define %readymedia-user-account "readymedia")
 
@@ -157,6 +166,10 @@
                                 (target source)
                                 (writable? #t))
                                (file-system-mapping
+                                (source %readymedia-default-pid-directory)
+                                (target source)
+                                (writable? #t))
+                               (file-system-mapping
                                 (source minidlna-conf)
                                 (target source))
                                (map (lambda (directory)
@@ -168,6 +181,8 @@
                         #:namespaces (delq 'net %namespaces))
                      "-f"
                      #$minidlna-conf
+                     "-P"
+                     #$(%readymedia-pid-file)
                      "-S")
                #:log-file #$log-file
                #:user #$(if home-service? #f %readymedia-user-account)
@@ -182,6 +197,8 @@
                                     "/sbin/minidlnad")
                      "-f"
                      #$minidlna-conf
+                     "-P"
+                     #$(%readymedia-pid-file #:home-service? home-service?)
                      "-S")
                #:log-file #$log-file)))
        (stop #~(make-kill-destructor))))))
@@ -215,17 +232,23 @@
                                        #$(if home-service? #o755 #o775))))
                     (list #$@(map readymedia-media-directory-path
                                   media-directories)))
-          (unless (file-exists? directory)
-                  (mkdir-p/perms (if (absolute-file-name? #$cache-directory)
-                                     #$cache-directory
-                                     (string-append (or (getenv "HOME")
-                                                        (passwd:dir
-                                                         (getpwuid (getuid))))
-                                                    "/" #$cache-directory))
-                                 (getpw #$(if home-service?
-                                              #~(getuid)
-                                              %readymedia-user-account))
-                                 #o755))))))
+          (for-each (lambda (directory)
+                      (unless (file-exists? directory)
+                        (mkdir-p/perms directory
+                                       (getpw #$(if home-service?
+                                                    #~(getuid)
+                                                    %readymedia-user-account))
+                                       #o755)))
+                    (list (if #$home-service?
+                              (if (absolute-file-name? #$cache-directory)
+                                  #$cache-directory
+                                  (string-append (or (getenv "HOME")
+                                                     (passwd:dir
+                                                      (getpwuid (getuid))))
+                                                 "/" #$cache-directory))
+                               #$cache-directory)
+                          (dirname #$(%readymedia-pid-file
+                                      #:home-service? home-service?))))))))
 
 (define readymedia-service-type
   (service-type
