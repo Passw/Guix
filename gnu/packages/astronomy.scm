@@ -9556,7 +9556,7 @@ about the underlying principles, see
 (define-public python-spherical-geometry
   (package
     (name "python-spherical-geometry")
-    (version "1.3.4")
+    (version "1.3.5")
     (source
      (origin
        (method git-fetch)
@@ -9565,7 +9565,7 @@ about the underlying principles, see
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09f5j8xapvb88bcn48qc4438zb1k0c3lbkb8immfzkwwkvx0jpi7"))
+        (base32 "1l25xqqvmrq32r5ny0pgm1h43n9fplakvlsgg9kgfbm2n6pv89d3"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
@@ -9583,7 +9583,8 @@ about the underlying principles, see
               ;; Use our own libraries in place of bundles.
               (setenv "USE_SYSTEM_QD" "1"))))))
     (native-inputs
-     (list python-pytest
+     (list python-gwcs
+           python-pytest
            python-pytest-astropy-header
            python-setuptools
            python-setuptools-scm))
