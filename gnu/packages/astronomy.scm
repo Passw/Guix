@@ -10121,34 +10121,21 @@ processing functions: @code{xyxymatch}, @code{geomap}.")
 (define-public python-stsci-tools
   (package
     (name "python-stsci-tools")
-    (version "4.2.0")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stsci_tools" version))
        (sha256
-        (base32 "180x3fmp020p4imc39ajs5qs6iimd8ld5bly3g9mm4psqbp8nyw9"))))
+        (base32 "1vmgznpww0b1v4x6kfdp75q45r0jr0mrpdq3q9jl17idmqsb4jjy"))))
     (build-system pyproject-build-system)
-    (arguments
-     (list
-      #:test-flags
-      #~(list "-k"
-              ;; Two tests fail with error: RuntimeError: Problem during:
-              ;; takes_time(), exitcode: 1. Check log.
-              (string-append "not test_launch_and_wait[None-spawn]"
-                             " and not test_launch_and_wait[None-forkserver]"))
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-before 'check 'pre-check
-            (lambda _
-              (delete-file "conftest.py"))))))
+    ;; tests: 192 passed, 14 skipped
     (native-inputs
      (list python-pytest
            python-pytest-astropy-header
            python-pytest-doctestplus
            python-setuptools
-           python-setuptools-scm
-           python-wheel))
+           python-setuptools-scm))
     (propagated-inputs
      (list python-astropy
            python-numpy
