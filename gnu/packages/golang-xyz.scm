@@ -28926,6 +28926,15 @@ Program Argument Syntax Conventions}.")
      (list
       #:import-path "modernc.org/cc/v4"
       #:unpack-path "modernc.org/cc"
+      ;; On aarch64, TestParse, TestTranslate, and TestMake fail because
+      ;; the C parser does not implement GCC built-in vector types
+      ;; (__Float32x4_t, __Float64x2_t, etc.) used in glibc's
+      ;; bits/math-vector.h since glibc 2.38.
+      ;; See <https://gitlab.com/cznic/cc/-/issues/155>.
+      #:test-flags
+      (if (target-aarch64?)
+          #~(list "-skip" "TestParse|TestTranslate|TestMake")
+          #~'())
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'copy-source-assets
