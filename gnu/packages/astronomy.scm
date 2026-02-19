@@ -8655,7 +8655,7 @@ pipelines.")
 (define-public python-romancal
   (package
     (name "python-romancal")
-    (version "0.21.0")
+    (version "0.22.0")
     (source
      (origin
        (method git-fetch)
@@ -8664,12 +8664,11 @@ pipelines.")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1gjg7hws03rxa7mlapn4pxyvxckrhlqxj9r5q6qg03bx4d0w1gd3"))))
+        (base32 "1rj1v07hnl7g1qd6fgv9czy1qa6lqfjf0ckbi5ldyy9yji9drhx1"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests:  3 skipped, 2 deselected, 1 warning, 37 errors
-      #:tests? #f ;XXX: up to the next release.
+      ;; tests: 380 passed, 311 skipped, 18 deselected, 2 warnings
       #:test-flags
       #~(list "--color=no"
               ;; Tests requiring calibration data.
@@ -8696,11 +8695,17 @@ pipelines.")
                             "romancal/source_catalog/tests/test_source_catalog.py"
                             "romancal/stpipe/tests/test_core.py"))
               ;;  SystemExit: -1
-              "-k" "not test_inject_sources and not test_grid_injection")
-      #:phases
-      #~(modify-phases %standard-phases
-          ;; XXX: Up to the next release.
-          (delete 'sanity-check))))
+              "-k" (string-join
+                    (list "not test_dark_decay"
+                          "test_inject_sources"
+                          "test_grid_injection"
+                          "test_wfi18_transient"
+                          "test_wfi18_transient_flat_data"
+                          "test_wfi18_transient_wrong_detector"
+                          "test_wfi18_transient_too_few_resultants"
+                          "test_wfi18_transient_fit_failure"
+                          "test_wfi18_transient_save_results")
+                    " and not "))))
     (native-inputs
      (list nss-certs-for-test
            python-ci-watson
@@ -8731,9 +8736,9 @@ pipelines.")
            python-stpipe
            python-stsci-imagestats
            python-tweakwcs
-           ;; [sdp]
+           ;; [optional]
            python-pysiaf
-           ;; python-roman-photoz     ;not packaged
+           ;; python-roman-photoz     ;not packed yet in Guix
            python-stpreview))
     (home-page "https://github.com/spacetelescope/romancal")
     (synopsis "Nancy Grace Roman Space Telescope observations processing library")
