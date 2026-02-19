@@ -9653,16 +9653,17 @@ over many parameters:
 (define-public python-statmorph
   (package
     (name "python-statmorph")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "statmorph" version))
        (sha256
-        (base32 "1c4srrmfzx8iszcc140ylljs0dzqs6d9ya2z7wic96p6y6gixb9h"))))
+        (base32 "1hab5yq0xjc3fzyd177bwsgainqzaxpdw423r73nzc5yqiqz9ji4"))))
     (build-system pyproject-build-system)
     (arguments
      (list
+      ;; tests: 19 passed, 1 deselected 
       #:test-flags
       ;; Test fails due to numerical uncertainties.
       ;; See: <https://github.com/vrodgom/statmorph/issues/17>.
