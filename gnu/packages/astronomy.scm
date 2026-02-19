@@ -7751,7 +7751,7 @@ N-Chilada and RAMSES AMR outputs.")
 (define-public python-pypeit
   (package
     (name "python-pypeit")
-    (version "1.18.1")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
@@ -7760,30 +7760,29 @@ N-Chilada and RAMSES AMR outputs.")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "171sbw8r83ll994nn2faz3b7c381hrss84fgih3lqqij1d4395hm"))))
+        (base32 "0nw96iiqswmj6ia48v6p6nxfpj54zlih7d4psm7b7vgma0prxk98"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 245 passed, 5 deselected, 112 warnings
-      #:test-flags
-      ;; Tests still try to download test data even it's available in
-      ;; "pypeit/data".
-      #~(list "--deselect=pypeit/tests/test_install.py::test_install_telluric"
-              #$@(map (lambda (test) (string-append "--deselect=pypeit/"
-                                                    "tests/test_pkgdata.py::"
-                                                    test))
-                      (list "test_cloud_url"
-                            "test_fetch_github_files"
-                            "test_github_contents"
-                            "test_cache_to_pkg")))
+      ;; TODO: Astropy removed 'coordinates/data/sites.json' from the package
+      ;; which forces to download site data during sanity-check, and check
+      ;; phases, see: <https://github.com/astropy/astropy/pull/18649>,
+      ;; <https://codeberg.org/guix/guix/issues/6371#issuecomment-10784417>.
+      #:tests? #f
       #:phases
       #~(modify-phases %standard-phases
+          (delete 'sanity-check)
           ;; XXX: See: <https://github.com/pypeit/PypeIt/issues/1786>.
           (add-after 'unpack 'remove-missing-scripts-entry-points
             (lambda _
               (substitute* "pyproject.toml"
                 ((".*pypeit_install_ql_calibs.*") "")
                 ((".*pypeit_ql_multislit.*") ""))))
+          (add-after 'unpack 'relax-requirements
+            (lambda _
+              (substitute* "pyproject.toml"
+                ;; numpy>=2.4.1
+                ((">=2.4.1") ">=2.3.1"))))
           (add-after 'install 'include-package-data
             ;; XXX: PyPI archive provides pypeit/data but during build from
             ;; Git it's ignored for some reason, add it manually.
@@ -7798,16 +7797,8 @@ N-Chilada and RAMSES AMR outputs.")
               (setenv "HOME" "/tmp")
               (setenv "MPLBACKEND" "agg"))))))
     (native-inputs
-     (list nss-certs-for-test
-           python-cython
-           python-pygit2
-           python-pytest
-           python-scikit-image
-           python-setuptools
-           python-setuptools-scm
-           python-shapely
-           python-specutils
-           xorg-server-for-tests))
+     (list python-cython
+           python-specutils))
     (propagated-inputs
      (list python-astropy
            python-bottleneck
@@ -7815,7 +7806,6 @@ N-Chilada and RAMSES AMR outputs.")
            python-fast-histogram
            python-ginga
            python-ipython
-           python-linetools
            python-matplotlib
            python-numpy
            python-packaging
@@ -7825,7 +7815,10 @@ N-Chilada and RAMSES AMR outputs.")
            python-pyyaml
            python-qtpy
            python-scikit-learn
-           python-scipy))
+           python-scipy
+           ;; [optional]
+           python-scikit-image
+           python-specutils))
     (home-page "https://github.com/pypeit/PypeIt")
     (synopsis "Spectroscopic Data Reduction Pipeline")
     (description
