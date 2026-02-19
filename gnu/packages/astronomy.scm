@@ -11977,7 +11977,7 @@ See related paper
 (define-public tenmon
   (package
     (name "tenmon")
-    (version "20260119")
+    (version "20260217")
     (source
      (origin
        (method git-fetch)
@@ -11986,7 +11986,7 @@ See related paper
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "115ik1ldas20jkfcka7cydr1l5i4zw7zfxkcqq1v8vs2qsjyrgnn"))))
+        (base32 "07hiqr6jxmbw2dasbmyvcjmfxw4hjsn7xp269irjgfijsf8ga68n"))))
     (build-system cmake-build-system)
     (arguments
      (list
