@@ -10188,17 +10188,17 @@ packages for HST.")
 (define-public python-stwcs
   (package
     (name "python-stwcs")
-    (version "1.7.5")
+    (version "1.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stwcs" version))
        (sha256
-        (base32 "04s5wlw1yvgyrz9ax0akfvikkpfyvfy598rap37jqjy35lgpqmlb"))))
+        (base32 "1yh65ih4k0lpp4m3jbvrmn91an1gv5khka65yhdv5fhghxbj85bx"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 18 passed, 34 deselected, 1 warning
+      ;; tests: 24 passed, 36 deselected, 1 warning
       #:test-flags
       #~(list "-k" (string-join
                     ;; XXX: Test requiring network access to download data
@@ -10218,6 +10218,7 @@ packages for HST.")
                           "test_apply_as_primary_method"
                           "test_apply_d2im"
                           "test_db_connection"
+                          "test_db_timeout"
                           "test_default"
                           "test_new_obs"
                           "test_no_HDRNAME_no_WCSNAME"
@@ -10232,6 +10233,7 @@ packages for HST.")
                           "test_restore_headerlet"
                           "test_simple_sci1"
                           "test_simple_sci2"
+                          "test_success_offsets"
                           "test_update_d2im_distortion"
                           "test_update_legacy_file"
                           "test_update_stis_asn"
