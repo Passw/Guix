@@ -9712,39 +9712,25 @@ and CAS statistics), as well as fitting 2D Sérsic profiles.")
 (define-public python-stcal
   (package
     (name "python-stcal")
-    (version "1.15.2")
+    (version "1.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stcal" version))
        (sha256
-        (base32 "0lzwp06399fwxi8m82cmj5009s2xyvmzmvxw64qfbm39mxkhbw51"))))
+        (base32 "1897nclhw98gqg1krjky13nbfmbi0q1qa8dfzh96lq8d8yfgrix5"))))
     (build-system pyproject-build-system)
     (arguments
      (list
+      ;; tests: 676 passed, 12 warnings
       #:test-flags
       #~(list "--pyargs" "stcal"
-              "--numprocesses" (number->string (parallel-job-count))
-              "-k" (string-join
-                    ;; Tests requiring network access.
-                    (list "not test_absolute_align"
-                          "test_create_catalog"
-                          "test_create_catalog_graceful_failure"
-                          "test_get_catalog"
-                          "test_parse_refcat"
-                          "test_parse_sky_centroid"
-                          "test_relative_align[False]"
-                          "test_relative_align[True]")
-                    " and not ")
-              "tests")
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-before 'build 'relax-requirements
-            (lambda _
-              (substitute* "pyproject.toml"
-                ;; XXX: Can't detect opencv-python version. The input opencv
-                ;; might not set the version correctly.
-                ((".*opencv-python-headless.*") "")))))))
+              "--numprocesses" (number->string (min 8 (parallel-job-count)))
+              ;; Network access is required for the most of the tests to
+              ;; download test data from
+              ;; <s3://stpubdata/gaia/gaia_dr3/public/hats/gaia/>.
+              "--ignore=tests/test_tweakreg.py"
+              "tests")))
     (native-inputs
      (list python-cython
            python-psutil
@@ -9754,15 +9740,19 @@ and CAS statistics), as well as fitting 2D Sérsic profiles.")
            python-setuptools
            python-setuptools-scm))
     (propagated-inputs
-     (list opencv        ;Provides OpenCV-Python
-           python-asdf
+     (list python-asdf
            python-astropy
+           python-astropy-healpix
            python-drizzle
            python-gwcs
            python-numpy
+           python-pyarrow
            python-requests
            python-scikit-image
            python-scipy
+           python-shapely
+           python-spherical-geometry
+           python-stsci-imagestats
            python-tweakwcs))
     (home-page "https://github.com/spacetelescope/stcal")
     (synopsis "STScI tools and algorithms used in calibration pipelines")
