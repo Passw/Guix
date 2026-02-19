@@ -957,20 +957,18 @@ options are given, the action applies to the focused window.")
 (define-public xeyes
   (package
     (name "xeyes")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.x.org/releases/individual/app/"
-                           name "-" version ".tar.xz"))
+       (uri (string-append "https://www.x.org/releases/individual/app/" name
+                           "-" version ".tar.xz"))
        (sha256
-        (base32 "08rhfp5xlmdbyxkvxhgjxdn6vwzrbrjyd7jkk8b7wi1kpw0ccl09"))))
+        (base32 "1akfjm5fxk3xp2s343r2jf38ryafsxd6n6rgybbmxb0sgdmxf22n"))))
     (build-system gnu-build-system)
-    (inputs
-      (list libxext libxi libxmu libxrender libxt))
-    (native-inputs
-     (list pkg-config))
-    (home-page "https://www.x.org/")    ; no dedicated Xeyes page exists
+    (inputs (list libxext libxi libxmu libxrender libxt))
+    (native-inputs (list pkg-config))
+    (home-page "https://www.x.org/") ;no dedicated Xeyes page exists
     (synopsis "Follow-the-mouse X demo")
     (description "Xeyes is a demo program for x.org.  It shows eyes
 following the mouse.")
