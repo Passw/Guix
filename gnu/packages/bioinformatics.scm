@@ -19486,57 +19486,60 @@ functionality for Giotto Suite.")
       (license license:expat))))
 
 (define-public r-giotto
-  (let ((commit "3e6671a2512484a7b90b421b7e697d1abc2ec760")
+  (let ((commit "7988300d59d7ca67c6203411794f1f3a813979d5")
         (revision "1"))
     (package
       (name "r-giotto")
-      (version (git-version "1.1.2" revision commit))
+      (version (git-version "4.2.2" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/RubD/Giotto/")
-               (commit commit)))
+                (url "https://github.com/drieslab/Giotto")
+                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "086kyfhwqcd9qkl2yb9g4xgk8xs88ga4slha7rwilxm1sg8fhchf"))))
+          (base32 "1h3a6czswpczckc5cgcfsxjcil0pzq57fv8lfrgjl655qqs3riix"))))
       (properties `((upstream-name . "Giotto")))
       (build-system r-build-system)
+      ;; Test data are not included.
+      (arguments (list #:tests? #false))
       (propagated-inputs
-       (list r-clusterr
-             r-complexheatmap
-             r-cowplot
+       (list r-bluster
+             r-biocparallel
+             r-biocsingular
+             r-checkmate
              r-data-table
              r-dbscan
-             r-deldir
-             r-farver
-             r-fitdistrplus
-             r-ggdendro
              r-ggplot2
              r-ggraph
-             r-ggrepel
+             r-giottoclass
+             r-giottoutils
+             r-giottovisuals
              r-igraph
-             r-irlba
-             r-lfa
-             r-limma
-             r-magick
-             r-magrittr
              r-matrix
-             r-matrixstats
-             r-plotly
-             r-qvalue
-             r-r-utils
-             r-rcolorbrewer
-             r-rcpp
-             r-reshape2
+             r-matrixgenerics
              r-reticulate
+             r-scales
+             r-sparsematrixstats
+             r-terra
+             r-uwot
+
+             ;; The following are suggested packages
+             r-arrow
+             r-clusterr
+             r-complexheatmap
+             r-fitdistrplus
+             r-future-apply
+             r-ggdendro
+             r-limma
+             r-plotly
+             r-r-utils
              r-rfast
              r-rlang
-             r-rtsne
-             r-scales
-             r-uwot))
-      (native-inputs (list r-knitr))
-      (home-page "https://github.com/RubD/Giotto/")
+             r-rtsne))
+      (native-inputs (list r-knitr r-testthat))
+      (home-page "https://github.com/drieslab/Giotto")
       (synopsis "Spatial single-cell transcriptomics toolbox")
       (description
        "This package provides a toolbox to process, analyze and visualize
