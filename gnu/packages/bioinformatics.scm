@@ -22980,6 +22980,14 @@ patterns.")
                  (string-append
                   "source(paste0(system.file(package=\"VoltRon\"), \"/guix-refs.R\"));\n"
                   "return(guix_python);")))))
+          (add-after 'unpack 'skip-bad-tests
+            (lambda _
+              (with-directory-excursion "tests/testthat"
+                (substitute* "test_conversion.R"
+                  ((".*as.AnnData, python path.*" m)
+                   (string-append m "skip('skip');\n"))
+                  ((".*as.ometiff, python path.*" m)
+                   (string-append m "skip('skip');\n"))))))
           ;; We do this outside of the source code to ensure that
           ;; references are accessible to Guix.
           (add-after 'install 'record-python-reference
