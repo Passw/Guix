@@ -7428,6 +7428,56 @@ position-frequency slice.")
       (list python-setuptools
             python-wheel)))))
 
+(define-public python-pyastronomy
+  (package
+    (name "python-pyastronomy")
+    (version "0.24.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/sczesla/PyAstronomy")
+              (commit (string-append
+                       "v_" (string-replace-substring version "." "-")))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "01gpcvm6nw2arhnsicv983qbqi74plfxn1bqn325fffdw8qnfbhx"))))
+    (build-system pyproject-build-system)
+    (arguments
+     ;; See: <https://github.com/sczesla/PyAstronomy/issues/64>.
+     (list #:tests? #f)) 
+    (native-inputs
+     (list python-ipython-minimal
+           python-nbconvert
+           python-pytest
+           python-setuptools))
+    (propagated-inputs
+     (list python-bidict
+           python-numpy
+           python-quantities
+           python-scipy
+           python-six)) ;hard dependency
+    (home-page "https://pyastronomy.readthedocs.io/en/latest/")
+    (synopsis "Collection of astronomy related tools for Python")
+    (description
+     "This package provides a collection of astronomy related tools for
+Python.
+
+The following subpackages are available:
+@itemize
+@item funcFit: A convenient fitting package providing support for minimization
+and MCMC sampling.
+@item modelSuite: A Set of astrophysical models (e.g., transit light-curve
+modeling), which can be used stand-alone or with funcFit.
+@item AstroLib: A set of useful routines including a number of ports from
+IDL's astrolib.
+@item Constants: The package provides a number of often-needed constants.
+@item Timing: Provides algorithms for timing analysis such as the Lomb-Scargle
+and the Generalized Lomb-Scargle periodogram
+@item pyaGUI: A collection of GUI tools for interactive work.
+@end itemize ")
+    (license license:expat)))
+
 (define-public python-pyavm
   (package
     (name "python-pyavm")
