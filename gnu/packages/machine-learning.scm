@@ -5425,6 +5425,12 @@ in the audio domain.")
                 ;; For Vulkan
                 (substitute* "CMakeLists.txt"
                   (("append_cxx_flag.*-Werror=(return-type|range-loop-construct).*") ""))
+                ;; In this variant functorch is installed directly under
+                ;; site-packages/functorch, so use a direct rpath to
+                ;; site-packages/torch/lib.
+                (substitute* "functorch/CMakeLists.txt"
+                  (("set_target_properties\\(\\$\\{PROJECT_NAME\\} PROPERTIES INSTALL_RPATH \"\\$\\{_rpath_portable_origin\\}/\\.\\./torch/lib\"\\)")
+                   "set_target_properties(${PROJECT_NAME} PROPERTIES INSTALL_RPATH \"$ORIGIN/../torch/lib\")"))
                 (substitute*
                     (cons*
                      "torch/csrc/Module.cpp"
@@ -5454,7 +5460,11 @@ in the audio domain.")
                     (setenv "USE_QNNPACK" "0"))
                 (substitute* '("requirements.txt" "setup.py")
                   (("sympy>=1\\.13\\.3")
-                   "sympy>=1.13.1"))))
+                   "sympy>=1.13.1"))
+                ;; Avoid ModuleNotFoundError while preserving setup.py flow.
+                (substitute* "setup.py"
+                  (("from build_bundled import create_bundled")
+                   "create_bundled = lambda *args, **kwargs: None"))))
             (replace 'skip-nccl-call
               (lambda _
                 ;; Comment-out `checkout_nccl()` invokation in build_pytorch().
