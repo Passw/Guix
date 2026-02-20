@@ -813,43 +813,6 @@ experiments for downstream dataset integration.  It improves conventional
 usage of highly-variable genes for integration tasks.")
       (license license:gpl3+))))
 
-(define-public r-anndatar
-  (let ((commit "5c3eb7e498d0d9bf1c522ad66f4eb8ad277238b6")
-        (revision "1"))
-    (package
-      (name "r-anndatar")
-      (version (git-version "0.99.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/scverse/anndataR")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0sx87i8cb4p08ihgpgflxs0fhkr1kw6lxvky4w766rq7wqy41cgk"))))
-      (properties
-       '((upstream-name . "anndataR")
-         (updater-extra-native-inputs . ("r-vctrs"))))
-      (build-system r-build-system)
-      (propagated-inputs (list r-matrix r-r6))
-      (native-inputs
-       (list r-knitr
-             r-rhdf5
-             r-seuratobject
-             r-singlecellexperiment
-             r-testthat
-             r-vctrs))
-      (home-page "https://github.com/scverse/anndataR")
-      (synopsis "AnnData interoperability in R")
-      (description
-       "This package aims to bring the power and flexibility of @code{AnnData}
-to the R ecosystem, allowing you to effortlessly manipulate and analyze your
-single-cell data.  This package lets you work with backed h5ad and zarr files,
-directly access various slots (e.g. X, obs, var), or convert the data into
-@code{SingleCellExperiment} and Seurat objects.")
-      (license license:expat))))
-
 (define-public r-anpan
   (let ((commit "efd4dc4874c418a43104ed3f418283d2451f0483")
         (revision "1"))
