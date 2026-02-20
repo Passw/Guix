@@ -530,6 +530,21 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 ;; The current "stable" kernels. That is, the most recently released major
 ;; versions that are still supported upstream.
 
+(define-public linux-libre-6.19-version "6.19.3")
+(define-public linux-libre-6.19-gnu-revision "gnu")
+(define deblob-scripts-6.19
+  (linux-libre-deblob-scripts
+   linux-libre-6.19-version
+   linux-libre-6.19-gnu-revision
+   (base32 "1n39w2lzzxqgfm10y5324bas4x827l34kpvdz64ng5ngp1cspdzw")
+   (base32 "1780cj1bpf6c6cwkbg1p5b9b4kipkxb0rjljlm96drch8ikxl2k8")))
+(define-public linux-libre-6.19-pristine-source
+  (let ((version linux-libre-6.19-version)
+        (hash (base32 "1glf369wfr66lmv9wmijin6idlfgijfsh0gx2qly7gpwmml4jiqf")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-6.19)))
+
 (define-public linux-libre-6.18-version "6.18.13")
 (define-public linux-libre-6.18-gnu-revision "gnu")
 (define deblob-scripts-6.18
@@ -667,6 +682,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (patches (append (origin-patches source)
                      patches))))
 
+(define-public linux-libre-6.19-source
+  (source-with-patches linux-libre-6.19-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+
 (define-public linux-libre-6.18-source
   (source-with-patches linux-libre-6.18-pristine-source
                        (list %boot-logo-patch
@@ -792,6 +812,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-6.19
+  (make-linux-libre-headers* linux-libre-6.19-version
+                             linux-libre-6.19-gnu-revision
+                             linux-libre-6.19-source))
 
 (define-public linux-libre-headers-6.18
   (make-linux-libre-headers* linux-libre-6.18-version
@@ -1164,6 +1189,14 @@ Linux kernel.  It has been modified to remove all non-free binary blobs.")
 ;;;
 ;;; Generic kernel packages.
 ;;;
+
+(define-public linux-libre-6.19
+  (make-linux-libre* linux-libre-6.19-version
+                     linux-libre-6.19-gnu-revision
+                     linux-libre-6.19-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux"
+                       "aarch64-linux" "powerpc64le-linux" "riscv64-linux")
+                     #:configuration-file kernel-config))
 
 (define-public linux-libre-6.18
   (make-linux-libre* linux-libre-6.18-version
