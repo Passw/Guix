@@ -22721,27 +22721,31 @@ pairs.")
     (license license:expat)))
 
 (define-public r-hdf5dataframe
-  (let ((commit "1e30e6b82b5599d5d98fbcb8bf7312dd1711ca3c")
-        (revision "2"))
+  (let ((commit "61c52cb4ee940e623363ac7fdaa67766ed6947fa")
+        (revision "1"))
     (package
       (name "r-hdf5dataframe")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.99.3" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/BIMSBbioinfo/HDF5DataFrame")
-               (commit commit)))
+                (url "https://github.com/BIMSBbioinfo/HDF5DataFrame")
+                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0y6hp31gy17v87ll4rij6pwy6b7k7gnw8iwnvzsaa13ga73g69ak"))))
+          (base32 "0awd2q5q2rh0lmls0cb5shhi20cs82jc43gphfhx10fwrc4cfmrg"))))
       (properties `((upstream-name . "HDF5DataFrame")))
       (build-system r-build-system)
-      (propagated-inputs (list r-biocgenerics r-delayedarray r-hdf5array
-                               r-rhdf5 r-s4vectors))
+      (propagated-inputs (list r-biocgenerics
+                               r-delayedarray
+                               r-h5mread
+                               r-hdf5array
+                               r-rhdf5
+                               r-s4vectors))
       (native-inputs (list r-knitr r-testthat))
       (home-page "https://github.com/BIMSBbioinfo/HDF5DataFrame")
-      (synopsis "Bioconductor-friendly bindings for Parquet")
+      (synopsis "HDF5-backed DataFrame objects and methods")
       (description
        "This package implements bindings for h5 files that are compatible with
 Bioconductor S4 data structures, namely the @code{DataFrame} and
