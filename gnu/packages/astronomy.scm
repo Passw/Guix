@@ -6114,7 +6114,11 @@ milliarcsecond).")
            (lambda _
              (substitute* "pyproject.toml"
                ;; drizzle>=2.1.1,<2.2.0
-               ((">=2.1.1,<2.2.0") ">=2.1.1")))))))
+               ((">=2.1.1,<2.2.0") ">=2.1.1")
+               ;; gwcs>=0.26.0,<0.27.0
+               ((">=0.26.0,<0.27.0") ">=0.26.0")
+               ;; stcal>=1.15.2,<1.16.0
+               ((">=1.15.2,<1.16.0") ">=1.15.2")))))))
     (native-inputs
      (list python-ci-watson
            python-pysiaf
