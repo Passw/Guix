@@ -19331,6 +19331,47 @@ analysing cytometry data in R.")
 controls for use in @code{CytoExploreR}.")
       (license license:gpl2))))
 
+(define-public r-giottoclass
+  (let ((commit "15627a29bcdaf7e484546363b185a2ccee6470a5")
+        (revision "1"))
+    (package
+      (name "r-giottoclass")
+      (version (git-version "0.4.10" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/drieslab/GiottoClass")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15kaf1wli8sc8d9k9l4bkl4z68yrva1zi9w5yqgbbw1n44khn8yx"))))
+      (properties `((upstream-name . "GiottoClass")))
+      (build-system r-build-system)
+      ;; Tests require r-giottodata, which requires r-giottoclass.
+      (arguments (list #:tests? #false))
+      (propagated-inputs (list r-checkmate
+                               r-data-table
+                               r-dbscan
+                               r-deldir
+                               r-giottoutils
+                               r-igraph
+                               r-matrix
+                               r-matrixstats
+                               r-reticulate
+                               r-terra))
+      (native-inputs (list r-knitr r-testthat))
+      (home-page "https://github.com/drieslab/GiottoClass")
+      (synopsis "Giotto suite object definitions and framework")
+      (description
+       "This package provides definitions for the Giotto object and its
+subobjects.  Functionalities relating to data ingestion, basic object
+creation, data access within the Giotto object, and generics defined for the
+Giotto classes are all found here.  Applications of this framework and
+convenience functions for loading specific technologies are found in the base
+Giotto package.")
+      (license license:expat))))
+
 (define-public r-giotto
   (let ((commit "3e6671a2512484a7b90b421b7e697d1abc2ec760")
         (revision "1"))
