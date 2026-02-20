@@ -8026,8 +8026,8 @@ natively in Siril.")
   (package
     (name "python-pysm3")
     ;; NumPy2 support was added after 3.4.4 was released.
-    (properties '((commit . "7e5980e18a03aac9adf0eea09ef94b8e359a7fe0")
-                  (revision . "0")))
+    (properties '((commit . "060913e7af72e12aba4bcc94b7f3d2d7a2bc878f")
+                  (revision . "1")))
     (version (git-version "3.4.3"
                           (assoc-ref properties 'revision)
                           (assoc-ref properties 'commit)))
@@ -8039,11 +8039,11 @@ natively in Siril.")
               (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03d4dn79741j7acgma4ida8q6ps4xf5d4mpfv22rl3f1s8fbfx6y"))))
+        (base32 "0qip5iwn6lb5xwzglxjjcznqc9vhgrfbsri1xwma6g4ffhnqxgbx"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 44 passed, 2 skipped, 97 deselected, 3 warnings
+      ;; tests: 73 passed, 2 skipped, 98 deselected, 3 warnings
       #:test-flags
       ;; XXX: Tests requiring additional FITS files, check if they may be
       ;; packages:
@@ -8098,7 +8098,8 @@ natively in Siril.")
           (add-after 'unpack 'relax-requirements
             (lambda _
               (substitute* "pyproject.toml"
-                (("scipy < 1.15") "scipy")))))))
+                ;; scipy >= 1.10, < 1.15
+                ((" >= 1.10, < 1.15") ">=1.10")))))))
     (native-inputs
      (list nss-certs-for-test
            python-hatch-vcs
@@ -8114,7 +8115,7 @@ natively in Siril.")
     (propagated-inputs
      (list python-astropy
            python-h5py
-           python-healpy-1.18
+           python-healpy
            python-numba
            python-numpy
            python-scipy
