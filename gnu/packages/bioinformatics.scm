@@ -19447,6 +19447,44 @@ workflow.  It also contains example mini Giotto subobjects.")
 Giotto Suite.")
       (license license:expat))))
 
+(define-public r-giottovisuals
+  (let ((commit "556d75352a208507819f1d4e33ae61c179185435")
+        (revision "1"))
+    (package
+      (name "r-giottovisuals")
+      (version (git-version "0.2.14" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/drieslab/GiottoVisuals")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1a9kdfvz7bpb92fjgsyjd12rp7c0zc3cbjvkcv5lf91lfjqivlhb"))))
+      (properties `((upstream-name . "GiottoVisuals")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-checkmate
+                               r-colorramp2
+                               r-cowplot
+                               r-data-table
+                               r-ggplot2
+                               r-ggrepel
+                               r-giottoclass
+                               r-giottoutils
+                               r-igraph
+                               r-plotly
+                               r-scales
+                               r-scattermore
+                               r-terra))
+      (native-inputs (list r-knitr r-testthat))
+      (home-page "https://github.com/drieslab/GiottoVisuals")
+      (synopsis "Visuals for the Giotto spatial biology analysis suite")
+      (description
+       "This package provides expanded visualization and plotting
+functionality for Giotto Suite.")
+      (license license:expat))))
+
 (define-public r-giotto
   (let ((commit "3e6671a2512484a7b90b421b7e697d1abc2ec760")
         (revision "1"))
