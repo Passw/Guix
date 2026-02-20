@@ -312,6 +312,14 @@ guix/import/opam\.scm                              @guix/ocaml
 guix/scripts/import/opam\.scm                      @guix/ocaml
 tests/import/opam\.scm                             @guix/ocaml
 
+gnu/packages/perl(-.+|)\.scm$                      @guix/perl
+guix/build/perl-build-system\.scm                  @guix/perl
+guix/build/rakudo-build-system\.scm                @guix/perl
+guix/build-system/perl\.scm                        @guix/perl
+guix/build-system/rakudo\.scm                      @guix/perl
+guix/import/cpan\.scm                              @guix/perl
+guix/scripts/import/cpan\.scm                      @guix/perl
+
 gnu/packages/django\.scm                           @guix/python
 gnu/packages/jupyter\.scm                          @guix/python
 gnu/packages/python(-.+|)\.scm$                    @guix/python

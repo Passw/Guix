@@ -920,6 +920,21 @@ importer, and the ocaml-build-system."
               "guix/scripts/import/opam.scm"
               "tests/import/opam.scm")))
 
+(define-team perl
+  (team 'perl
+        #:name "Perl and Raku team"
+        #:description
+        "Perl & Raku packages, the \"cpan\" importer, and the
+perl-build-system as well as the rakudo-build-system."
+        #:scope
+        (list (make-regexp* "^gnu/packages/perl(-.+|)\\.scm$")
+              "guix/build/perl-build-system.scm"
+              "guix/build/rakudo-build-system.scm"
+              "guix/build-system/perl.scm"
+              "guix/build-system/rakudo.scm"
+              "guix/import/cpan.scm"
+              "guix/scripts/import/cpan.scm")))
+
 (define-team python
   (team 'python
         #:name "Python team"
@@ -1501,7 +1516,7 @@ the \"texlive\" importer."
 (define-member (person "Wilko Meyer"
                        "w@wmeyer.eu"
                        "theesm")
-  kernel)
+  kernel perl)
 
 (define-member (person "Untrusem"
                        "mysticmoksh@riseup.net"
