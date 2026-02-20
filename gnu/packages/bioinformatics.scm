@@ -6668,29 +6668,37 @@ meso, or continuum scale.")
     (name "lammps-serial")
     (arguments
      (substitute-keyword-arguments (package-arguments lammps)
-       ((#:make-flags flags)
-        '(list "CC=gcc" "serial"
-               "LMP_INC=-DLAMMPS_GZIP \
--DLAMMPS_JPEG -DLAMMPS_PNG -DLAMMPS_FFMPEG -DLAMMPS_MEMALIGN=64"
-               "LIB=-gz -ljpeg -lpng -lavcodec"))
-       ((#:phases phases)
-        #~(modify-phases #$phases
-            (replace 'configure
-              (lambda _
-                (substitute* "MAKE/Makefile.serial"
-                  (("SHELL =.*")
-                   (string-append "SHELL=" (which "bash") "\n"))
-                  (("cc ") "gcc "))
-                (substitute* "Makefile"
-                  (("SHELL =.*")
-                   (string-append "SHELL=" (which "bash") "\n")))))
-            (replace 'install
-	      (lambda _
-		(let ((bin (string-append #$output "/bin")))
-		  (mkdir-p bin)
-		  (install-file "lmp_serial" bin))))))))
+       ((#:configure-flags flags)
+        #~(list
+        ;; activate all possible lammps packages.
+        "-C ../cmake/presets/all_on.cmake"
+        "-D PKG_USER-MISC=yes"
+        ;; prevent from downloading extra packages.
+        "-D DOWNLOAD_POTENTIALS=off"
+        ;; Build libraries to link to other codes.
+        "-D BUILD_SHARED_LIBS=yes"
+        ;; Deactivate package currently unavailable on guix
+        "-D PKG_VTK=no"
+        "-D PKG_ADIOS=no"
+        "-D PKG_GPU=no"
+        "-D PKG_VMD=no"
+        "-D PKG_VORONOI=no"
+        "-D PKG_SCAFACOS=no"
+        "-D PKG_MDI=no"
+        "-D PKG_ML-QUIP=no"
+        "-D PKG_ML-PACE=no"
+        "-D PKG_KIM=no"
+        "-D PKG_PLUMED=no"
+        "-D PKG_APIP=no"
+        "-D PKG_LATBOLTZ=no"
+        ;; Extra arguments for some packages.
+        "-D FFT=FFTW3"
+        "-D MLIAP_ENABLE_PYTHON=yes"
+        (string-append "-DN2P2_DIR=" #$(this-package-input "n2p2"))))))
     (inputs
      (modify-inputs (package-inputs lammps)
+       (delete "pnetcdf")
+       (replace "hdf5-parallel-openmpi" hdf5)
        (delete "openmpi")))))
 
 (define-public libbigwig
