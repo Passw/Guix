@@ -6574,10 +6574,11 @@ other types of unwanted sequence from high-throughput sequencing reads.")
     (license license:expat)))
 
 (define-public lammps
-  (let ((commit "stable_2Aug2023_update2"))
+  (let ((commit "stable_22Jul2025_update3")
+        (version-tag "250722.3"))
     (package
       (name "lammps")
-      (version (string-append "0." commit))
+      (version version-tag)
       (source
        (origin
 	 (method git-fetch)
@@ -6587,52 +6588,70 @@ other types of unwanted sequence from high-throughput sequencing reads.")
 	 (file-name (git-file-name name version))
 	 (sha256
 	  (base32
-	   "11xagacgxgldkx34qdzyjrjvn8x3hpl0kgzhh9zh7skpq79pwycz"))))
-      (build-system gnu-build-system)
+	   "1ar1qvhziw7bx3az881lfq1a4w3w80x17ri1jiamd6f6ck57gwyz"))))
+      (build-system cmake-build-system)
       (arguments
        (list
-        #:tests? #f                     ; no check target
-	#:make-flags
-        '(list "CC=mpicc" "mpi"
-	       "LMP_INC=-DLAMMPS_GZIP \
--DLAMMPS_JPEG -DLAMMPS_PNG -DLAMMPS_FFMPEG -DLAMMPS_MEMALIGN=64"
-	       "LIB=-gz -ljpeg -lpng -lavcodec")
-	#:phases
-	#~(modify-phases %standard-phases
-            (add-after 'unpack 'chdir
-	      (lambda _ (chdir "src")))
-	    (replace 'configure
-	      (lambda _
-		(substitute* "MAKE/Makefile.mpi"
-		  (("SHELL =.*")
-		   (string-append "SHELL=" (which "bash") "\n"))
-		  (("cc ") "mpicc "))
-		(substitute* "Makefile"
-		  (("SHELL =.*")
-		   (string-append "SHELL=" (which "bash") "\n")))))
-	    (add-after 'configure 'configure-modules
-	      (lambda _
-		(invoke "make"
-			"yes-molecule"
-			"yes-misc"
-			"yes-granular"
-			(string-append "HDF5_PATH="
-				       #$(this-package-input "hdf5")))))
-	    (replace 'install
-	      (lambda _
-		(let ((bin (string-append #$output "/bin")))
-		  (mkdir-p bin)
-		  (install-file "lmp_mpi" bin)))))))
+          #:configure-flags
+          #~(list
+            ;; activate all possible lammps packages.
+            "-C ../cmake/presets/all_on.cmake"
+            "-D PKG_USER-MISC=yes"
+            ;; prevent from downloading extra packages.
+            "-D DOWNLOAD_POTENTIALS=off"
+            ;; Parallel
+            "-D LAMMPS_MACHINE=mpi"
+            "-D BUILD_MPI=yes"
+            "-D BUILD_OMP=yes"
+            ;; Build libraries to link to other codes.
+            "-D BUILD_SHARED_LIBS=yes"
+            ;; Deactivate package currently unavailable on guix
+            "-D PKG_VTK=no"
+            "-D PKG_ADIOS=no"
+            "-D PKG_GPU=no"
+            "-D PKG_VMD=no"
+            "-D PKG_VORONOI=no"
+            "-D PKG_SCAFACOS=no"
+            "-D PKG_MDI=no"
+            "-D PKG_ML-QUIP=no"
+            "-D PKG_ML-PACE=no"
+            "-D PKG_KIM=no"
+            "-D PKG_PLUMED=no"
+            "-D PKG_APIP=no"
+            ;; Extra arguments for some packages.
+            "-D FFT=FFTW3"
+            "-D Kokkos_ENABLE_OPENMP=yes"
+            "-D MLIAP_ENABLE_PYTHON=yes"
+            (string-append "-DN2P2_DIR=" #$(this-package-input "n2p2")))
+          #:tests? #f
+          #:build-type "Release"
+          #:phases
+          #~(modify-phases %standard-phases
+            (add-before 'configure 'goto-cmake-dir
+              (lambda _
+                (chdir "./cmake"))))))
       (inputs
        (list ffmpeg
-	     gfortran
-	     gzip
-	     hdf5
-	     libjpeg-turbo
-	     libpng
-	     openmpi
+             gzip
+             hdf5-parallel-openmpi
+             libjpeg-turbo
+             libpng
+             openmpi
+             fftw
+             n2p2
+             gsl
+             openblas
+             libomp
+             eigen
+             netcdf
+             pnetcdf
+             python-numpy
              python-wrapper))
-      (native-inputs (list bc))
+      (native-inputs
+        (list bc
+              pkg-config
+              python-cython
+              gfortran))
       (home-page "https://www.lammps.org/")
       (synopsis "Classical molecular dynamics simulator")
       (description "LAMMPS is a classical molecular dynamics simulator
