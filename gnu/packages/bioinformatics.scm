@@ -19372,6 +19372,54 @@ convenience functions for loading specific technologies are found in the base
 Giotto package.")
       (license license:expat))))
 
+(define-public r-giottoutils
+  (let ((commit "1ce82e5303b002540b41b6bf90ff543c26f41b31")
+        (revision "1"))
+    (package
+      (name "r-giottoutils")
+      (version (git-version "0.2.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/drieslab/GiottoUtils")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "04wm0ym07gz5zi639nm175vv7xsg0rja9vdb03jv969zbwcrd8mv"))))
+      (properties `((upstream-name . "GiottoUtils")))
+      (build-system r-build-system)
+      (arguments
+       (list
+        #:phases
+        '(modify-phases %standard-phases
+           (add-after 'unpack 'find-python
+             (lambda _
+               (setenv "RETICULATE_PYTHON" (which "python3")))))))
+      (propagated-inputs (list r-biocparallel
+                               r-checkmate
+                               r-data-table
+                               r-dplyr
+                               r-future
+                               r-gtools
+                               r-jsonlite
+                               r-lifecycle
+                               r-magrittr
+                               r-matrix
+                               r-progressr
+                               r-r-utils
+                               r-rcolorbrewer
+                               r-remotes
+                               r-reticulate
+                               python-scipy))
+      (inputs (list python-wrapper))
+      (native-inputs (list r-knitr r-testthat))
+      (home-page "https://github.com/drieslab/GiottoUtils")
+      (synopsis "Giotto suite utilities")
+      (description "This package provides utility functions and imports for
+Giotto Suite.")
+      (license license:expat))))
+
 (define-public r-giotto
   (let ((commit "3e6671a2512484a7b90b421b7e697d1abc2ec760")
         (revision "1"))
