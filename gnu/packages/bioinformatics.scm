@@ -19372,6 +19372,33 @@ convenience functions for loading specific technologies are found in the base
 Giotto package.")
       (license license:expat))))
 
+(define-public r-giottodata
+  (let ((commit "1dc55ee8195104a81549b9e3fad04bd459b226de")
+        (revision "1"))
+    (package
+      (name "r-giottodata")
+      (version (git-version "0.2.16" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/drieslab/GiottoData")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0izlmfrghx5nixlx1m9bpd5qxlvj6llz898qd0ij5ihp5x2w7dqk"))))
+      (properties `((upstream-name . "GiottoData")))
+      (build-system r-build-system)
+      (propagated-inputs (list r-data-table r-giottoclass r-giottoutils
+                               r-rprojroot))
+      (home-page "https://github.com/drieslab/GiottoData")
+      (synopsis "Datasets for Giotto")
+      (description
+       "This package stores information and scripts to work with, or load
+various different spatial datasets that can be used with the Giotto Suite
+workflow.  It also contains example mini Giotto subobjects.")
+      (license license:expat))))
+
 (define-public r-giottoutils
   (let ((commit "1ce82e5303b002540b41b6bf90ff543c26f41b31")
         (revision "1"))
