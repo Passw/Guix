@@ -22754,11 +22754,11 @@ frames with arbitrary sets of columns.")
       (license license:expat))))
 
 (define-public r-imagearray
-  (let ((commit "78b4b18d4326aca8aecb2cf01b019c5809078310")
+  (let ((commit "2f90694fa33ed8320a6a2f7e0ad5c8a1796cbfc6")
         (revision "1"))
     (package
       (name "r-imagearray")
-      (version (git-version "1.0" revision commit))
+      (version (git-version "0.99.6" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -22767,14 +22767,24 @@ frames with arbitrary sets of columns.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0lqcvp0xrvi5c5v31cjvcbjcyrd2wssc948fvndarvg0vhvgqw71"))))
+          (base32 "1mf68b007dc5wdzdva4vkjgkavgagjk45qv05f7vahbpi24yjj4n"))))
       (properties `((upstream-name . "ImageArray")))
       (build-system r-build-system)
-      (propagated-inputs (list r-delayedarray r-hdf5array r-magick r-s4arrays
-                               r-zarrarray))
+      (propagated-inputs (list r-delayedarray
+                               r-ebimage
+                               r-hdf5array
+                               r-magick
+                               r-rarr
+                               r-rhdf5
+                               r-s4arrays
+                               r-s4vectors))
+      (native-inputs (list r-knitr r-testthat))
       (home-page "https://github.com/BIMSBbioinfo/ImageArray")
-      (synopsis "DelayedArray based image operations")
-      (description "@code{DelayedArray} based image operations.")
+      (synopsis "Framework for on-disk and in-memory image arrays")
+      (description
+       "@code{ImageArray} provides a framework for on-disk and in-memory image
+arrays, specifically for pyramidal images stored in either HDF5 files or Zarr
+stores.")
       (license license:expat))))
 
 (define-public r-velocyto
