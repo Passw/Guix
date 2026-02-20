@@ -22831,137 +22831,135 @@ patterns.")
       (license license:gpl3))))
 
 (define-public r-voltron
-  (let ((commit "1c0810b6603010af9afc7bb75eaebbe6de5ace30")
-        (revision "1"))
-    (package
-      (name "r-voltron")
-      (version (git-version "0.2.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/BIMSBbioinfo/VoltRon")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0w8lbk74n0pxz4rscl5vnfaw2xpl107y55cc5xff4km37dw901hv"))))
-      (properties `((upstream-name . "VoltRon")))
-      (build-system r-build-system)
-      (arguments
-       (list
-        #:phases
-        #~(modify-phases %standard-phases
-            ;; By default VoltRon will use Basilisk, which uses Conda to set
-            ;; up a Python environment.  We override the fallback default
-            ;; here.  Users can still override the location of the Python
-            ;; interpreter with the option "voltron.python.path".
-            (add-after 'unpack 'do-not-use-conda
-              (lambda* (#:key inputs #:allow-other-keys)
-                (substitute* "R/conversion.R"
-                  (("return\\(NULL\\)")
-                   (string-append
-                    "source(paste0(system.file(package=\"VoltRon\"), \"/guix-refs.R\"));\n"
-                    "return(guix_python);")))))
-            ;; We do this outside of the source code to ensure that
-            ;; references are accessible to Guix.
-            (add-after 'install 'record-python-reference
-              (lambda* (#:key inputs #:allow-other-keys)
-                (mkdir-p (string-append #$output "/site-library/VoltRon/"))
-                (call-with-output-file (string-append #$output "/site-library/VoltRon/guix-refs.R")
-                  (lambda (port)
-                    (format port "\
+  (package
+    (name "r-voltron")
+    (version "0.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/BIMSBbioinfo/VoltRon")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15cfszipvsq2c1gqkvvg5xkwndhjvn8hqjg5ymliwfcz9y9cv9xg"))))
+    (properties `((upstream-name . "VoltRon")))
+    (build-system r-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          ;; By default VoltRon will use Basilisk, which uses Conda to set
+          ;; up a Python environment.  We override the fallback default
+          ;; here.  Users can still override the location of the Python
+          ;; interpreter with the option "voltron.python.path".
+          (add-after 'unpack 'do-not-use-conda
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "R/conversion.R"
+                (("return\\(NULL\\)")
+                 (string-append
+                  "source(paste0(system.file(package=\"VoltRon\"), \"/guix-refs.R\"));\n"
+                  "return(guix_python);")))))
+          ;; We do this outside of the source code to ensure that
+          ;; references are accessible to Guix.
+          (add-after 'install 'record-python-reference
+            (lambda* (#:key inputs #:allow-other-keys)
+              (mkdir-p (string-append #$output "/site-library/VoltRon/"))
+              (call-with-output-file (string-append #$output "/site-library/VoltRon/guix-refs.R")
+                (lambda (port)
+                  (format port "\
 Sys.setenv(GUIX_PYTHONPATH=\"~a\");
 guix_python <- \"~a\";"
-                            (getenv "GUIX_PYTHONPATH")
-                            (search-input-file inputs "/bin/python3")))))))))
-      (inputs
-       (list opencv
-             ;; These Python inputs are used via reticulate.
-             python
-             python-numpy
-             python-pandas
-             python-anndata
-             python-h5py
-             python-natsort
-             python-numcodecs
-             python-packaging
-             python-scipy
-             python-tifffile
-             python-zarr
-             which       ;tests/testthat/test_conversion.R
-             zlib))
-      (propagated-inputs (list r-biocsingular
-                               r-data-table
-                               r-dplyr
-                               r-ebimage
-                               r-ggplot2
-                               r-ggpubr
-                               r-ggrepel
-                               r-ids
-                               r-igraph
-                               r-irlba
-                               r-magick
-                               r-matrix
-                               r-pizzarr
-                               r-rann
-                               r-rcdt
-                               r-rcpp
-                               r-rcppannoy
-                               r-rcpparmadillo
-                               r-reshape2
-                               r-reticulate
-                               r-rhdf5
-                               r-rjson
-                               r-rlang
-                               r-s4arrays
-                               r-shiny
-                               r-shinyjs
-                               r-sp
-                               r-stringr
-                               r-uwot
+                          (getenv "GUIX_PYTHONPATH")
+                          (search-input-file inputs "/bin/python3")))))))))
+    (inputs
+     (list opencv
+           ;; These Python inputs are used via reticulate.
+           python-wrapper
+           python-numpy
+           python-pandas
+           python-anndata
+           python-h5py
+           python-natsort
+           python-numcodecs
+           python-packaging
+           python-scipy
+           python-tifffile
+           python-zarr
+           which       ;tests/testthat/test_conversion.R
+           zlib))
+    (propagated-inputs (list r-biocsingular
+                             r-data-table
+                             r-dplyr
+                             r-ebimage
+                             r-ggplot2
+                             r-ggpubr
+                             r-ggrepel
+                             r-ids
+                             r-igraph
+                             r-irlba
+                             r-magick
+                             r-matrix
+                             r-pizzarr
+                             r-rann
+                             r-rcdt
+                             r-rcpp
+                             r-rcppannoy
+                             r-rcpparmadillo
+                             r-reshape2
+                             r-reticulate
+                             r-rhdf5
+                             r-rjson
+                             r-rlang
+                             r-s4arrays
+                             r-shiny
+                             r-shinyjs
+                             r-sp
+                             r-stringr
+                             r-uwot
 
-                               ;; Suggested packages
-                               r-anndata
-                               r-anndatar
-                               r-arrow
-                               r-bpcells
-                               r-circlize
-                               r-codetools
-                               r-complexheatmap
-                               r-delayedarray
-                               r-deseq2
-                               r-geojsonr
-                               r-ggforce
-                               r-ggnewscale
-                               r-giotto
-                               r-glmgampoi
-                               r-hdf5array
-                               r-hdf5dataframe
-                               r-imagearray
-                               r-music
-                               r-rhdf5
-                               r-rstudioapi
-                               r-s4vectors
-                               r-seurat
-                               r-seuratobject
-                               r-singlecellexperiment
-                               r-spacexr
-                               r-spatialexperiment
-                               r-summarizedexperiment
-                               r-viridislite
-                               r-vitesscer
-                               r-xml
-                               r-zarrdataframe))
-      (native-inputs (list pkg-config r-testthat))
-      (home-page "https://github.com/BIMSBbioinfo/VoltRon")
-      (synopsis "VoltRon for spatial data integration and analysis")
-      (description
-       "@code{VoltRon} is a novel spatial omic analysis toolbox for
+                             ;; Suggested packages
+                             r-anndata
+                             r-anndatar
+                             r-arrow
+                             r-bpcells
+                             r-circlize
+                             r-codetools
+                             r-complexheatmap
+                             r-delayedarray
+                             r-deseq2
+                             r-geojsonr
+                             r-ggforce
+                             r-ggnewscale
+                             r-giotto
+                             r-glmgampoi
+                             r-hdf5array
+                             r-hdf5dataframe
+                             r-imagearray
+                             r-music
+                             r-rhdf5
+                             r-rstudioapi
+                             r-s4vectors
+                             r-seurat
+                             r-seuratobject
+                             r-singlecellexperiment
+                             r-spacexr
+                             r-spatialexperiment
+                             r-summarizedexperiment
+                             r-viridislite
+                             r-vitesscer
+                             r-xml
+                             r-zarrdataframe))
+    (native-inputs (list pkg-config r-testthat))
+    (home-page "https://github.com/BIMSBbioinfo/VoltRon")
+    (synopsis "VoltRon for spatial data integration and analysis")
+    (description
+     "@code{VoltRon} is a novel spatial omic analysis toolbox for
 multi-omics integration using spatial image registration.  @code{VoltRon} is
 capable of analyzing multiple types and modalities of spatially-aware
 datasets.  @code{VoltRon} visualizes and analyzes regions of interests (ROIs),
 spots, cells and even molecules.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public r-zarrdataframe
   (let ((commit "84c7db2f6f5f84b4a4308f8eb72bedc131fb68bc")
