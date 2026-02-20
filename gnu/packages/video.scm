@@ -79,6 +79,7 @@
 ;;; Copyright © 2025 Julian Flake <flake@uni-koblenz.de>
 ;;; Copyright © 2025 Karl Hallsby <karl@hallsby.com>
 ;;; Copyright © 2026 Ashish SHUKLA <ashish.is@lostca.se>
+;;; Copyright © 2026 Carlos Durán Domínguez <wurt@wurt.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -173,6 +174,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages hunspell)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
@@ -5909,71 +5911,77 @@ programmers to access a standard API to open and decompress media files.")
 (define-public aegisub
   (package
     (name "aegisub")
-    (version "3.2.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                     "https://github.com/Aegisub/Aegisub/releases/download/v"
-                     version "/aegisub-" version ".tar.xz"))
-              (sha256
-               (base32
-                "11b83qazc8h0iidyj1rprnnjdivj1lpphvpa08y53n42bfa36pn5"))
-              (patches (search-patches "aegisub-icu59-include-unistr.patch"
-                                       "aegisub-make43.patch"
-                                       "aegisub-boost68.patch"
-                                       "aegisub-boost81.patch"))))
-    (build-system gnu-build-system)
+    (version "3.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/TypesettingTools/Aegisub")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wsksmxk6sgwy4hqag3j8gls77bbiaq0jflzc7i6c5glkqdqk3w6"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       (list "--disable-update-checker"
-             "--without-portaudio"
-             "--without-openal"
-             "--without-oss"
-             "CXXFLAGS=-DU_USING_ICU_NAMESPACE=1")
-       ;; tests require busted, a lua package we don't have yet
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-ldflags
-           (lambda _
-             (setenv "LDFLAGS" "-pthread")
-             #t))
-         (add-after 'unpack 'fix-boost-headers
-               (lambda _
-                 (substitute*
-                     '("src/subtitles_provider_libass.cpp"
-                       "src/colour_button.cpp"
-                       "src/video_provider_dummy.cpp"
-                       "./src/video_frame.cpp")
-                   (("#include <boost/gil/gil_all.hpp>")
-                    "#include <boost/gil.hpp>"))
-                 #t)))))
+     (list
+      #:configure-flags
+      #~(list "-Denable_update_checker=false"
+              "-Dsystem_luajit=true"
+              "-Dlocal_boost=false")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'git-version-h
+            (lambda _
+              (call-with-output-file "git_version.h"
+                (lambda (port)
+                  (format
+                   port
+                   "#define BUILD_GIT_VERSION_NUMBER ~d
+#define BUILD_GIT_VERSION_STRING ~s
+#define TAGGED_RELEASE 1
+#define INSTALLER_VERSION ~s
+#define RESOURCE_BASE_VERSION ~a"
+                   ;; lastSvnHash=16cd907fe7482cb54a7374cd28b8501f138116be
+                   ;; $(expr 6962 + $(git rev-list --count $lastSvnHash..HEAD))
+                   9426
+                   #$version
+                   #$version
+                   #$(string-replace-substring version "." ", ")))))))))
+    (native-inputs
+     (list gettext-minimal
+           googletest
+           pkg-config
+           python))
     (inputs
-     (list boost-1.83
+     (list alsa-lib
+           boost-1.83
+           curl
            ffms2
            fftw
            hunspell
-           mesa
+           icu4c
            libass
-           alsa-lib
+           libportal
+           luajit-lua52-openresty
+           mesa
+           openal
            pulseaudio
-           libx11
-           freetype
-           wxwidgets-gtk2))
-    (native-inputs
-     (list intltool desktop-file-utils pkg-config))
+           uchardet
+           wxwidgets
+           zlib))
     (home-page "https://www.aegisub.org/")
     (synopsis "Subtitle engine")
     (description
-      "Aegisub is a tool for creating and modifying subtitles.  Aegisub makes
+     "Aegisub is a tool for creating and modifying subtitles.  Aegisub makes
 it quick and easy to time subtitles to audio, and features many powerful
 tools for styling them, including a built-in real-time video preview.")
-    (license (list license:bsd-3 ; the package is licensed under the bsd-3, except
-                   license:mpl1.1 ; for vendor/universalchardet under the mpl1.1
-                   license:expat)))) ; and src/gl that is under a license similar
-   ; the the Expat license, with a rewording (Software -> Materials). (called MIT
-   ; by upstream). See https://github.com/Aegisub/Aegisub/blob/master/LICENCE
-   ; src/MatroskaParser.(c|h) is under bsd-3 with permission from the author
+    ;; See https://github.com/TypesettingTools/Aegisub/issues/271
+    (license (list license:bsd-2
+                   license:bsd-3
+                   license:expat
+                   license:gpl2+
+                   license:isc
+                   license:public-domain))))
 
 (define-public pitivi
   (package
