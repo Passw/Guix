@@ -29,7 +29,7 @@
 ;;; Copyright © 2022 jgart <jgart@dismail.de>
 ;;; Copyright © 2022 Sarah Morgensen <iskarian@mgsn.dev>
 ;;; Copyright © 2023, 2024 Troy Figiel <troy@troyfigiel.com>
-;;; Copyright © 2024-2025 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2024-2026 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2024 Marco Baggio <marco.baggio@mdc-berlin.de>
 ;;; Copyright © 2024 Nicolas Graves <ngraves@ngraves.fr>
 ;;; Copyright © 2024 Rick Huijzer <ikbenrickhuyzer@gmail.com>
@@ -2696,6 +2696,40 @@ or as a TikZ file for use in LaTeX documents;
     (description "This package provides a Python interface to the QDLDL LDL
 factorization routine for quasi-definite linear system.")
     (license license:asl2.0)))
+
+(define-public python-quantities
+  (package
+    (name "python-quantities")
+    (version "0.16.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "quantities" version))
+       (sha256
+        (base32 "0dmzk17hd0c6lzjlipjpc52jdifknpvxq15javn19n3f9yvxxdpm"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'pre-check
+            (lambda _
+              (setenv "PY_IGNORE_IMPORTMISMATCH" "1"))))))
+    (native-inputs
+     (list python-pytest
+           python-setuptools
+           python-setuptools-scm))
+    (propagated-inputs
+     (list python-numpy))
+    (home-page "https://github.com/python-quantities/python-quantities")
+    (synopsis "Support for physical quantities with units, based on NumPy")
+    (description
+     "Quantities is designed to handle arithmetic and conversions of physical
+quantities, which have a magnitude, dimensionality specified by various units,
+and possibly an uncertainty.  It builds on the NumPy library and is designed
+to work with @code{numpy.ufuncs}, many of which are already supported.")
+    ;; OSI approved, BSD like, see doc/user/license.rst.
+    (license license:bsd-3)))
 
 (define-public python-qutip
   (package
