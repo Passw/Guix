@@ -173,7 +173,7 @@ your project into different processes.")
 (define-public python-crispy-bootstrap4
   (package
     (name "python-crispy-bootstrap4")
-    (version "2025.6")
+    (version "2026.2")
     (source
      (origin
        (method git-fetch)
@@ -182,7 +182,7 @@ your project into different processes.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kyyyrg39ckqw3pmsq67g5xzgmcd7xjgz7vpsr97gaai1frnsvnr"))))
+        (base32 "1sjclyc7xxflzz452j57vp0290gz86kwcbfjz7x39sfwlhrib24q"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -191,7 +191,7 @@ your project into different processes.")
           (add-before 'check 'pre-check
             (lambda _
               (setenv "PYTHONPATH" "."))))))
-    (propagated-inputs (list python-django-4 python-django-crispy-forms))
+    (propagated-inputs (list python-django python-django-crispy-forms))
     (native-inputs (list python-pytest python-pytest-django python-setuptools))
     (home-page "https://github.com/django-crispy-forms/crispy-bootstrap4")
     (synopsis "Bootstrap4 template pack for django-crispy-forms")
