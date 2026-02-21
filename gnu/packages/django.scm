@@ -1057,23 +1057,27 @@ for Django sites.")
 (define-public python-django-contrib-comments
   (package
     (name "python-django-contrib-comments")
-    (version "2.2.0")
+    (properties '((commit . "4ad4c701f2a17ca62f040e94d73c2eb08af320e9")
+                  (revision . "0")))
+    (version (git-version "2.2.0"
+                          (assoc-ref properties 'revision)
+                          (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/django/django-contrib-comments")
-             (commit version)))
+              (url "https://github.com/django/django-contrib-comments")
+              (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17mymw64bm5f19iq6dlpcbbycamy2a0wrnfzrbnw8diysc3fsnpr"))))
+        (base32 "0rr8vxj8q93b1a8s69a8big0r5h77liwi8ldc7ssk2bfwqb7gh26"))))
     (build-system pyproject-build-system)
     (arguments
      (list
       #:test-backend #~'custom
       #:test-flags #~(list "tests/runtests.py")))
     (native-inputs (list python-setuptools tzdata-for-tests))
-    (propagated-inputs (list python-django-4))
+    (propagated-inputs (list python-django))
     (home-page "https://github.com/django/django-contrib-comments")
     (synopsis "Comments framework")
     (description
