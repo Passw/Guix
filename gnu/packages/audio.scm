@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015-2025 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015-2026 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2025 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -1208,7 +1208,7 @@ PulseAudio clients, featuring:
 (define-public ardour
   (package
     (name "ardour")
-    (version "8.12")
+    (version "9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1225,7 +1225,7 @@ PulseAudio clients, featuring:
 namespace ARDOUR { const char* revision = \"" version "\" ; const char* date = \"\"; }")))))
               (sha256
                (base32
-                "1cbsgdzhvnjwqgxbjk7ydcqaq6m87qm463ccwlvz1h6wkm1h3270"))
+                "00bramm8dq0ihr376n7l9rg0mjzxmzw6lxvsbsdlrdsimfwsy16p"))
               (file-name (git-file-name name version))))
     (build-system waf-build-system)
     (arguments
@@ -1233,7 +1233,6 @@ namespace ARDOUR { const char* revision = \"" version "\" ; const char* date = \
       #:configure-flags
       '(list "--optimize"
              "--no-phone-home"          ;don't contact ardour.org
-             "--no-ytk"                 ;don't use bundled GTK2
              "--freedesktop"            ;build .desktop file
              "--test"                   ;build unit tests
              "--use-external-libs")     ;use system libraries
