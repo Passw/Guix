@@ -10054,15 +10054,15 @@ subroutine, which you can call with a value to be tested against.")
 (define-public perl-number-format
   (package
     (name "perl-number-format")
-    (version "1.75")
+    (version "1.76")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://cpan/authors/id/W/WR/WRW/Number-Format-"
+                    "mirror://cpan/authors/id/R/RJ/RJBS/Number-Format-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "1wspw9fybik76jq9w1n1gmvfixd4wvlrq6ni8kyn85s62v5mkml2"))))
+                "1mj4vnay2w6skpjclakvkxssxzmazksjcskcf22shd9n6vmn000f"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Number-Format")
     (synopsis "Convert numbers to strings with pretty formatting")
