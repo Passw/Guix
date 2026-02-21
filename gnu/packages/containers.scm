@@ -10,6 +10,7 @@
 ;;; Copyright © 2024 Jean-Pierre De Jesus DIAZ <jean@foundation.xyz>
 ;;; Copyright © 2025 Tomas Volf <~@wolfsden.cz>
 ;;; Copyright © 2025 Foster Hangdaan <foster@hangdaan.email>
+;;; Copyright © 2026 Giacomo Leidi <therewasa@fishinthecalculator.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,8 +38,10 @@
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system guile)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system pyproject)
+  #:use-module ((guix search-paths) #:select ($GUIX_EXTENSIONS_PATH))
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
@@ -58,11 +61,13 @@
   #:use-module (gnu packages golang-web)
   #:use-module (gnu packages golang-xyz)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-build)
@@ -285,6 +290,68 @@ containers highly integrated with the hosts.")
      "This package provides a tool for exploring a Docker image, layer
 contents, and discovering ways to shrink the size of Docker/OCI image.")
     (license license:expat)))
+
+(define-public guix-compose
+  (package
+    (name "guix-compose")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://codeberg.org/fishinthecalculator/guix-compose")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ij6rfs5pfykk8c53q029sl2qx3k572dqdfb6pn5s569l6697ci1"))))
+    (build-system guile-build-system)
+    (arguments
+     (list
+      #:source-directory "src"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'set-load-paths-in-entry-point
+            (lambda _
+              (define load-path
+                (cons (string-append #$output "/share/guile/site/3.0")
+                      (parse-path (getenv "GUILE_LOAD_PATH"))))
+              (define load-compiled-path
+                (cons (string-append #$output "/lib/guile/3.0/site-ccache")
+                      (parse-path (getenv "GUILE_LOAD_COMPILED_PATH"))))
+              (define search-paths-header
+                `(begin
+                   (set! %load-path
+                         (append (list ,@load-path) %load-path))
+                   (set! %load-compiled-path
+                         (append (list ,@load-compiled-path)
+                                 %load-compiled-path))))
+
+              (substitute* "src/guix/extensions/compose.scm"
+                ((";;@load-paths@")
+                 (with-output-to-string
+                   (lambda () (write search-paths-header)))))))
+          (add-after 'build 'add-extension-to-search-path
+            (lambda _
+              (with-directory-excursion #$output
+                (mkdir-p "share/guix/extensions")
+                (symlink
+                 (string-append
+                  #$output "/share/guile/site/3.0/guix/extensions/compose.scm")
+                 "share/guix/extensions/compose.scm"))))
+          (add-after 'add-extension-to-search-path 'check
+            (lambda _
+              (invoke
+               "guile" "-L" "./modules" "-s" "tests/test-compose.scm"))))))
+    (native-inputs (list guile-3.0))
+    ;; Avoid setting propagated so that we use the user’s profile.
+    (inputs (list guix guile-yamlpp))
+    (native-search-paths
+     (list $GUIX_EXTENSIONS_PATH))
+    (synopsis "Guix' docker compose compatibility layer")
+    (description "A toolkit to run, read and write docker-compose.yml files with
+Guix machinery.")
+    (home-page "https://codeberg.org/fishinthecalculator/guix-compose")
+    (license license:gpl3+)))
 
 (define-public libslirp
   (package
