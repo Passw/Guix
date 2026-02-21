@@ -1448,7 +1448,7 @@ the \"texlive\" importer."
 (define-member (person "Rodion Goritskov"
                        "rodion@goritskov.com"
                        "rodion-goritskov")
-  release)
+  games java kde kernel release)
 
 (define-member (person "Jason Conroy"
                        "jconroy@tscripta.net"
