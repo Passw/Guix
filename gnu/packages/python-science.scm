@@ -683,6 +683,25 @@ colormaps, like chroma and rainforest for jet; sunburst for hot; neutral for
 binary; and fusion and redshift for coolwarm.")
     (license license:bsd-3)))
 
+(define-public python-cmcrameri
+  (package
+    (name "python-cmcrameri")
+    (version "1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cmcrameri" version))
+       (sha256
+        (base32 "0h3n6lngq5jnqywl3f6p554qbh95vk3vwdq18pnkzc1yynvzkyjn"))))
+    (build-system pyproject-build-system)
+    (propagated-inputs (list python-matplotlib python-numpy python-packaging))
+    (native-inputs (list python-setuptools python-setuptools-scm))
+    (home-page "https://github.com/callumrollo/cmcrameri")
+    (synopsis "Perceptually uniform colormaps by Fabio Crameri")
+    (description "This package provides a Python wrapper around Fabio
+Crameri's perceptually uniform colormaps for scientific data visualization.")
+    (license license:expat)))
+
 (define-public python-cmocean
   (package
     (name "python-cmocean")
