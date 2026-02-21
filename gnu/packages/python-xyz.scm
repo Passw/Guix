@@ -14816,29 +14816,6 @@ computing.")
               ;; "python-ipython-documentation-chars.patch" patch) copy of
               ;; IPython gets used.
               (setenv "PYTHONPATH" (string-append (getcwd)))))
-          (add-before 'build 'configure-sphinx-for-xelatex
-            (lambda _
-              ;; Use XeLaTeX instead of PDFLaTeX, as it can
-              ;; cope with the Unicode characters present in the
-              ;; contributors page, for example.
-              (substitute* "docs/source/conf.py"
-                (("project = 'IPython'.*" all)
-                 (string-append all "latex_engine = 'xelatex'\n")))
-              ;; XXX: The Sphinx-generated ipython.tex specifies the GNU
-              ;; FreeFont font to be searched via its extension, which uses
-              ;; kpathsea instead of fontconfig and fail (see:
-              ;; https://github.com/sphinx-doc/sphinx/issues/10347).  Create a
-              ;; symlink to GNU FreeFont and add it to the TEXMF tree via
-              ;; GUIX_TEXMF.
-              (mkdir-p "texmf-dist/fonts/opentype/public")
-              (symlink (string-append
-                        #$(this-package-native-input "font-gnu-freefont")
-                        "/share/fonts/opentype")
-                       (string-append
-                        (getcwd) "/"
-                        "texmf-dist/fonts/opentype/public/gnu-freefont"))
-              (setenv "GUIX_TEXMF" (string-append (getenv "GUIX_TEXMF") ":"
-                                                  (getcwd) "/texmf-dist"))))
           (delete 'build)
           (delete 'check)
           (replace 'install
@@ -14847,33 +14824,25 @@ computing.")
                      (doc (string-append data "/doc/" #$name "-" #$version))
                      (html (string-append doc "/html"))
                      (info (string-append data "/info")))
-                (invoke "make" "-C" "docs" "info" "html" "pdf"
+                (invoke "make" "-C" "docs" "info" "html"
                         (string-append "SPHINXOPTS=-j"
                                        (number->string (parallel-job-count))))
                 (install-file "COPYING.rst" doc)
                 (copy-recursively "examples" (string-append doc "/examples"))
                 ;; Install HTML documentation.
                 (copy-recursively "docs/build/html" html)
-                ;; Likewise for the PDF.
-                (install-file "docs/build/latex/ipython.pdf" doc)
                 ;; Likewise for the info manual.
                 (install-file "docs/build/texinfo/ipython.info" info)
                 (symlink (string-append html "/_images")
                          (string-append info "/ipython-figures"))))))))
     (native-inputs
-     (list fontconfig                   ;for XDG_DATA_DIRS to locate fonts
-           font-gnu-freefont
-           graphviz
+     (list graphviz
            python-docrepr
            python-ipykernel
            python-sphinx
            python-sphinx-rtd-theme
-           texinfo
-           (texlive-local-tree
-            (list texlive-latexmk
-                  texlive-polyglossia
-                  texlive-xetex
-                  texlive-xindy))))))
+           python-sphinx-toml
+           texinfo))))
 
 ;; A bare minimal package, mainly to use in tests and reduce closure
 ;; size. Tests are left out in the main package to slim down native-inputs.
