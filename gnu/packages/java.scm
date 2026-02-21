@@ -1719,18 +1719,30 @@ blacklisted.certs.pem"
       (append libxcursor)))             ;for our patch to work
    (arguments
     (substitute-keyword-arguments (package-arguments base)
+      ((#:implicit-inputs? _ #t)
+       ;; This is necessary to avoid include ordering errors when adding a
+       ;; lower GCC to native-inputs to avoid errors like "error: 'fesetround'
+       ;; was not declared in this scope; did you mean 'setreuid'?"
+       #f)
       ((#:configure-flags flags '%standard-phases)
        #~(cons "--without-gtest"        ;this replaces...
                (delete "--disable-hotspot-gtest" #$flags))))) ;... this
    (native-inputs
-    (modify-inputs (package-native-inputs base)
-      (delete "make"                    ;remove old gnu-make-4.2
-              "openjdk")                ;to remove non-jdk output
-      (append `(,openjdk14 "jdk"))))))
+    (append (modify-inputs (package-native-inputs base)
+              (delete "make"            ;remove old gnu-make-4.2
+                      "openjdk")        ;to remove non-jdk output
+              (append `(,openjdk14 "jdk")))
+            ;; On powerpc64le at least, GCC 14 cannot be used otherwise JDK 15
+            ;; fails to bootstrap JDK 16, with incomprehensible errors like:
+            ;; src/java.base/share/classes/java/lang/reflect/Proxy.java:1311:
+            ;; error: integer number too large.
+            (modify-inputs (%final-inputs)
+              (replace "gcc" gcc-11))))))
 
 (define-public openjdk16
-  (make-openjdk openjdk15 "16.0.2"
-                "0587px2qbz07g3xi4a3ya6m630p72dvkxcn0bj1813pxnwvcgigz"
+  (make-openjdk
+   openjdk15 "16.0.2"
+   "0587px2qbz07g3xi4a3ya6m630p72dvkxcn0bj1813pxnwvcgigz"
    (source (origin
              (inherit (package-source base))
              (patches (search-patches "openjdk-15-xcursor-no-dynamic.patch"
@@ -1744,14 +1756,19 @@ blacklisted.certs.pem"
              (inherit (package-source base))
              (patches (search-patches "openjdk-15-xcursor-no-dynamic.patch"))))
    (arguments
-    (substitute-keyword-arguments (package-arguments openjdk16)
+    (substitute-keyword-arguments (package-arguments base)
+      ((#:implicit-inputs? _ #t) #t)    ;restore default
       ((#:phases phases)
        #~(modify-phases #$phases
            (replace 'fix-java-shebangs
              (lambda _
                ;; 'blacklisted' was renamed back to 'blocked'.
                (substitute* "make/data/blockedcertsconverter/blocked.certs.pem"
-                 (("^#!.*") "#! java BlockedCertsConverter SHA-256\n"))))))))))
+                 (("^#!.*") "#! java BlockedCertsConverter SHA-256\n"))))))))
+   (native-inputs
+    ;; Resume using the implicit inputs, including the current GCC.
+    (fold alist-delete (package-native-inputs base)
+          (map first (%final-inputs))))))
 
 (define-public openjdk18
   (make-openjdk openjdk17 "18.0.2.1"
