@@ -892,32 +892,31 @@ templatetags and a full test suite.")
 (define-public python-django-jinja
   (package
     (name "python-django-jinja")
-    (version "2.11.0")
+    (properties '((commit . "db07311d9693ffcd42ec34f9ce7bcab861b81d0f")
+                  (revision . "0")))
+    (version (git-version "2.11.0"
+                          (assoc-ref properties 'revision)
+                          (assoc-ref properties 'commit)))
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/niwinz/django-jinja")
-             (commit version)))
+              (url "https://github.com/niwinz/django-jinja")
+              (commit (assoc-ref properties 'commit))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "17irzcwxm49iqyn3q2rpfncj41r6gywh938q9myfq7m733vjy2fj"))))
+         "1iqqqbvi0w9vlbgq3j8wi1z2ln92zri1abc9b951yy5sp47xk4vh"))))
     (build-system pyproject-build-system)
     (arguments
      (list
-      #:phases
-      '(modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (with-directory-excursion "testing"
-                 (invoke "python" "runtests.py"))))))))
+      #:test-backend #~'custom
+      #:test-flags #~(list "testing/runtests.py")))
     (propagated-inputs
-     (list python-django-4 python-jinja2 python-pytz python-django-pipeline))
+     (list python-django python-jinja2 python-pytz python-django-pipeline))
     (native-inputs
-     (list python-setuptools python-wheel tzdata-for-tests))
-    (home-page "https://niwinz.github.io/django-jinja/latest/")
+     (list python-setuptools tzdata-for-tests))
+    (home-page "https://niwi.nz/django-jinja/latest/")
     (synopsis "Simple jinja2 templating backend for Django")
     (description
      "This package provides a templating backend for Django, using Jinja2.  It
