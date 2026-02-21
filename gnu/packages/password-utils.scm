@@ -63,7 +63,6 @@
 
 (define-module (gnu packages password-utils)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
