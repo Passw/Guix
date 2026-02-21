@@ -5504,6 +5504,30 @@ structured and declarative manner.  It is inspired by the R package ggplot2
 and aims to provide a similar API and functionality in Python.")
     (license license:expat)))
 
+(define-public python-pytest-pyvista
+  (package
+    (name "python-pytest-pyvista")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest_pyvista" version))
+       (sha256
+        (base32 "0hgk3a5wwymk3k7ih4lsmkd44dfnsd842zv5859izqxkw74j2xpn"))))
+    (build-system pyproject-build-system)
+    (arguments
+     (list
+      ;; No tests included in the PyPI tarball.
+      #:tests? #f))
+    (propagated-inputs (list python-numpy python-pillow python-pytest-8))
+    (native-inputs (list python-flit-core))
+    (home-page "https://github.com/pyvista/pytest-pyvista")
+    (synopsis "Pytest plugin for comparing PyVista plot images")
+    (description "This package provides a Pytest plugin that facilitates
+the comparison of images produced by PyVista, generating cached images from
+tests and comparing subsequent results against that cache.")
+    (license license:expat)))
+
 (define-public python-pyvista
   (package
     (name "python-pyvista")
