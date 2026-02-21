@@ -1649,7 +1649,7 @@ a single block.")
 (define-public python-django-crispy-forms
   (package
     (name "python-django-crispy-forms")
-    (version "2.4")
+    (version "2.5")
     (source
      (origin
        (method git-fetch)
@@ -1658,7 +1658,7 @@ a single block.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1xrrcsv534p989hh1jgy4nk6sxay7g913z6zxwgpgnadzr9dfpk1"))))
+        (base32 "0nx3b5p8flwirfpwiq528z9dxqz49s99z3y33n0076af8zmkr72i"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -1684,7 +1684,7 @@ a single block.")
                   (delete "python-django-crispy-forms")))))
            (list python-crispy-bootstrap3 python-crispy-bootstrap4))
       (list python-pytest python-pytest-django python-setuptools)))
-    (propagated-inputs (list python-django-4))
+    (propagated-inputs (list python-django))
     (home-page "https://github.com/django-crispy-forms/django-crispy-forms")
     (synopsis "Tool to control Django forms without custom templates")
     (description
