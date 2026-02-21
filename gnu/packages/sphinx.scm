@@ -20,6 +20,7 @@
 ;;; Copyright © 2021, 2022, 2024, 2025 Maxim Cournoyer <maxim@guixotic.coop>
 ;;; Copyright © 2024 Troy Figiel <troy@troyfigiel.com>
 ;;; Copyright © 2021 Maxime Devos <maximedevos@telenet.be>
+;;; Copyright © 2026 Yan Abu Arab <yanabuarab@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,29 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages xml))
+
+(define-public python-intersphinx-registry
+  (package
+    (name "python-intersphinx-registry")
+    (version "0.2602.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+          (url "https://github.com/Quansight-Labs/intersphinx_registry")
+          (commit version)))
+       (sha256
+        (base32 "153rjh3dyk2azwsdsrll2ia4abrv0mzdppkyx4n2pzd705nk767a"))))
+    (build-system pyproject-build-system)
+    (native-inputs
+     (list python-flit-core))
+    (home-page "https://github.com/Quansight-Labs/intersphinx_registry")
+    (synopsis "Convenient utilities and data to write a Sphinx config file")
+    (description
+     "A simple utility package that provides a default intersphinx mapping for
+a large chunk of the Python ecosystem.")
+    (license license:expat)))
 
 (define-public python-sphinx
   (package
