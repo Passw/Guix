@@ -326,6 +326,38 @@ sources.")
 create tags for documentation pages.")
     (license license:expat)))
 
+(define-public python-sphinx-toml
+  (let ((commit "095a4d193a7fd046317b9f15074a5f70d6b1fd38")
+        (revision "0"))
+    (package
+      (name "python-sphinx-toml")
+      ;; version number from untagged commit
+      ;; 1dc4121cbec4247ae931165c2b22727705cf0caa
+      (version (git-version "0.0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+            (url "https://github.com/Carreau/sphinx_toml")
+            (commit commit)))
+         (sha256
+          (base32 "0f5vm8m8gbjl963mgw4r3yq5k9npyiyp80c785f73sh8z9zhq485"))))
+      (build-system pyproject-build-system)
+      (native-inputs
+       (list python-flit-core))
+      (propagated-inputs
+       (list python-intersphinx-registry
+             python-pydantic
+             python-tomli))
+      (home-page "https://github.com/Carreau/sphinx_toml")
+      (synopsis "Load data from a sphinx.toml file next to a conf.py file")
+      (description
+       "This package implements a functionality of partially load Sphinx
+configuration from @code{sphinx.toml} situated in the same dir as
+@code{conf.py}.")
+      (license license:expat))))
+
 (define-public python-sphinxcontrib-apidoc
   (package
     (name "python-sphinxcontrib-apidoc")
