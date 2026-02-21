@@ -86,6 +86,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -5531,7 +5532,7 @@ tests and comparing subsequent results against that cache.")
 (define-public python-pyvista
   (package
     (name "python-pyvista")
-    (version "0.44.2")
+    (version "0.46.5")
     (source
      (origin
        (method git-fetch)
@@ -5540,7 +5541,7 @@ tests and comparing subsequent results against that cache.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0lnh4cvf6wld7hm293015d80ny0vnsk96ckfvc2crzd1b79ch1v5"))))
+        (base32 "0553bp4fhbar9z0ybjv1mw1jhb5rhrr4v6q2bzmia0ww0dn8fc69"))))
     (build-system pyproject-build-system)
     (arguments
      (list
@@ -5551,6 +5552,12 @@ tests and comparing subsequent results against that cache.")
               "--ignore=tests/examples/test_download_files.py"
               "--ignore=tests/examples/test_downloads.py"
               "--ignore=tests/plotting/test_texture.py"
+              ;; Tries to download data from GitHub at collection time.
+              "--ignore=tests/core/test_dataobject_filters.py"
+              ;; Tries to download data from GitHub at collection time.
+              "--ignore=tests/core/test_dataset_filters.py"
+              ;; Tries to download data from GitHub at collection time.
+              "--ignore=tests/plotting/test_plotter.py"
               "-k" (string-join
                     (list "not test_actor_texture"
                           "test_add_multiple"
@@ -5630,7 +5637,23 @@ tests and comparing subsequent results against that cache.")
                           "test_xdmf_reader"
                           ;; XXX: incompatible with Numpy@2
                           ;; Drop when updating along with vtk.
-                          "test_check_subdtype_changes_type")
+                          "test_check_subdtype_changes_type"
+                          ;; These tests try to download data from GitHub.
+                          "test_read_exodus"
+                          "test_nek5000_reader"
+                          "test_exodus_reader_ext"
+                          "test_exodus_reader_core"
+                          "test_exodus_blocks"
+                          "test_download_dataset_texture"
+                          "test_structured_grid_cast_to_explicit_structured_grid"
+                          "test_pad_image_multi_component_with_scalar"
+                          "test_pad_image_raises"
+                          "test_points_to_cells_and_cells_to_points_dimensions"
+                          ;; These tests download cow.vtp from GitHub.
+                          "test_meshio[cow_ugrid]"
+                          "test_meshio[points_only]"
+                          ;; Looks for pyproject.toml in installed package.
+                          "test_max_positional_args_matches_pyproject")
                     " and not "))
       #:phases
       #~(modify-phases %standard-phases
@@ -5638,7 +5661,7 @@ tests and comparing subsequent results against that cache.")
           (add-after 'unpack 'patch-pyproject
             (lambda _
               (substitute* "pyproject.toml"
-                (("'vtk<9\\.4\\.0'," all) (string-append "#" all)))))
+                (("'vtk[^']*'," all) (string-append "#" all)))))
           (add-after 'unpack 'fix-failing-tests
             (lambda _
               (substitute* "tests/plotting/test_plotting.py"
@@ -5652,20 +5675,32 @@ tests and comparing subsequent results against that cache.")
             (lambda _
               (setenv "HOME" "/tmp"))))))
     (native-inputs
-     (list python-ipython
-           python-pytest
+     (list nss-certs-for-test
+           python-aiohttp
+           python-ipython
+           python-mypy
+           python-pandas
+           python-pytest-8
+           python-pytest-cases
+           python-pytest-mock
+           python-pytest-pyvista
            python-scipy
            python-tqdm
-           python-trimesh))
+           python-trimesh
+           which
+           xorg-server-for-tests))
     (propagated-inputs
-     (list python-imageio
+     (list python-cmcrameri
+           python-cmocean
+           python-colorcet
+           python-imageio
            python-matplotlib
            python-meshio
            python-numpy
            python-pillow
            python-pooch
            python-scooby
-           vtk-9.3))
+           vtk-9.5))
     (home-page "https://docs.pyvista.org/")
     (synopsis "3D plotting and mesh analysis through VTK")
     (description
