@@ -6220,6 +6220,10 @@ It includes a sentence boundary component of a relatively small size.")
      (list
       #:phases
       #~(modify-phases %standard-phases
+          (add-after 'unpack 'disable-spacy-download
+            (lambda _
+              (substitute* "argostranslate/networking.py"
+                ((".*spacy_download.*") ""))))
           (add-before 'build 'set-home-env
             (lambda _
               (setenv "HOME" "/tmp"))))))
