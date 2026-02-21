@@ -6,7 +6,7 @@
 ;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Gabriel Arazas <foo.dogsquared@gmail.com>
-;;; Copyright © 2020-2025 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020-2026 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2021 Sharlatan Hellseher <sharlatanus@gmail.ccom>
@@ -1831,7 +1831,7 @@ with other physical backends.")
 (define-public kanata
   (package
     (name "kanata")
-    (version "1.8.1")
+    (version "1.11.0")
     (source
      (origin
        (method url-fetch)
@@ -1839,7 +1839,7 @@ with other physical backends.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1632iaclw9qy6sswm2wqapa28px7rdxqchk8b1wwp6k2scysr2bs"))))
+         "13xv85bvrwkbnq596mdjynkv9kbhvm7k81k25sc6i1xw0wgb6vi5"))))
     (build-system cargo-build-system)
     (arguments
      (list #:install-source? #f))
