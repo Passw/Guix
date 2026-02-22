@@ -484,7 +484,8 @@ that are useful for particular countries or cultures.")
          (add-after 'unpack 'compatibility
            (lambda _
              (substitute* "test_simplemathcaptcha/form_tests.py"
-               (("label for=\"id_captcha_0\"") "label"))
+               (("label for=\"id_captcha_0\"") "label")
+               (("str\\(f\\)") "str(f.as_table())"))
              (substitute* "simplemathcaptcha/widgets.py"
                (("ugettext_lazy") "gettext_lazy"))))
          (replace 'check
@@ -494,7 +495,7 @@ that are useful for particular countries or cultures.")
     (native-inputs
      (list python-mock python-setuptools python-wheel))
     (propagated-inputs
-     (list python-django-4 python-six))
+     (list python-django python-six))
     (synopsis "Easy-to-use math field/widget captcha for Django forms")
     (description
      "A multi-value-field that presents a human answerable question,
