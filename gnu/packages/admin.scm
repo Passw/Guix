@@ -4792,14 +4792,14 @@ system distribution, akin to many similar tools.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "5.1")
+    (version "5.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "0igc119c1cicravlsh0p715rn7fc0cqjxnhplqw0cbm2xv3g32n8"))))
+        (base32 "035xn433mqx6wzzwdavv40dk09m4k4m41gzwwd25glbl1widscfb"))))
     (build-system gnu-build-system)
     (inputs
      (list ncurses readline))
