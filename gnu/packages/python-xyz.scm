@@ -9276,7 +9276,17 @@ Google and Numpydoc format.")
     (arguments
      (list
       #:test-backend #~'custom
-      #:test-flags #~(list "test/alltests.py")))
+      #:test-flags #~(list "test/alltests.py")
+      #:phases
+      (if (target-hurd?)
+          #~(modify-phases %standard-phases
+              (add-before 'check 'fix-errno
+                (lambda _
+                  ;; Some tests check for an exact error message
+                  ;; Expecting ENOENT == 2.
+                  (substitute* (find-files "test" "\\.py$")
+                    (("\\[Errno 2\\]") (format #f "[Errno ~a]" ENOENT))))))
+          #~%standard-phases)))
     (native-inputs
      (list python-flit-core))
     (home-page "https://docutils.sourceforge.net/")
