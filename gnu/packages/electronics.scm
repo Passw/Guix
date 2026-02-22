@@ -486,7 +486,7 @@ hardware designs in Verilog.")
 (define-public gdstk
   (package
     (name "gdstk")
-    (version "0.9.62")
+    (version "1.0.0")
     (source
      (origin
        (method git-fetch)
@@ -494,7 +494,7 @@ hardware designs in Verilog.")
              (url "https://github.com/heitzmann/gdstk")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0q07g7h613yqszgs49vbnran3pz6yayc0hyisdnp4fi60cyzsz1l"))
+        (base32 "0if4i71gsx5p8hspmxhhdf1pj7ynkpdq74rybb1nbpjwg26fsd30"))
        (file-name (git-file-name name version))
        (snippet '(begin
                    ;; This snippet is also inherited by python-gdstk.
@@ -519,6 +519,7 @@ hardware designs in Verilog.")
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests?
                 (invoke "make" "examples")))))))
+    (native-inputs (list python-minimal-wrapper))
     (inputs (list clipper qhull zlib))
     (home-page "https://heitzmann.github.io/gdstk/")
     (synopsis "Library for creation and manipulation of GDSII files")
