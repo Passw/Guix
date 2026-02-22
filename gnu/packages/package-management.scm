@@ -1399,11 +1399,7 @@ Trisquel's @code{apt}.")
                           ;; poetry.inspection.info.PackageInfoError: Unable
                           ;; to determine package info for path
                           "test_info_setup_complex_calls_script")
-                    " and not "))
-      #:phases
-      #~(modify-phases %standard-phases
-          ;; Almost every dependency is pinned too strictly.
-          (delete 'sanity-check))))
+                    " and not "))))
     (native-inputs
      (list nss-certs-for-test
            python-deepdiff
@@ -1416,7 +1412,7 @@ Trisquel's @code{apt}.")
      (list python-cachecontrol
            python-cleo
            python-crashtest
-           python-dulwich
+           python-dulwich-0.24
            python-entrypoints
            python-fastjsonschema
            python-findpython
