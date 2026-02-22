@@ -11,7 +11,7 @@
 ;;; Copyright © 2018, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2021 Justin Veilleux <terramorpha@cock.li>
+;;; Copyright © 2021, 2026 Justin Veilleux <terramorpha@cock.li>
 ;;; Copyright © 2021 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2021 Josselin Poiret <josselin.poiret@protonmail.ch>
 ;;; Copyright © 2022 Brice Waegeneire <brice@waegenei.re>
@@ -199,7 +199,7 @@ DHT, µTP, PEX and Magnet Links.")
 (define-public transmission-remote-gtk
   (package
     (name "transmission-remote-gtk")
-    (version "1.6.0")
+    (version "1.7.0")
     (source
      (origin
        (method git-fetch)
@@ -210,7 +210,7 @@ DHT, µTP, PEX and Magnet Links.")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17b4as8k84b6gfr7g27r9hgw8qbcx5wr5kbspl5yd1jbzqirkk7y"))))
+        (base32 "19m0jksx4klf5h9b7ici2dsdkbsrj24nj4y2iysrl5zc3sh3kii3"))))
     (build-system meson-build-system)
     (native-inputs (list `(,glib "bin") ;glib-compile-resources
                          gettext-minimal
