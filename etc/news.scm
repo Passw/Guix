@@ -27,7 +27,7 @@
 ;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;; Copyright © 2024 Nicolas Graves <ngraves@ngraves.fr>
 ;; Copyright © 2024 Sebastian Dümcke <code@sam-d.com>
-;; Copyright © 2025 Anderson Torres <anderson.torres.8519@gmail.com>
+;; Copyright © 2025-2026 Anderson Torres <anderson.torres.8519@gmail.com>
 ;; Copyright © 2025 Roman Scherer <roman@burningswell.com>
 ;; Copyright © 2025 Jelle Licht <jlicht@fsfe.org>
 ;; Copyright © 2025 Rivulet Cedar <rivulet_cedar@yeah.net>
@@ -45,7 +45,8 @@
  (entry (commit "d659fe8666c4bc38fcbdbe7b7a35101f2d7cc41b")
         (title
          (en "Potential security vulnerability in glibc")
-         (de "Mögliche Sicherheitslücke in glibc"))
+         (de "Mögliche Sicherheitslücke in glibc")
+         (pt "Potencial vulnerabilidade de segurança em glibc"))
         (body
          (en "Guix adds the environment variable @code{GUIX_LOCPATH} to glibc,
 however it was not added to potentially unsafe variables to be unset in
@@ -57,7 +58,13 @@ hinzu, aber sie wurde nicht zu den möglicherweise unsicheren Variablen
 hinzugefügt, die in privilegierten Umgebungen zurückgesetzt werden.  Eine
 CVE-Nummer hierfür wird noch zugewiesen.  Um den Fehler zu beheben, stellen
 wir eine Veredelung für glibc bereit; Nutzerinnen und Nutzer sollten all ihre
-Profile aktualisieren, ihr System rekonfigurieren und neustarten.")))
+Profile aktualisieren, ihr System rekonfigurieren und neustarten.")
+         (pt "Guix adiciona a variável de ambiente @code{GUIX_LOCPATH} à
+glibc, todavia ela não foi adicionada às variáveis potencialmente inseguras
+a serem desabilitadas em ambientes privilegiados.  Este incidente está
+pendente de um identificador CVE.  Isto foi resolvido com um enxerto à glibc,
+e os usuários devem atualizar todos os seus perfis, reconfigurando seu
+sistema e reiniciando-o.")))
 
  (entry (commit "6d4cb99a15da7f4fd55f956c55f4f4aacfcc7742")
         (title
