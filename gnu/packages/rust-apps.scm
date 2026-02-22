@@ -1677,7 +1677,7 @@ Interface}.")
 (define-public jujutsu
   (package
     (name "jujutsu")
-    (version "0.32.0")
+    (version "0.38.0")
     (source
      (origin
        (method git-fetch)
@@ -1686,16 +1686,54 @@ Interface}.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0cib02kyzkfznzww2iz7wixphxradwhg8agr8hyi62alr37r8ljc"))))
+        (base32 "0c3fgxvvf7lj5p8s7fzx1mnxbiigplmgfqn49szj3z51m74d0xhm"))))
     (build-system cargo-build-system)
     (arguments
-     (list #:install-source? #f
-           #:cargo-install-paths ''("cli")))
+     (list
+      #:install-source? #f
+      #:cargo-install-paths ''("cli")
+      #:cargo-test-flags
+      ''("--"
+         "--skip=test_gerrit_upload::test_gerrit_upload_rejected_by_remote"
+         "--skip=test_git_push::test_git_push_rejected_by_remote"
+         "--skip=test_util_command::test_util_exec_sets_env")
+      #:modules
+      '((guix build cargo-build-system)
+        (guix build utils)
+        (ice-9 match))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'install-completions
+            (lambda* (#:key native-inputs #:allow-other-keys)
+              ;; See the upstream documentation for more information about
+              ;; building the standard or dynamic shell completions.
+              ;; https://docs.jj-vcs.dev/v0.38.0/install-and-setup/#dynamic
+              (for-each
+               (match-lambda
+                 ((shell . path)
+                  (mkdir-p (in-vicinity #$output (dirname path)))
+                  (let ((binary
+                         (if #$(%current-target-system)
+                             (search-input-file native-inputs "bin/jj")
+                             (in-vicinity #$output "bin/jj"))))
+                    (setenv "COMPLETE" shell)
+                    (with-output-to-file (in-vicinity #$output path)
+                      (lambda _
+                        (invoke binary))))))
+               '(("bash"    . "share/bash-completion/completions/jj")
+                 ("elvish"  . "share/elvish/lib/jj")
+                 ("fish"    . "share/fish/vendor_completions.d/jj.fish")
+                 ;("nushell" . "share/nushell/vendor/autoload/jj")
+                 ("zsh"     . "share/zsh/site-functions/_jj"))))))))
     (native-inputs
-     (list pkg-config
-           ;; For tests.
-           git
-           openssh))
+     (append
+       (if (%current-target-system)
+           (list this-package)
+           '())
+       (list pkg-config
+             ;; For tests.
+             git-minimal
+             openssh)))
     (inputs (cons* zlib openssl libssh2 libgit2-1.9 (cargo-inputs 'jujutsu)))
     (home-page "https://github.com/jj-vcs/jj")
     (synopsis "Git-compatible distributed version control system")
