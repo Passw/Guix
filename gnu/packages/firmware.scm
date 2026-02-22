@@ -636,27 +636,26 @@ provide OpenFirmware functionality on top of an already running system.")
          '())
        (list python)))
     (arguments
-     `(#:tests? #f ; no check target
-       #:target #f ; Package produces firmware.
-       #:make-flags (list (string-append "PLATFORM=" ,platform)
-                          ,@(if (and (not (string-prefix? "riscv64"
-                                                          (%current-system)))
-                                     (string-prefix? "riscv64" arch))
-                                `("CROSS_COMPILE=riscv64-linux-gnu-")
-                                `("CC=gcc"))
-                          "FW_PAYLOAD=n"
-                          "V=1")
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (bin (find-files "." "fw_.*\\.(elf|bin)$")))
-               (for-each
-                 (lambda (file)
-                   (install-file file out))
-                 bin)))))))
+     (list
+      #:tests? #f ; no check target
+      #:target #f ; Package produces firmware.
+      #:make-flags
+      #~(list (string-append "PLATFORM=" #$platform)
+              #$@(if (and (not (string-prefix? "riscv64" (%current-system)))
+                          (string-prefix? "riscv64" arch))
+                     `("CROSS_COMPILE=riscv64-linux-gnu-")
+                     `("CC=gcc"))
+              "FW_PAYLOAD=n"
+              "V=1")
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'configure)
+          (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (for-each
+               (lambda (file)
+                 (install-file file #$output))
+               (find-files "." "fw_.*\\.(elf|bin)$")))))))
     (home-page "https://github.com/riscv-software-src/opensbi")
     (synopsis "RISC-V @acronym{SBI, Supervisor Binary Interface} implementation")
     (description
