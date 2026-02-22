@@ -44,6 +44,7 @@
 ;;; Copyright © 2025 Jonas Freimuth <jonas.freimuth@posteo.de>
 ;;; Copyright © 2026 Cayetano Santos <csantosb@inventati.org>
 ;;; Copyright © 2026 Yarl Baudig <yarl-baudig@mailoo.org>
+;;; Copyright © 2026 Laurent Gatto <lgatto@protonmail.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5789,6 +5790,29 @@ data.")
      "This package lets you interact with Google Sheets through the
 @url{https://developers.google.com/sheets/api,Sheets API v4}.  This package
 can read and write both the metadata and the cell data in a Sheet.")
+    (license license:expat)))
+
+(define-public r-nipals
+  (package
+    (name "r-nipals")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nipals" version))
+       (sha256
+        (base32 "1aasm7ifnlxwaywq0g7v5m2w6jl7kld08k9gn3vbsm43wnpp0ahw"))))
+    (properties `((upstream-name . "nipals")))
+    (build-system r-build-system)
+    (native-inputs (list r-knitr r-testthat))
+    (home-page "https://kwstat.github.io/nipals/")
+    (synopsis "Principal Components Analysis using NIPALS or weighted EMPCA")
+    (description
+     "This package provides Principal Components Analysis (PCA) of matrix
+using Non-linear Iterative Partial Least Squares (NIPALS) or weighted
+Expectation Maximization PCA (EMPCA) with Gram-Schmidt orthogonalization of
+the scores and loadings.  See Andrecut (2009)
+@url{doi:10.1089/cmb.2008.0221}.")
     (license license:expat)))
 
 (define-public r-pbapply
