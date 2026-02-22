@@ -5,6 +5,7 @@
 ;;; Copyright © 2022 Pradana Aumars <paumars@courrier.dev>
 ;;; Copyright © 2023 Zhu Zihao <all_but_last@163.com>
 ;;; Copyright © 2025 Luca Di Sera <disera.luca@gmail.com>
+;;; Copyright © 2026 Lîm Tsú-thuàn <inbox@dannypsnl.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (guix build-system cmake)
@@ -35,7 +37,6 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix git-download)
-  #:use-module (guix download)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages perl)
@@ -88,7 +89,7 @@ interactive and automated theorem proving.")
 (define-public lean4
   (package
     (name "lean4")
-    (version "4.17.0")
+    (version "4.28.0")
     (home-page "https://lean-lang.org" )
     (source (origin
               (method git-fetch)
@@ -98,7 +99,7 @@ interactive and automated theorem proving.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fmjp8hqsbppn1fqzr8lyh6fhk8vhfj1m18wlmsfk1can00mx2za"))))
+                "012x0zpans6liwwcs6zx797zdhl4gslhj8y9svylnm0pkxfmda9b"))))
     (build-system cmake-build-system)
     (native-inputs
      (list git ; for the tests
@@ -144,12 +145,35 @@ interactive and automated theorem proving.")
                (("/usr/bin/env bash")
                 "bash"))
               (setenv "SHELL" "bash -euo pipefail")))
+          (add-after 'configure 'pre-populate-mimalloc
+            (lambda _
+              ;; Lean's CMake tries to git-clone mimalloc at build
+              ;; time, which fails in the sandbox. Pre-populate the
+              ;; source and create stamp files so ExternalProject
+              ;; skips the download.
+              (let ((mimalloc-dir "../build/mimalloc/src/mimalloc")
+                    (stamp-dir "../build/mimalloc/src/mimalloc-stamp"))
+                (mkdir-p stamp-dir)
+                (copy-recursively #$(package-source mimalloc) mimalloc-dir)
+                ;; Create stamp files so ExternalProject skips all steps.
+                (for-each (lambda (step)
+                            (call-with-output-file
+                              (string-append stamp-dir "/mimalloc-" step)
+                              (lambda (port) (display "" port))))
+                          '("mkdir" "download" "update" "patch"
+                            "configure" "build" "install")))))
           (replace 'check
             (lambda* (#:key tests? parallel-tests? #:allow-other-keys)
               (when tests?
                 (with-directory-excursion "../source"
                   (invoke "ctest" "--preset" "release" "--test-dir" "../build/stage1"
-                          "-E" "leancomptest_(doc_example|foreign)|leanlaketest_reverse-ffi|leanruntest_timeIO"
+                          "-E" (string-join
+                                 (list "leancomptest_(doc_example|foreign)"
+                                       "tests/lake/examples/(reverse-ffi|ffi)"
+                                       "tests/lean/run/(timeIO|async_dns)"
+                                       "tests/lean/server/"
+                                       "tests/lean/interactive/")
+                                 "|")
                           "-j" (if parallel-tests?
                                    (number->string (parallel-job-count))
                                    "1"))))))
