@@ -59,6 +59,7 @@
 ;;; Copyright © 2025 Giacomo Leidi <therewasa@fishinthecalculator.me>
 ;;; Copyright © 2025 Andy Tai <atai@atai.org>
 ;;; Copyright © 2025 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2026 Matt Wette <matt.wette@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7129,7 +7130,7 @@ schedulers.")
 (define-public guile-libyaml
   (package
     (name "guile-libyaml")
-    (version "1.0.0")
+    (version "3.0.2")
     (source
      (origin
        (method git-fetch)
@@ -7138,7 +7139,7 @@ schedulers.")
              (commit (string-append "V" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bssby1ri1vjll2rvi8b33xr2ghwjyxsd4yc15najj3h8n2ss87i"))
+        (base32 "1qyalw2zx8xx5dc0pnms0va1ha1nmiv7yir9rabd324qgy4y1aiz"))
        (snippet #~(for-each delete-file
                             '("guix.scm" "demo1.yml" "demo1.scm")))))
     (build-system guile-build-system)
@@ -7151,15 +7152,12 @@ schedulers.")
               (setenv "GUILE_AUTO_COMPILE" "0")
               (invoke "guild" "compile-ffi" "--no-exec" "yaml/libyaml.ffi")
               (substitute* "yaml/libyaml.scm"
-                (("dynamic-link \"libyaml\"")
-                 (format #f "dynamic-link \"~a/lib/libyaml\""
+                ((" \"libyaml\"")
+                 (format #f " \"~a/lib/libyaml\""
                          (assoc-ref inputs "libyaml")))))))))
-    ;; guile-libyaml does not work with nyacc-2.02.2. See
-    ;; https://github.com/mwette/guile-libyaml/issues/7 for upstream bug
-    ;; report. Hence, we use the older nyacc-1.08.1.
-    (native-inputs (list gcc guile-3.0 nyacc-1.08.1))
+    (native-inputs (list gcc guile-3.0 nyacc))
     (inputs (list libyaml))
-    (propagated-inputs (list guile-bytestructures nyacc-1.08.1))
+    (propagated-inputs (list nyacc))
     (home-page "https://github.com/mwette/guile-libyaml")
     (synopsis "Guile wrapper for libyaml")
     (description
