@@ -6306,47 +6306,6 @@ web server.")
 (define-deprecated-package kdsoap-qt6
   kdsoap)
 
-(define-public libaccounts-qt
-  (package
-    (name "libaccounts-qt")
-    (version "1.17")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://gitlab.com/accounts-sso/libaccounts-qt")
-                    (commit (string-append "VERSION_" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0859nsksgfrj6ynj74awj1fr6slwcjavs989xc7mbgpvi87n1xlq"))))
-    (build-system gnu-build-system)
-    (arguments
-     (list #:tests? #f                  ;TODO
-           #:phases
-           #~(modify-phases %standard-phases
-               (replace 'configure
-                 (lambda _
-                   (substitute* "tests/tst_libaccounts.pro"
-                     (("QMAKE_RPATHDIR = \\$\\$\\{QMAKE_LIBDIR\\}")
-                      (string-append "QMAKE_RPATHDIR ="
-                                     #$output "/lib")))
-                   (invoke "qmake"
-                           (string-append "PREFIX=" #$output)
-                           (string-append "LIBDIR=" #$output "/lib")))))))
-    ;; * SignOnQt5 (required version >= 8.55), D-Bus service which performs
-    ;; user authentication on behalf of its clients,
-    ;; <https://gitlab.com/accounts-sso/signond>
-    (native-inputs (list doxygen pkg-config qtbase-5 qttools-5))
-    (inputs (list glib signond libaccounts-glib))
-    (home-page "https://accounts-sso.gitlab.io/")
-    (synopsis "Qt5 bindings for libaccounts-glib")
-    (description
-     "Accounts SSO is a framework for application developers who
-wish to acquire, use and store web account details and credentials.  It
-handles the authentication process of an account and securely stores the
-credentials and service-specific settings.")
-    (license license:lgpl2.1+)))
-
 (define-public libaccounts-qt6
   (package
     (name "libaccounts-qt6")
