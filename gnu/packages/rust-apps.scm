@@ -1266,8 +1266,39 @@ defaults for 80% of the use cases.")
         (base32 "1xsqcq6fyhvc4q3f79745lmx1afan5a58d2w920j7hmnczpgz6hh"))))
     (build-system cargo-build-system)
     (arguments
-     (list #:install-source? #f))
-    (native-inputs (list pkg-config))
+     (list
+      #:install-source? #f
+      #:modules
+      '((guix build cargo-build-system)
+        (guix build utils)
+        (ice-9 match))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'install-completions
+            (lambda* (#:key native-inputs #:allow-other-keys)
+              (setenv "HOME" (getcwd))
+              (for-each
+               (match-lambda
+                 ((shell . path)
+                  (mkdir-p (in-vicinity #$output (dirname path)))
+                  (let ((binary
+                         (if #$(%current-target-system)
+                             (search-input-file native-inputs "bin/fj")
+                             (in-vicinity #$output "bin/fj"))))
+                    (with-output-to-file (in-vicinity #$output path)
+                      (lambda _
+                        (invoke binary "completion" shell))))))
+               '(("bash"    . "share/bash-completion/completions/fj")
+                 ("elvish"  . "share/elvish/lib/fj")
+                 ("fish"    . "share/fish/vendor_completions.d/fj.fish")
+                 ("nushell" . "share/nushell/vendor/autoload/fj")
+                 ("zsh"     . "share/zsh/site-functions/_fj"))))))))
+    (native-inputs
+     (append
+       (if (%current-target-system)
+           (list this-package)
+           '())
+       (list pkg-config)))
     (inputs
      (cons* libgit2-1.9
             libssh2
