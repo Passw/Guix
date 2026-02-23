@@ -429,8 +429,13 @@ applications running on AMD GPUs.")
            rocm-cmake
            rocm-toolchain
            rocroller))
-    (properties `((amd-gpu-targets . ,%default-amd-gpu-targets)
-                  (max-silent-time . ,(* 6 3600))))
+    (properties
+     ;; Building for several GPUs requires too much space; building for gfx942
+     ;; alone (MI300X and MI300A) requires more than 50 GiB.  Thus default to
+     ;; a single GPU model such that the default package can be built with
+     ;; less than 50 GiB of disk space.
+     `((amd-gpu-targets . ("gfx90a"))             ;MI210, MI250, MI250X
+       (max-silent-time . ,(* 6 3600))))
     (home-page %rocm-libraries-url)
     (synopsis "Flexible library for general matrix-matrix operations")
     (description "hipBLASLt is a library that provides general
