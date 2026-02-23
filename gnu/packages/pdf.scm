@@ -1895,6 +1895,53 @@ presentation.  The input files processed by pdfpc are PDF documents.")
 rendering of the file through the Pango Cairo back end.")
     (license license:lgpl2.0+)))
 
+(define-public stapler
+  (let ((commit "23eb07270dd3362a78064e721474b17951daeb88")
+        (revision "0"))
+    (package
+      (name "stapler")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                ;; It's an fixed fork of
+                ;; <https://github.com/hellerbarde/stapler>.
+                (url "https://github.com/cvnb/stapler")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1ph385gax9jzfia69y5vac4lk371bhvc4mf5l2ka2026ihdq6wbj"))))
+      (build-system pyproject-build-system)
+      (arguments
+       (list
+        #:test-flags #~(list "staplelib/tests.py") ; from tox.ini
+        #:build-backend "poetry.core.masonry.api"
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'fix-pypdf-version-requirement
+              (lambda _
+                (substitute* "pyproject.toml"
+                  (("pypdf = \"^4.2.0\"")
+                   "pypdf = \"^6.0.0\"")))))))
+      (native-inputs (list python-poetry-core python-pytest))
+      (propagated-inputs (list python-pypdf))
+      (home-page "https://github.com/cvnb/stapler")
+      (synopsis "PDF manipulation tool")
+      (description
+       "Stapler is a pure Python alternative to PDFtk, a tool for
+manipulating PDF documents from the command line.  It supports
+
+@itemize
+@item cherry-picking pages and concatenating them into a new file
+@item splitting a PDF document into single pages each in its own file
+@item merging PDF documents with their pages interleaved
+@item displaying metadata in a PDF document
+@item displaying the mapping between logical and physical page numbers
+@end itemize")
+      (license license:bsd-3))))
+
 (define-public weasyprint
   (package
     (name "weasyprint")
