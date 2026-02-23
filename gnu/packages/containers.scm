@@ -339,9 +339,10 @@ contents, and discovering ways to shrink the size of Docker/OCI image.")
                   #$output "/share/guile/site/3.0/guix/extensions/compose.scm")
                  "share/guix/extensions/compose.scm"))))
           (add-after 'add-extension-to-search-path 'check
-            (lambda _
-              (invoke
-               "guile" "-L" "./modules" "-s" "tests/test-compose.scm"))))))
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (invoke
+                 "guile" "-L" "./modules" "-s" "tests/test-compose.scm")))))))
     (native-inputs (list guile-3.0))
     ;; Avoid setting propagated so that we use the user’s profile.
     (inputs (list guix guile-yamlpp))
