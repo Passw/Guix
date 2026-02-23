@@ -6442,7 +6442,6 @@ authentication on behalf of its clients.")
   (let ((commit "c8ad98249af541514ff7a81634d3295e712f1a39")
         (revision "0"))
     (package
-      (inherit signond)
       (name "signond-qt6")
       (version (git-version "8.61" revision commit))
       (source (origin
@@ -6454,12 +6453,45 @@ authentication on behalf of its clients.")
                 (sha256
                  (base32
                   "13cgdf6hhi2z3c8sax79dwi7450n8h228kpyl2w5lx0xglb2savq"))))
-      (native-inputs (modify-inputs (package-native-inputs signond)
-                       (replace "qttools" qttools)))
+      (build-system qt-build-system)
+      (native-inputs (list doxygen pkg-config qttools))
+      (inputs (list dbus glib libaccounts-glib))
       (arguments
-       (substitute-keyword-arguments (package-arguments signond)
-         ((#:qtbase _ #f)
-          qtbase))))))
+       (list #:qtbase qtbase
+             #:tests? #f                  ; Figure out how to run tests
+             #:modules '((guix build qt-build-system)
+                         ((guix build gnu-build-system) #:prefix gnu:)
+                         (guix build utils))
+             #:phases
+             #~(modify-phases %standard-phases
+                 (replace 'configure
+                   (lambda _
+                     (substitute* "src/signond/signond.pro"
+                       (("/etc/")
+                        (string-append #$output "/etc/")))
+                     (substitute*
+                         '("tests/extensions/extensions.pri"
+                           "tests/signond-tests/mock-ac-plugin/plugin.pro"
+                           "tests/signond-tests/identity-tool.pro"
+                           "tests/signond-tests/mock-ac-plugin/identity-ac-helper.pro"
+                           "tests/libsignon-qt-tests/libsignon-qt-tests.pro"
+                           "tests/signond-tests/signond-tests.pri")
+                       (("QMAKE_RPATHDIR = \\$\\$\\{QMAKE_LIBDIR\\}")
+                        (string-append "QMAKE_RPATHDIR = "
+                                       #$output "/lib:"
+                                       #$output "/lib/signon")))
+                     (invoke "qmake"
+                             (string-append "PREFIX=" #$output)
+                             (string-append "LIBDIR=" #$output "/lib")
+                             (string-append "QMAKE_LFLAGS_RPATH=-Wl,-rpath,"
+                                            #$output "/lib -Wl,-rpath,"))))
+                 (replace 'build (assoc-ref gnu:%standard-phases 'build))
+                 (replace 'install (assoc-ref gnu:%standard-phases 'install)))))
+    (home-page "https://accounts-sso.gitlab.io/signond/index.html")
+    (synopsis "Perform user authentication over D-Bus")
+    (description "This package provides a D-Bus service which performs user
+authentication on behalf of its clients.")
+    (license license:lgpl2.1+))))
 
 (define-public clazy
   (package
