@@ -2479,7 +2479,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/telegram-purple-adjust-test.patch	\
   %D%/packages/patches/telepathy-glib-fix-test.patch	\
   %D%/packages/patches/tensile-copy-if-not-exist.patch		\
-  %D%/packages/patches/teuchos-remove-duplicate-using.patch	\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\
   %D%/packages/patches/texmacs-wayland-hidpi.patch	\
@@ -2498,7 +2497,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/torbrowser-compare-paths.patch           \
   %D%/packages/patches/torbrowser-use-system-wide-dir.patch     \
   %D%/packages/patches/torbrowsers-add-store-to-rdd-allowlist.patch     \
-  %D%/packages/patches/tpetra-remove-duplicate-using.patch	\
   %D%/packages/patches/transcode-ffmpeg.patch	\
   %D%/packages/patches/trytond-add-guix_trytond_path.patch	\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
