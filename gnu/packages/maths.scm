@@ -7858,36 +7858,6 @@ using among other aspects adaptive meshes and a wide array of tools often used
 in finite element programs.")
     (license license:lgpl2.1+)))
 
-(define-public dealii-openmpi
-  (package/inherit dealii
-    (name "dealii-openmpi")
-    (inputs
-     (modify-inputs (package-inputs dealii)
-       (delete "arpack")
-       (prepend arpack-ng-openmpi
-                metis
-                scalapack)))
-    (propagated-inputs
-     (modify-inputs (package-propagated-inputs dealii)
-       (delete "hdf5" "kokkos" "sundials")
-       (prepend hdf5-parallel-openmpi
-                openmpi
-                p4est-openmpi
-                petsc-openmpi
-                slepc-openmpi
-                sundials-openmpi
-                trilinos-for-dealii-openmpi)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments dealii)
-       ((#:configure-flags flags)
-        #~(cons "-DDEAL_II_WITH_MPI=ON" #$flags))
-       ((#:phases phases #~%standard-phases)
-        #~(modify-phases #$phases
-            ;; The build failure fixed by this phase does not manifest when
-            ;; Kokkos is included via Trilinos.
-            (delete 'unset-cpath)))))
-    (synopsis "Finite element library (with MPI support)")))
-
 (define-public flann
   (package
     (name "flann")
