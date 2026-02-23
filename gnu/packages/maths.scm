@@ -5761,18 +5761,6 @@ p4est is designed to work in parallel and scales to hundreds of thousands of
 processor cores.")
     (license license:gpl2+)))
 
-(define-public p4est-openmpi
-  (package (inherit p4est)
-    (name "p4est-openmpi")
-    (inputs
-     `(("mpi" ,openmpi)
-       ,@(package-inputs p4est)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments p4est)
-       ((#:configure-flags cf)
-        ``("--enable-mpi" ,@,cf))))
-    (synopsis "Parallel adaptive mesh refinement on forests of octrees")))
-
 (define-public gsegrafix
   ;; This is an old and equally dead "experimental fork" of the longer-dead
   ;; original. At least it no longer requires the even-deader libgnomeprint{,ui}
