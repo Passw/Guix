@@ -25554,60 +25554,6 @@ Angus Johnson's polygon clipping Clipper library (ver. 6.4.2).")
 http://semver.org/}.")
     (license license:bsd-3)))
 
-(define-public python-pyro4
-  (package
-    (name "python-pyro4")
-    (version "4.82")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "Pyro4" version))
-       (sha256
-        (base32 "1yr1rv2afmq55wb14sx9qplzkqw7fya9rprsqdyxfbg90h45n7si"))))
-    (build-system pyproject-build-system)
-    (arguments
-     (list #:test-flags
-           #~(list "-k"
-                   (string-join
-                    ;; Those tests require network.
-                    (list "not testBCstart"
-                          "testAutoClean"
-                          "testDaemonPyroObj"
-                          "testLookupAndRegister"
-                          "testLookupInvalidHmac"
-                          "testLookupUnixsockParsing"
-                          "testMulti"
-                          "testRefuseDottedNames"
-                          "testResolve"
-                          "testBCLookup0000"
-                          "testPyroname"
-                          "testResolveAsymmetricHmacUsage"
-                          "testResolveWrongHmac"
-                          "testStartNSfunc"
-                          "testCustomDictClass"
-                          "testDictClassFail"
-                          "testBroadcast"
-                          "testGetIP"
-                          ;; XXX: Unclear why this test fails.
-                          "testCustomClassFail")
-                    " and not "))))
-    (native-inputs
-     (list python-cloudpickle
-           python-dill
-           python-msgpack
-           python-pytest
-           python-setuptools
-           python-wheel))
-    (propagated-inputs
-     (list python-serpent))
-    (home-page "https://pyro4.readthedocs.io")
-    (synopsis "Distributed object middleware for Python")
-    (description
-     "Pyro enables you to build applications in which objects can talk to each
-other over the network.  You can just use normal Python method calls to call
-objects on other machines, also known as remote procedure calls (RPC).")
-    (license license:expat)))
-
 (define-public python-phonenumbers
   (package
     (name "python-phonenumbers")
