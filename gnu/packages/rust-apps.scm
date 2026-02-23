@@ -65,6 +65,7 @@
 
 (define-module (gnu packages rust-apps)
   #:use-module (guix build-system cargo)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system pyproject)
@@ -271,32 +272,28 @@ alternative zones.")
     (arguments
      (list
       #:install-source? #f
+      #:imported-modules (append %copy-build-system-modules
+                                 %cargo-build-system-modules)
+      #:modules '((guix build cargo-build-system)
+                  ((guix build copy-build-system) #:prefix copy:)
+                  (guix build utils))
       #:phases
       #~(modify-phases %standard-phases
           (add-before 'build 'pre-build
             (lambda _
               (setenv "BAT_ASSETS_GEN_DIR" (string-append (getcwd) "/target"))))
           (add-after 'install 'install-extras
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (share (string-append out "/share"))
-                     (bash-completions-dir
-                      (string-append share "/bash-completion/completions"))
-                     (zsh-completions-dir
-                      (string-append share "/zsh/site-functions"))
-                     (fish-completions-dir
-                      (string-append share "/fish/vendor_completions.d"))
-                     (man1 (string-append share "/man/man1")))
-                (mkdir-p bash-completions-dir)
-                (mkdir-p zsh-completions-dir)
-                (mkdir-p fish-completions-dir)
-                (copy-file "target/assets/completions/bat.bash"
-                           (string-append bash-completions-dir "/bat"))
-                (copy-file "target/assets/completions/bat.zsh"
-                           (string-append zsh-completions-dir "/_bat"))
-                (install-file "target/assets/completions/bat.fish"
-                              fish-completions-dir)
-                (install-file "target/assets/manual/bat.1" man1)))))))
+            (lambda args
+              (apply (assoc-ref copy:%standard-phases 'install)
+                     #:install-plan
+                     '(("target/assets/completions/bat.bash"
+                        "share/bash-completion/completions/bat")
+                       ("target/assets/completions/bat.fish"
+                        "share/fish/vendor_completions.d/")
+                       ("target/assets/completions/bat.zsh"
+                        "share/zsh/site-functions/_bat")
+                       ("target/assets/manual/bat.1" "share/man/man1/"))
+                     args))))))
     (native-inputs (list pkg-config))
     (inputs (cons* libgit2-1.9 oniguruma zlib (cargo-inputs 'bat)))
     (home-page "https://github.com/sharkdp/bat")
