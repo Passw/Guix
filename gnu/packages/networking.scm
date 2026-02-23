@@ -60,7 +60,7 @@
 ;;; Copyright © 2023 Bruno Victal <mirai@makinata.eu>
 ;;; Copyright © 2023 Yovan Naumovski <yovan@gorski.stream>
 ;;; Copyright © 2023, 2024 Zheng Junjie <873216071@qq.com>
-;;; Copyright © 2023, 2024, 2025 Artyom V. Poptsov <poptsov.artyom@gmail.com>
+;;; Copyright © 2023, 2024, 2025, 2026 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;; Copyright © 2024 Tomas Volf <~@wolfsden.cz>
 ;;; Copyright © 2022 Dominic Martinez <dom@dominicm.dev>
 ;;; Copyright © 2024 Alexey Abramov <levenson@mmer.org>
@@ -4074,7 +4074,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
 (define-public hcxdumptool
   (package
     (name "hcxdumptool")
-    (version "7.0.1")
+    (version "7.1.2")
     (source
      (origin
        (method git-fetch)
@@ -4082,7 +4082,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
              (url "https://github.com/ZerBea/hcxdumptool")
              (commit version)))
        (sha256
-        (base32 "1h03wdm9rcfa0s59kbd1dv550k7c4rpksw5w5djz5q70i23f25h0"))
+        (base32 "044ixwww6byfmv9208h3xzhqfc996sxxjqqq2lhr8dwmvg6s6jbl"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
