@@ -1284,14 +1284,14 @@ Octave.  TeXmacs is completely extensible via Guile.")
 (define-public moe
   (package
     (name "moe")
-    (version "1.15")
+    (version "1.16")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/moe/moe-"
                           version ".tar.lz"))
       (sha256
-       (base32 "0rhakw6qpnhj98cqq9mv7z3yjhwj1nk9gq54bja4fc6fk6qciy21"))))
+       (base32 "0s582w56y8936ix808klv2ss9d8v04kc3y57q2zawwljj5wcs9ac"))))
     (build-system gnu-build-system)
     (native-inputs (list lzip))
     (inputs (list ncurses))
