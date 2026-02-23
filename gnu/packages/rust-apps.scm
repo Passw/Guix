@@ -3725,37 +3725,39 @@ window manager.")
          "1d3877y9g1v6gi8a326d6wfz7z52qkrl70zi5ry7ybh5q6jha6a3"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-completions
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (bash (string-append out "/etc/bash_completion.d/"))
-                    (fish (string-append out "/share/fish/vendor_completions.d/"))
-                    (zsh  (string-append out "/share/zsh/site-functions/")))
-               (mkdir-p bash)
-               (mkdir-p fish)
-               (mkdir-p zsh)
-               (copy-file "completion/bash_tealdeer"
-                          (string-append bash "tealdeer"))
-               (copy-file "completion/fish_tealdeer"
-                          (string-append fish "tealdeer.fish"))
-               (copy-file "completion/zsh_tealdeer"
-                          (string-append zsh "_tealdeer"))))))
+     (list
+       #:phases
+       #~(modify-phases %standard-phases
+           (add-after 'install 'install-completions
+             (lambda args
+               (apply (assoc-ref copy:%standard-phases 'install)
+                      #:install-plan
+                      '(("completion/bash_tealdeer"
+                         "share/bash-completion/completions/tealdeer")
+                        ("completion/fish_tealdeer"
+                         "share/fish/vendor_completions.d/tealdeer.fish")
+                        ("completion/zsh_tealdeer"
+                         "share/zsh/site-functions/_tealdeer"))
+                      args))))
        #:install-source? #f
+       #:imported-modules (append %copy-build-system-modules
+                                  %cargo-build-system-modules)
+       #:modules '((guix build cargo-build-system)
+                   ((guix build copy-build-system) #:prefix copy:)
+                   (guix build utils))
        #:cargo-test-flags
-       '("--"
-         ;; These tests go to the network
-         "--skip=test_quiet_old_cache"
-         "--skip=test_quiet_cache"
-         "--skip=test_quiet_failures"
-         "--skip=test_pager_flag_enable"
-         "--skip=test_markdown_rendering"
-         "--skip=test_spaces_find_command"
-         "--skip=test_autoupdate_cache"
-         "--skip=test_update_language_arg"
-         "--skip=test_update_cache"
-         "--skip=test_create_cache_directory_path")))
+       '(list "--"
+              ;; These tests go to the network
+              "--skip=test_quiet_old_cache"
+              "--skip=test_quiet_cache"
+              "--skip=test_quiet_failures"
+              "--skip=test_pager_flag_enable"
+              "--skip=test_markdown_rendering"
+              "--skip=test_spaces_find_command"
+              "--skip=test_autoupdate_cache"
+              "--skip=test_update_language_arg"
+              "--skip=test_update_cache"
+              "--skip=test_create_cache_directory_path")))
     (native-inputs
      (list pkg-config))
     (inputs
