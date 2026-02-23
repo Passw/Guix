@@ -581,16 +581,17 @@ as well as pick-place files.")
 (define-public gnucap
   (package
     (name "gnucap")
-    (version "20171003")
+    (version "20240220")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://git.savannah.gnu.org/cgit/gnucap.git/snapshot/gnucap-"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://git.git.savannah.gnu.org/git/gnucap.git")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "16m09xa685qhj5fqq3bcgakrwnb74xhf5f7rpqkkf9fg8plzbb1g"))))
+         "11l5h1zvyab8zms0c6v0i379q4i6m3hzyi8r0ccy9s88mhs254v9"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -598,13 +599,10 @@ as well as pick-place files.")
       #~(modify-phases %standard-phases
           (replace 'configure
             (lambda _
-              ;; Set correct rpath so that gnucap finds libgnucap.so.
-              (substitute* (list "apps/configure" "lib/configure"
-                                 "main/configure" "modelgen/configure")
-                (("LDFLAGS =")
-                 (string-append "LDFLAGS = -Wl,-rpath=" #$output "/lib")))
-              ;; gnucap uses a hand-written configure script that expects the
-              ;; --prefix argument to be the first argument passed to it.
+              (substitute* (list "lib/configure" "lib/Make1")
+                (("-ltermcap") ""))
+              (setenv "LDFLAGS"
+                      (string-append "-Wl,-rpath=" #$output "/lib"))
               (invoke "./configure" (string-append "--prefix=" #$output))))
           (replace 'check
             ;; Attention: As discussed, a failing test in gnucap does not mean
