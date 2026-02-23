@@ -3508,19 +3508,19 @@ failure.")
 (define-public ruby-haml
   (package
     (name "ruby-haml")
-    (version "5.0.4")
+    (version "7.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "haml" version))
        (sha256
         (base32
-         "1q0a9fvqh8kn6wm97fcks6qzbjd400bv8bx748w8v87m7p4klhac"))))
+         "0nnmzj6g2wynxbrp9j885zab4nkzfryhl2bv6cj1gazyyxqjpzc7"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ; No included tests
+     (list #:tests? #f)) ; No included tests
     (propagated-inputs
-     (list ruby-tilt ruby-temple))
+     (list ruby-thor ruby-tilt ruby-temple))
     (synopsis "Haml is a Ruby library to generate HTML documents")
     (description
      "@acronym{Haml, HTML Abstraction Markup Language} is a layer on top of
