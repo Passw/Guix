@@ -61,7 +61,6 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
@@ -570,7 +569,7 @@ build system that uses the standard Lua command-line interpreter.")
 (define-public lua-language-server
   (package
     (name "lua-language-server")
-    (version "3.16.4")
+    (version "3.17.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -586,7 +585,7 @@ build system that uses the standard Lua command-line interpreter.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0kbbwz9cjw9b8sii2hki51s968n551r8z46h9gp9bd2m3g3l1l75"))))
+                "1fjhh02iph0mplqrgxfrdqfydrppksjsgw3lg6k8y5w6g24l3z1m"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -1766,7 +1765,7 @@ way, following established lisp conventions.")
      (list
       #:make-flags #~(list "VENDOR=false")
       #:tests? #f                ; tests require additional dependencies
-      #:phases 
+      #:phases
       #~(let ((luajit-major+minor
                #$(version-major+minor (package-version lua))))
          (modify-phases %standard-phases
