@@ -6546,48 +6546,6 @@ authentication on behalf of its clients.")
          ((#:qtbase _ #f)
           qtbase))))))
 
-(define-public signon-plugin-oauth2
-  (package
-    (name "signon-plugin-oauth2")
-    (version "0.25")
-    (home-page "https://gitlab.com/accounts-sso/signon-plugin-oauth2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    (commit (string-append "VERSION_" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "16aslnyk8jdg03zcg97rp6qzd0gmclj14hyhliksz8jgfz1l0w7c"))))
-    (build-system qt-build-system)
-    (native-inputs (list doxygen pkg-config))
-    (inputs (list signond))
-    (arguments
-     (list #:tests? #f                  ;no tests
-           #:modules '((guix build qt-build-system)
-                       ((guix build gnu-build-system) #:prefix gnu:)
-                       (guix build utils))
-           #:phases
-           #~(modify-phases %standard-phases
-               (replace 'configure
-                 (lambda _
-                   (substitute* "common-project-config.pri"
-                     (("-Werror")
-                      ""))
-                   (invoke "qmake"
-                           (string-append "PREFIX=" #$output)
-                           (string-append "LIBDIR=" #$output "/lib")
-                           (string-append "SIGNON_PLUGINS_DIR=" #$output
-                                          "/lib/signon"))))
-               (replace 'build (assoc-ref gnu:%standard-phases 'build))
-               (replace 'install (assoc-ref gnu:%standard-phases 'install)))))
-    (synopsis "OAuth 2 plugin for signon")
-    (description
-     "This plugin for the Accounts-SSO SignOn daemon handles the OAuth
-1.0 and 2.0 authentication protocols.")
-    (license license:lgpl2.1+)))
-
 (define-public clazy
   (package
     (name "clazy")
