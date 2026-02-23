@@ -317,55 +317,48 @@ paging.")
         (base32 "0vnm6l527pzlpk3jb6qai4jhs7l5c9d9vagxgzc6m7kws8srkqii"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:install-source? #f
+     (list
+       #:install-source? #f
        #:cargo-test-flags
-       '("--"
-         "--skip=valid_config_tests::test_all_proc"
-         "--skip=valid_config_tests::test_basic"
-         "--skip=valid_config_tests::test_cpu_doughnut"
-         "--skip=valid_config_tests::test_empty"
-         "--skip=valid_config_tests::test_filtering"
-         "--skip=valid_config_tests::test_many_proc"
-         "--skip=valid_config_tests::test_styling_sanity_check"
-         "--skip=valid_config_tests::test_styling_sanity_check_2"
-         "--skip=valid_config_tests::test_linux_only"
-         "--skip=valid_config_tests::test_new_default"
-         "--skip=valid_config_tests::test_proc_columns"
-         "--skip=valid_config_tests::test_theme")
+       '(list "--"
+              "--skip=valid_config_tests::test_all_proc"
+              "--skip=valid_config_tests::test_basic"
+              "--skip=valid_config_tests::test_cpu_doughnut"
+              "--skip=valid_config_tests::test_empty"
+              "--skip=valid_config_tests::test_filtering"
+              "--skip=valid_config_tests::test_many_proc"
+              "--skip=valid_config_tests::test_styling_sanity_check"
+              "--skip=valid_config_tests::test_styling_sanity_check_2"
+              "--skip=valid_config_tests::test_linux_only"
+              "--skip=valid_config_tests::test_new_default"
+              "--skip=valid_config_tests::test_proc_columns"
+              "--skip=valid_config_tests::test_theme")
+       #:imported-modules (append %copy-build-system-modules
+                                  %cargo-build-system-modules)
+       #:modules '((guix build cargo-build-system)
+                   ((guix build copy-build-system) #:prefix copy:)
+                   (guix build utils))
        #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'enable-building-completions
-           (lambda _
-             (setenv "BTM_GENERATE" "true")))
-         (add-after 'install 'install-extras
-           (lambda* (#:key native-inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (share (string-append out "/share"))
-                    (man1 (string-append share "/man/man1"))
-                    (bash-completions-dir
-                     (string-append out "/etc/bash_completion.d/"))
-                    (zsh-completions-dir
-                     (string-append share "/zsh/site-functions"))
-                    (fish-completions-dir
-                     (string-append share "/fish/vendor_completions.d"))
-                    (elvish-completions-dir
-                     (string-append share "/elvish/lib"))
-                    (nu-completions-dir
-                     (string-append share "/nushell/vendor/autoload")))
-               (install-file "target/tmp/bottom/manpage/btm.1" man1)
-               (install-file "target/tmp/bottom/completion/_btm"
-                             zsh-completions-dir)
-               (install-file "target/tmp/bottom/completion/btm.fish"
-                             fish-completions-dir)
-               (mkdir-p bash-completions-dir)
-               (copy-file "target/tmp/bottom/completion/btm.bash"
-                          (string-append bash-completions-dir "/btm"))
-               (mkdir-p elvish-completions-dir)
-               (copy-file "target/tmp/bottom/completion/btm.elv"
-                          (string-append elvish-completions-dir "/btm"))
-               (mkdir-p nu-completions-dir)
-               (copy-file "target/tmp/bottom/completion/btm.nu"
-                          (string-append nu-completions-dir "/btm"))))))))
+       #~(modify-phases %standard-phases
+           (add-after 'unpack 'enable-building-completions
+             (lambda _
+               (setenv "BTM_GENERATE" "true")))
+           (add-after 'install 'install-extras
+             (lambda args
+               (apply (assoc-ref copy:%standard-phases 'install)
+                      #:install-plan
+                      '(("target/tmp/bottom/completion/btm.bash"
+                         "share/bash-completion/completions/btm")
+                        ("target/tmp/bottom/completion/btm.elv"
+                         "share/elvish/lib/btm")
+                        ("target/tmp/bottom/completion/btm.fish"
+                         "share/fish/vendor_completions.d/")
+                        ("target/tmp/bottom/completion/btm.nu"
+                         "share/nushell/vendor/autoload/btm")
+                        ("target/tmp/bottom/completion/_btm"
+                         "share/zsh/site-functions/_btm")
+                        ("target/tmp/bottom/manpage/btm.1" "share/man/man1/"))
+                      args))))))
     (inputs (cargo-inputs 'bottom))
     (home-page "https://github.com/ClementTsang/bottom")
     (synopsis "Customizable graphical process/system monitor for the terminal")
