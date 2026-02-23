@@ -1183,7 +1183,42 @@ shell with fzf, enabling fuzzy finding and multi-selection.")
        (sha256
         (base32 "0nmh5kkjhsrmhwlb09wvg6chzpl7w7xq1qr1yy9gc202yrv6cnmk"))))
     (build-system cargo-build-system)
-    (arguments (list #:install-source? #f))
+    (arguments
+     (list
+       #:install-source? #f
+       #:modules
+       '((guix build cargo-build-system)
+         (guix build utils)
+         (ice-9 match))
+       #:phases
+       #~(modify-phases %standard-phases
+           (add-after 'install 'install-completions
+            (lambda* (#:key native-inputs #:allow-other-keys)
+              (for-each
+               (match-lambda
+                 ((shell . path)
+                  (mkdir-p (in-vicinity #$output (dirname path)))
+                  (let ((binary
+                         (if #$(%current-target-system)
+                             (search-input-file native-inputs "bin/pay-respects")
+                             (in-vicinity #$output "bin/pay-respects"))))
+                    (with-output-to-file (in-vicinity #$output path)
+                      (lambda _
+                        (invoke binary shell)))
+                    ;; The shell completions call the binary so we make sure
+                    ;; that we call the correct binary.
+                    (when #$(%current-target-system)
+                      (substitute* (in-vicinity #$output path)
+                        (((search-input-file native-inputs "bin/pay-respects"))
+                         (in-vicinity #$output "bin/pay-respects")))))))
+               '(("bash"    . "share/bash-completion/completions/pay-respects")
+                 ("fish"    . "share/fish/vendor_completions.d/pay-respects.fish")
+                 ("nushell" . "share/nushell/vendor/autoload/pay-respects")
+                 ("zsh"     . "share/zsh/site-functions/_pay-respects"))))))))
+    (native-inputs
+     (if (%current-target-system)
+         (list this-package)
+         '()))
     (inputs (cargo-inputs 'pay-respects))
     (home-page "https://codeberg.org/iff/pay-respects")
     (synopsis "Suggest correction for mistyped console commands")
