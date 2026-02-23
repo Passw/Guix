@@ -41,7 +41,7 @@
 ;;; Copyright © 2023 gemmaro <gemmaro.dev@gmail.com>
 ;;; Copyright © 2024 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2024 Wilko Meyer <w@wmeyer.eu>
-;;; Copyright © 2024, 2025 Ashish SHUKLA <ashish.is@lostca.se>
+;;; Copyright © 2024-2026 Ashish SHUKLA <ashish.is@lostca.se>
 ;;; Copyright © 2024, 2025 Igor Goryachev <igor@goryachev.org>
 ;;; Copyright © 2024 Nguyễn Gia Phong <cnx@loang.net>
 ;;; Copyright © 2025 Evgeny Pisemsky <mail@pisemsky.site>
@@ -2096,7 +2096,7 @@ are both supported).")
 (define-public profanity
   (package
     (name "profanity")
-    (version "0.15.1")
+    (version "0.16.0")
     (source
      (origin
        (method url-fetch)
@@ -2105,7 +2105,7 @@ are both supported).")
                        "/profanity-" version ".tar.gz"))
        (sha256
         (base32
-         "0163zs1070yhfsxzfknwagjbqi6jppwb117kqlggsy51ka28mqn1"))))
+         "0w3apmkjx3q4yyrny8mzcwz0cwgrrsqn8ay1y5rr2afdh6h3cbhz"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      (list
