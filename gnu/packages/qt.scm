@@ -6347,50 +6347,6 @@ handles the authentication process of an account and securely stores the
 credentials and service-specific settings.")
     (license license:lgpl2.1+)))
 
-(define-public libsignon-glib
-  (package
-    (name "libsignon-glib")
-    (version "2.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://gitlab.com/accounts-sso/libsignon-glib")
-                    (commit (string-append "VERSION_" version))
-                    (recursive? #t)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0gnx9gqsh0hcfm1lk7w60g64mkn1iicga5f5xcy1j9a9byacsfd0"))))
-    (build-system meson-build-system)
-    (arguments
-     (list
-      #:tests? #f                  ;TODO: ninja: no work to do.
-      #:imported-modules (append %meson-build-system-modules
-                                 %pyproject-build-system-modules)
-      #:modules '(((guix build pyproject-build-system) #:prefix py:)
-                  (guix build meson-build-system)
-                  (guix build utils))
-      #:configure-flags
-      #~(list "-Dtests=true"
-              (string-append "-Dpy-overrides-dir="
-                             (py:site-packages %build-inputs %outputs)
-                             "/gi/overrides"))))
-    (native-inputs (list dbus
-                         dbus-test-runner
-                         `(,glib "bin")
-                         gobject-introspection
-                         gtk-doc
-                         pkg-config
-                         vala))
-    (inputs (list check signond python python-pygobject))
-    (propagated-inputs (list glib))
-    (home-page "https://accounts-sso.gitlab.io/libsignon-glib/")
-    (synopsis "Single signon authentication library for GLib applications")
-    (description
-     "This package provides single signon authentication library for
-GLib applications.")
-    (license license:lgpl2.1+)))
-
 (define-public packagekit-qt5
   (package
     (name "packagekit-qt5")
