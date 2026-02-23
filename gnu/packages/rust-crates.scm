@@ -14647,10 +14647,6 @@
   (crate-source "ntapi" "0.4.1"
                 "1r38zhbwdvkis2mzs6671cm1p6djgsl49i7bwxzrvhwicdf8k8z8"))
 
-(define rust-ntapi-0.4.3
-  (crate-source "ntapi" "0.4.3"
-                "1bl0d73avwla7laa4pkqvzvifjbs0avg65w01zxjydgx3likbcy3"))
-
 (define rust-ntapi-0.4.2
   (crate-source "ntapi" "0.4.2"
                 "10ghcc1kmj5ygy4ls81as6s5akd1wflwcc0b1k3nf8ql46g223y7"))
@@ -24850,10 +24846,6 @@
 (define rust-uuid-0.1.18
   (crate-source "uuid" "0.1.18"
                 "0gy107y2fcm5qiakwx3cmx2v93cxlmwg0xgvv2m11vbrpnsr1ibq"))
-
-(define rust-uuid-1.21.0
-  (crate-source "uuid" "1.21.0"
-                "1nsxfd17gfkvl1jmwcy5lnq6z32b8kf19is04byl6b95an2k6wmn"))
 
 (define rust-uuid-1.8.0
   (crate-source "uuid" "1.8.0"
