@@ -1259,7 +1259,7 @@ defaults for 80% of the use cases.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://codeberg.org/Cyborus/forgejo-cli")
+              (url "https://codeberg.org/forgejo-contrib/forgejo-cli/")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -1274,7 +1274,7 @@ defaults for 80% of the use cases.")
             openssl
             zlib
             (cargo-inputs 'forgejo-cli)))
-    (home-page "https://codeberg.org/Cyborus/forgejo-cli/")
+    (home-page "https://codeberg.org/forgejo-contrib/forgejo-cli/")
     (synopsis "CLI tool for Forgejo")
     (description "This package provides a CLI tool for Forgejo.")
     (license (list license:asl2.0 license:expat))))
