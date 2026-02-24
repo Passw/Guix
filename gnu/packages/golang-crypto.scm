@@ -763,6 +763,46 @@ Deterministic signatures remove the need for a random number generator during
 signing.")
     (license license:isc)))
 
+(define-public go-github-com-containerd-imgcrypt-v2
+  (package
+    (name "go-github-com-containerd-imgcrypt-v2")
+    (version "2.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/containerd/imgcrypt")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vmq8fkqz0vcm1023lmrka8siasg5kj59k21101kk4n632zzwwn4"))
+       (modules '((guix build utils)))
+       (snippet
+        #~(begin
+            ;; Submodules with their own go.mod files and packaged separately:
+            ;;
+            ;; - github.com/containerd/imgcrypt/cmd
+            (delete-file-recursively "cmd")))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      ;; Cycles with go-github-com-containerd-containerd-v2
+      #:tests? #f
+      #:import-path "github.com/containerd/imgcrypt/v2"))
+    (propagated-inputs
+     (list go-github-com-containerd-errdefs
+           go-github-com-containerd-platforms
+           go-github-com-containerd-typeurl-v2
+           go-github-com-containers-ocicrypt
+           go-github-com-opencontainers-go-digest
+           go-github-com-opencontainers-image-spec))
+    (home-page "https://github.com/containerd/imgcrypt")
+    (synopsis "OCI Image Encryption Package")
+    (description
+     "The @code{imgcrypt} library provides API extensions for containerd to
+support encrypted container images.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-containers-libtrust
   (package
     (name "go-github-com-containers-libtrust")
