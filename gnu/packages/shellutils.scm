@@ -547,17 +547,18 @@ POSIX Shell}, @url{https://www.gnu.org/software/bash/, Bash}, and
                  ("fish"    . "share/fish/vendor_completions.d/starship.fish")
                  ("nushell" . "share/nushell/vendor/autoload/starship")
                  ("zsh"     . "share/zsh/site-functions/_starship")))))
-          ;; Some tests require a writable home directory
           (add-after 'unpack 'patch-test-shell
-            (lambda* (#:key inputs #:allow-other-keys)
-              ;; search through the rust files and then replace `/bin/sh'
-              ;; with the path to the `/bin/sh' in the drv inputs
+            (lambda* (#:key tests? inputs #:allow-other-keys)
+              ;; Search through the rust files and then replace `/bin/sh'
+              ;; with the full path for the tests.
               (let ((rust-files (find-files "." "\\.rs$")))
-                (for-each (lambda (file)
-                            (substitute* file
-                              (("/bin/sh")
-                               (search-input-file inputs "/bin/sh"))))
-                          rust-files))))
+                (when tests?
+                  (for-each (lambda (file)
+                              (substitute* file
+                                (("/bin/sh")
+                                 (search-input-file inputs "/bin/sh"))))
+                            rust-files)))))
+          ;; Some tests require a writable home directory
           ;; Set "HOME" to be located inside the cwd so it is writable
           ;; for tests checking for user-configs
           (add-before 'check 'set-test-env-vars
