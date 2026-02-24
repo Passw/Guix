@@ -136,6 +136,7 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages prometheus)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -2107,50 +2108,68 @@ Unidata/UCAR UDUNITS-2 library, and the cftime calendar functionality.")
               ;; TODO: Unbundle more when missing packages are available.
               (snippet #~(with-directory-excursion "vendor"
                            (for-each delete-file-recursively
-                                     '("github.com/aws"
+                                     '("github.com/BurntSushi"
+                                       "github.com/SAP"
+                                       "github.com/ajstarks"
+                                       "github.com/aws"
                                        "github.com/beorn7"
-                                       "github.com/BurntSushi"
-                                       "github.com/gofrs"
-                                       "github.com/golang/protobuf"
-                                       "github.com/google"
+                                       "github.com/dgryski"
                                        "github.com/go-test"
+                                       "github.com/gofrs"
+                                       "github.com/golang"
+                                       "github.com/google"
                                        "github.com/jmespath"
-                                       "github.com/mattn/go-sqlite3"
+                                       "github.com/mattn"
+                                       "github.com/prometheus"
+                                       "github.com/redis"
                                        "github.com/spf13"
-                                       "golang.org/x/crypto"
-                                       "golang.org/x/sys"
-                                       "golang.org/x/text"
-                                       "golang.org/x/tools"
-                                       "google.golang.org/protobuf"
-                                       "go.uber.org"))))))
+                                       "go.uber.org"
+                                       "golang.org/x"
+                                       "google.golang.org/protobuf"))))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "github.com/go-spatial/tegola/cmd/tegola"
-       #:unpack-path "github.com/go-spatial/tegola"
-       #:build-flags '(,(string-append "\
--ldflags=-X github.com/go-spatial/tegola/internal/build.Version=" version))
-       #:install-source? #f))
+     (list
+      #:install-source? #f
+      #:import-path "github.com/go-spatial/tegola/cmd/tegola"
+      #:unpack-path "github.com/go-spatial/tegola"
+      #:embed-files
+      #~(list "statscfg.json")
+      #:build-flags
+      #~(list (string-append "-ldflags="
+                             "-X github.com/go-spatial/tegola/internal/"
+                             "build.Version=" #$version))))
     (inputs
-     (list go-github-com-aws-aws-lambda-go
+     (list ;; go-cloud-google-com-go-storage
+           go-github-com-ajstarks-svgo
+           go-github-com-akrylysov-algnhsa
            go-github-com-aws-aws-sdk-go
-           go-github-com-beorn7-perks
+           ;; go-github-com-azure-azure-storage-blob-go
            go-github-com-burntsushi-toml
-           go-github-com-gofrs-uuid
-           go-github-com-golang-protobuf
-           go-github-com-google-go-cmp
-           go-github-com-google-uuid
+           go-github-com-dimfeld-httptreemux
+           go-github-com-gdey-tbltest
+           ;; go-github-com-go-spatial-cobra
+           ;; go-github-com-go-spatial-geom
+           go-github-com-go-spatial-proj
            go-github-com-go-test-deep
-           go-github-com-jmespath-go-jmespath
+           go-github-com-golang-protobuf
+           go-github-com-jackc-pgproto3-v2
+           go-github-com-jackc-pgtype
+           go-github-com-jackc-pgx-v4
            go-github-com-mattn-go-sqlite3
-           go-github-com-spf13-pflag
-           go-golang-org-x-crypto
-           go-golang-org-x-sys
-           go-golang-org-x-text
-           go-golang-org-x-tools
-           go-google-golang-org-protobuf
-           go-go-uber-org-atomic
-           go-go-uber-org-multierr
-           go-go-uber-org-zap))
+           go-github-com-mattn-goveralls
+           go-github-com-pborman-uuid
+           go-github-com-prometheus-client-golang
+           go-github-com-redis-go-redis-v9
+           go-github-com-sap-go-hdb
+           ;; go-github-com-theckman-goconstraint
+           go-go-uber-org-zap
+           ;; go-gopkg-in-go-playground-colors-v1
+
+           ;; XXX: Inderect dependencies, remove when all direct ones are
+           ;; packaged.
+           go-github-com-golang-groupcache ;go.opencensus.io/trace
+           go-github-com-spf13-pflag       ;github.com/go-spatial/cobra
+           go-golang-org-x-xerrors))       ;cloud.google.com/go
     (home-page "https://tegola.io")
     (synopsis "Vector tile server for maps")
     (description "Tegola is a free vector tile server written in Go.  Tegola
