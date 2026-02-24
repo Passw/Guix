@@ -1286,6 +1286,37 @@ system (origin at the lower left corner, x increasing left to right, 0-100%, y
 increasing upwards, 0-100%).")
       (license license:cc-by3.0))))
 
+(define-public go-github-com-ajstarks-svgo
+  (package
+    (name "go-github-com-ajstarks-svgo")
+    (version "0.0.0-20211024235047-1546f124cd8b")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/ajstarks/svgo")
+              (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1h0y8c1cw49lm0f324kvgvwc24q6r64pzzzrqpfgp2wd9ljszfnd"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:skip-build? #t
+      #:tests? #f
+      #:import-path "github.com/ajstarks/svgo"))
+    (propagated-inputs
+     (list go-github-com-ajstarks-deck-generate
+           go-honnef-co-go-tools))
+    (home-page "https://github.com/ajstarks/svgo")
+    (synopsis "Go library for SVG generation")
+    (description
+     "This package implements a functionality to generate SVG as defined by
+the Scalable Vector Graphics 1.1
+Specification (@url{http://www.w3.org/TR/SVG11/}).  Output goes to the
+specified @code{io.Writer}.")
+    (license license:cc-by4.0)))
+
 (define-public go-github-com-akamensky-argparse
   (package
     (name "go-github-com-akamensky-argparse")
