@@ -2016,21 +2016,26 @@ increase approaching hashing speeds of 1GB/sec on a single core.")
 (define-public go-github-com-minio-crc64nvme
   (package
     (name "go-github-com-minio-crc64nvme")
-    (version "1.0.1")
+    (version "1.1.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/minio/crc64nvme")
-             (commit (string-append "v" version))))
+              (url "https://github.com/minio/crc64nvme")
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hk0v474ligna49qh4rvwnqxv7w6ka5grdlb7fczh4kzhx80x536"))))
+        (base32 "0jimqp3r658rmsvbgvvyiswkfl661aigh9vff4m4814g0pz64ma5"))))
     (build-system go-build-system)
     (arguments
      (list
-      #:import-path "github.com/minio/crc64nvme"))
-    (propagated-inputs (list go-github-com-klauspost-cpuid-v2))
+      #:import-path "github.com/minio/crc64nvme"
+      #:test-flags
+      ;; Upstream applies "-short" option for ARM architecture, and the build
+      ;; often fails in Guix CI without it on aartch64-linux.
+      #~(list #$@(if (target-aarch64?) '("-short") '()))))
+    (propagated-inputs
+     (list go-github-com-klauspost-cpuid-v2))
     (home-page "https://github.com/minio/crc64nvme")
     (synopsis "CRC64 checksums using carryless-multiplication")
     (description
