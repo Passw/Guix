@@ -1228,6 +1228,64 @@ structure, and traverse the structure for display, publication, etc.  Clients
 may be interactive or produce standard formats such as SVG or PDF.")
       (license license:cc-by3.0))))
 
+(define-public go-github-com-ajstarks-deck-generate
+  ;; XXX: No release and not published in <https://pkg.go.dev/>.
+  (let ((commit "d56fad59c3d50f77937e315a7141fb55213a7f25")
+        (revision "0"))
+    (package
+      (name "go-github-com-ajstarks-deck-generate")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ajstarks/deck")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1np11if704xzyhsx9mqhz7djx23g6wnz62r1v9ra6xaz91yfic0n"))
+         (modules '((guix build utils)
+                    (ice-9 ftw)
+                    (srfi srfi-26)))
+         (snippet
+          #~(begin
+              ;; XXX: 'delete-all-but' is copied from the turbovnc package.
+              (define (delete-all-but directory . preserve)
+                (define (directory? x)
+                  (and=> (stat x #f)
+                         (compose (cut eq? 'directory <>) stat:type)))
+                (with-directory-excursion directory
+                  (let* ((pred
+                          (negate (cut member <> (append '("." "..") preserve))))
+                         (items (scandir "." pred)))
+                    (for-each (lambda (item)
+                                (if (directory? item)
+                                    (delete-file-recursively item)
+                                    (delete-file item)))
+                              items))))
+              (delete-all-but "." "generate")))))
+      (build-system go-build-system)
+      (arguments
+       (list
+        #:skip-build? #t
+        #:tests? #f
+        #:import-path "github.com/ajstarks/deck/generate"
+        #:unpack-path "github.com/ajstarks/deck"))
+      (propagated-inputs
+       (list go-github-com-ajstarks-deck))
+      (home-page "https://github.com/ajstarks/svgo")
+      (synopsis "High-level API for the creation of slide decks")
+      (description
+       "This package provides a high-level API for the creation of slide decks
+using the structures of the deck package (github.com/ajstarks/deck).
+Initialization of the package specifies the @code{io.Writer} destination for
+the generated markup, along with the width and height of the slides's canvas.
+Each deck element (text, list, image, rect, ellipse, line, curve, arc, and
+polygon) are supported.  Slides use a percentage-based coordinate
+system (origin at the lower left corner, x increasing left to right, 0-100%, y
+increasing upwards, 0-100%).")
+      (license license:cc-by3.0))))
+
 (define-public go-github-com-akamensky-argparse
   (package
     (name "go-github-com-akamensky-argparse")
