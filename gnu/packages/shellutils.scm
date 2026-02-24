@@ -564,7 +564,7 @@ POSIX Shell}, @url{https://www.gnu.org/software/bash/, Bash}, and
             (lambda _
               (setenv "HOME"
                       (string-append (getcwd) "/.test-home")))))))
-    (inputs (cons cmake-minimal (cargo-inputs 'starship)))
+    (inputs (cargo-inputs 'starship))
     (native-inputs
      (append
        (if (%current-target-system)
