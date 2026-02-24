@@ -4079,33 +4079,29 @@ advanced keybindings, word-level diff highlighting, syntax highlighting for
     (arguments
      (list
       #:features '(list "buildgen")
+      #:imported-modules (append %copy-build-system-modules
+                                 %cargo-build-system-modules)
+      #:modules '((guix build cargo-build-system)
+                  ((guix build copy-build-system) #:prefix copy:)
+                  (guix build utils))
       #:install-source? #f
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'install 'install-extras
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let* ((share (string-append #$output "/share"))
-                     (install-man (lambda (filename)
-                                    (install-file filename
-                                                  (string-append share
-                                                                 "/man/man"
-                                                                 (string-take-right
-                                                                  filename 1))))))
-                (mkdir-p (string-append #$output "/etc/bash_completion.d"))
-                (mkdir-p (string-append share "/elvish/lib"))
-                (copy-file "completions/wallust.bash"
-                           (string-append #$output
-                                          "/etc/bash_completion.d/wallust"))
-                (copy-file "completions/wallust.elv"
-                           (string-append share "/elvish/lib/wallust"))
-                (install-file "completions/wallust.fish"
-                              (string-append share
-                                             "/fish/vendor_completions.d/"))
-                (install-file "completions/_wallust"
-                              (string-append share "/zsh/site-functions/"))
-                (with-directory-excursion "man"
-                  (for-each install-man
-                            (find-files ".")))))))))
+            (lambda args
+              (apply (assoc-ref copy:%standard-phases 'install)
+                     #:install-plan
+                     '(("completions/wallust.bash"
+                        "share/bash-completion/completions/wallust")
+                       ("completions/wallust.elv"
+                        "share/elvish/lib/wallust")
+                       ("completions/wallust.fish"
+                        "share/fish/vendor_completions.d/")
+                       ("completions/_wallust"
+                        "share/zsh/site-functions/")
+                       ("man/" "share/man/man1/" #:include-regexp ("\\.1$"))
+                       ("man/" "share/man/man5/" #:include-regexp ("\\.5$")))
+                     args))))))
     (native-inputs (list pkg-config))
     (inputs (cons* libgit2-1.9 zlib (cargo-inputs 'wallust)))
     (home-page "https://explosion-mental.codeberg.page/wallust")
