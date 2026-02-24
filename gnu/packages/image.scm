@@ -1702,43 +1702,6 @@ and XMP metadata of images in various formats.")
        (sha256
         (base32 "1a3g7qly75zidj2xjfx1548h6az8sda79cpwvfknsjy3n8d5aay7"))))))
 
-(define-public devil
-  (package
-    (name "devil")
-    (version "1.8.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://downloads.sourceforge.net/openil/"
-                                  "DevIL-" version ".tar.gz"))
-              (sha256
-               (base32
-                "02dpzvi493r09c9hfjnk54nladl3qw55iqkkg18g12fxwwz9fx80"))))
-    (build-system cmake-build-system)
-    (arguments
-     '(;; XXX: Not supported in the released CMakeLists.txt.
-       ;; Enable this for > 1.8.0.
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'change-directory
-           (lambda _ (chdir "DevIL") #t)))))
-    (native-inputs
-     (list pkg-config))
-    (inputs
-     `(("lcms" ,lcms)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libmng" ,libmng)
-       ("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("openexr" ,openexr-2)
-       ("zlib" ,zlib)))
-    (synopsis "Library for manipulating many image formats")
-    (description "Developer's Image Library (DevIL) is a library to develop
-applications with support for many types of images.  DevIL can load, save,
-convert, manipulate, filter and display a wide variety of image formats.")
-    (home-page "https://openil.sourceforge.net")
-    (license license:lgpl2.1+)))
-
 (define-public jasper
   (package
     (name "jasper")
