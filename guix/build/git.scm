@@ -73,7 +73,13 @@ fetched, recursively.  Return #t on success, #f otherwise."
 
         (when lfs?
           (setenv "HOME" "/tmp")
-          (invoke git-command "lfs" "install"))
+          (invoke git-command "lfs" "install")
+          ;; Substitute the git-lfs hooks shebangs.  These can't be patched
+          ;; in-package because the hooks are installed and the commands
+          ;; referenced in their shebangs could become stale.
+          (substitute* ".git/hooks/post-checkout"
+            (("^#!/bin/sh")
+             (string-append "#!" (which "sh")))))
 
         (if (zero? (system* git-command "fetch" "--depth" "1" "--" "origin" commit))
             (invoke git-command "checkout" "FETCH_HEAD")

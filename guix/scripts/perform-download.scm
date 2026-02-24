@@ -216,7 +216,9 @@ Note: OUTPUT may differ from the 'out' value of DRV, notably for 'bmCheck' or
       ;; Commands such as 'git submodule' expect Coreutils and sed (among
       ;; others) to be in $PATH.  The 'git' package in Guix should address it
       ;; with wrappers but packages on other distros such as Debian may rely
-      ;; on ambient authority, hence the PATH value below.
+      ;; on ambient authority, hence the PATH value below.  The ambient 'sh'
+      ;; command is also used to patch the Git LFS hooks, which uses
+      ;; '/bin/sh'.
       (setenv "PATH" "/run/current-system/profile/bin:/bin:/usr/bin")
 
       (parameterize ((%download-methods

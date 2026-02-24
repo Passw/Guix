@@ -77,6 +77,11 @@
   (recursive? git-reference-recursive?   ; whether to recurse into sub-modules
               (default #f)))
 
+(define (bash-package)
+  "Return the default Bash package."
+  (let ((distro (resolve-interface '(gnu packages bash))))
+    (module-ref distro 'bash-minimal)))
+
 (define (git-package)
   "Return the default Git package."
   (let ((distro (resolve-interface '(gnu packages version-control))))
@@ -87,9 +92,10 @@
   (let ((distro (resolve-interface '(gnu packages version-control))))
     (module-ref distro 'git-lfs)))
 
-(define (git-fetch-builder git git-lfs git-ref-recursive? hash-algo)
+(define (git-fetch-builder bash git git-lfs git-ref-recursive? hash-algo)
   (define inputs
-    `(,(or git (git-package))
+    `(,(or bash (bash-package))
+      ,(or git (git-package))
       ,@(if git-lfs
             (list git-lfs)
             '())
@@ -163,6 +169,7 @@
 (define* (git-fetch/in-band* ref hash-algo hash
                              #:optional name
                              #:key (system (%current-system))
+                             (bash (bash-package))
                              (guile (default-guile))
                              (git (git-package))
                              git-lfs)
@@ -177,7 +184,7 @@ respective documentation."
                       ;;
                       ;; Don't pass package specific data in to the following
                       ;; procedure, use #:env-vars below instead.
-                      (git-fetch-builder git git-lfs
+                      (git-fetch-builder bash git git-lfs
                                          (git-reference-recursive? ref)
                                          hash-algo)
                       #:script-name "git-download"

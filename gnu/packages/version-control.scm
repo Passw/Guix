@@ -3953,11 +3953,6 @@ matching.")
       #:test-flags #~(list "-skip" "TestHistoryRewriterUpdatesRefs")
       #:phases
       #~(modify-phases %standard-phases
-          (add-after 'unpack 'patch-/bin/sh
-            (lambda* (#:key inputs #:allow-other-keys)
-              (substitute* "src/github.com/git-lfs/git-lfs/v3/lfs/hook.go"
-                (("/bin/sh")
-                 (search-input-file inputs "bin/sh")))))
           ;; Only build the man pages if ruby-asciidoctor is available.
           #$@(if (this-package-native-input "ruby-asciidoctor")
                  #~((add-before 'build 'man-gen
