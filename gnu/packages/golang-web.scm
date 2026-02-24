@@ -10532,6 +10532,8 @@ compatible object storage.")
          ;; golang.org/x/net/publicsuffix/table.go:33:12: pattern data/text:
          ;; cannot embed irregular file data/text
          "text")
+      #:test-flags
+      #~(list #$@(if (target-aarch64?) '("-short") '()))
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'fix-tests
