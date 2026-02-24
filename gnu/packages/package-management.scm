@@ -30,6 +30,7 @@
 ;;; Copyright © 2025 aurtzy <aurtzy@gmail.com>
 ;;; Copyright © 2025 Tomás Ortín Fernández <quanrong@mailbox.org>
 ;;; Copyright © 2025-2026 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2026 Carlos Durán Domínguez <wurt@wurt.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1036,13 +1037,13 @@ symlinks to the files in a common directory such as /usr/local.")
   (package
     (name "xstow")
     (version "1.0.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/xstow/xstow-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "1vy6lcswpkixh7h5mvsmq2wbcih6lpsmcva3m7v6f5npllciy13g"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/xstow/xstow-" version
+                           ".tar.bz2"))
+       (sha256
+        (base32 "1vy6lcswpkixh7h5mvsmq2wbcih6lpsmcva3m7v6f5npllciy13g"))))
     (build-system gnu-build-system)
     (synopsis "Replacement of GNU Stow written in C++")
     (description
