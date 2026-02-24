@@ -11,6 +11,7 @@
 ;;; Copyright © 2025 Tomas Volf <~@wolfsden.cz>
 ;;; Copyright © 2025 Foster Hangdaan <foster@hangdaan.email>
 ;;; Copyright © 2026 Giacomo Leidi <therewasa@fishinthecalculator.me>
+;;; Copyright © 2026 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,6 +79,73 @@
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wget))
+
+;;; Code:
+
+;;;
+;;; Libraries:
+;;;
+
+(define-public go-github-com-checkpoint-restore-checkpointctl
+  (package
+    (name "go-github-com-checkpoint-restore-checkpointctl")
+    (version "1.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/checkpoint-restore/checkpointctl")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qvgld9vji5f7h2idk6r3q30909hqws0rkpvgina43i57bsfh2sv"))
+       (snippet
+        #~(begin
+            (use-modules (guix build utils))
+            (delete-file-recursively "vendor")))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:skip-build? #t
+      #:import-path "github.com/checkpoint-restore/checkpointctl"))
+    (native-inputs
+     (list go-github-com-spf13-cobra))
+    (propagated-inputs
+     (list go-github-com-checkpoint-restore-go-criu-v8
+           go-github-com-containers-storage
+           go-github-com-opencontainers-runtime-spec
+           go-github-com-xlab-treeprint))
+    (home-page "https://github.com/checkpoint-restore/checkpointctl")
+    (synopsis "Tool for in-depth analysis of container checkpoints")
+    (description
+     "This package provides a Go library to read and manipulate checkpoint
+archives as created by Podman, CRI-O and containerd.")
+    (license license:asl2.0)))
+
+;;;
+;;; Executables:
+;;;
+
+(define-public checkpointctl
+  (package/inherit go-github-com-checkpoint-restore-checkpointctl
+    (name "checkpointctl")
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments go-github-com-checkpoint-restore-checkpointctl)
+       ((#:build-flags _) #~(list (string-append "-X main.version="
+                                                 #$version)))
+       ((#:install-source? _ #t) #f)
+       ((#:skip-build? _ #t) #f)
+       ((#:tests? _ #t) #f)))
+    (native-inputs
+     (append
+      (package-native-inputs go-github-com-checkpoint-restore-checkpointctl)
+      (package-propagated-inputs go-github-com-checkpoint-restore-checkpointctl)))
+    (propagated-inputs '())
+    (inputs '())
+    (description
+     "This package provides a tool to read and manipulate checkpoint archives
+as created by Podman, CRI-O and containerd.")))
 
 (define-public crun
   (package
