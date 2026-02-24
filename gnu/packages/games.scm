@@ -10767,8 +10767,8 @@ a fortress beyond the forbidden swamp.")
                        #:tests? tests? #:test-target "tests" args)
                 (invoke "tests/tests")))))))
     (native-inputs
-     (list (package-source googletest-1.12)
-           googletest-1.12
+     (list (package-source googletest-1.13)
+           googletest-1.13
            pkg-config))
     (inputs
      (list c-template-sort
