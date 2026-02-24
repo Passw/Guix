@@ -28782,14 +28782,27 @@ register custom encoders and decoders.")
     (build-system pyproject-build-system)
     (arguments
      (list
-      ;; tests: 1580 passed, 67 skipped, 700 deselected, 4 xfailed
+      ;; tests:
+      ;;   - x86_64-linux: 1580 passed, 67 skipped, 700 deselected, 4 xfailed
+      ;;   - aarch64-linux: 1342 passed, 67 skipped, 56 deselected, 4 xfailed
       #:test-flags
       #~(list "-p" "no:asyncio"
               "-m" "not network"
+              ;; TODO: Set as global on the next python-team iteration, tests
+              ;; are not stable, see:
+              ;; <https://codeberg.org/guix/guix/issues/6649>.
+              #$@(if (target-aarch64?)
+                     '("--ignore=tests/test_sockets.py")
+                     '())
               "-k"
               (string-join
                (list
                 "not test_is_block_device"
+                #$@(if (target-aarch64?)
+                       ;; Assertion Errors
+                       '("test_shielded_cancel_sleep_time"
+                         "test_run_in_custom_limiter")
+                       '())
                 #$@(cond
                     ((or (target-aarch64?)
                          (target-riscv64?))
