@@ -63,7 +63,7 @@
 (define-public chrony
   (package
     (name "chrony")
-    (version "4.7")
+    (version "4.8")
     (source
      (origin
        (method git-fetch)
@@ -72,7 +72,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pqplqlfy1b05qkj7d5l954z7rdz5mbwr9d0hvsa7s6bwqsrl791"))))
+        (base32 "0pw1c6wkm4pxc92m1ykxs467azk6gmhvb8m49qkzw0s0agpg49nm"))))
     (build-system gnu-build-system)
     (arguments
      (list
