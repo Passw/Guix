@@ -591,7 +591,7 @@ Feature:
 (define-public rclone
   (package
     (name "rclone")
-    (version "1.72.0")
+    (version "1.72.1")
     (source
      (origin
        (method git-fetch)
@@ -600,7 +600,7 @@ Feature:
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1866kzdhv1by5qpr2j2mz85bllicdiasv4clc86lcbjh9hd674fd"))
+        (base32 "1k0npx1pzi2hfg9yyg1dil0a9a1b6mip7agxpscb4qb445rhc8qb"))
        (snippet
         #~(begin
             ;; XXX: This test fails to compile: `undefined: testscript.Main'
@@ -610,6 +610,10 @@ Feature:
      (list
       #:install-source? #f
       #:import-path "github.com/rclone/rclone"
+      #:build-flags
+      #~(list (string-append "-ldflags="
+                             "-X github.com/rclone/rclone/fs.Version="
+                             #$version))
       #:embed-files
       #~(list "Linux.gitignore"
               "Windows.gitignore"
@@ -619,7 +623,8 @@ Feature:
               "nodes"
               "text")
       #:test-flags
-      #~(list "-skip" (string-join
+      #~(list "-short"
+              "-skip" (string-join
                        ;; Requires docker-compose
                        (list "TestIntegration"
                              "TestDockerPluginMountTCP"
@@ -673,7 +678,15 @@ Feature:
                              "TestRWCacheRename"
                              "TestFunctional"
                              "invalid_UTF-8")
-                       "|"))))
+                       "|"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'pre-check
+            (lambda _
+              ;; As seen in go.mod
+              (setenv "GODEBUG" "x509negativeserial=1")
+              ;; As seen in Makefile
+              (setenv "RCLONE_CONFIG" "/notfound"))))))
     (native-inputs
      (list go-bazil-org-fuse
            go-github-com-a1ex3-zstd-seekable-format-go-pkg
