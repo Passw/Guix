@@ -163,9 +163,6 @@
 @end itemize")
     (license license:expat)))
 
-;; 2026-02-15
-(define-deprecated-package gcompris gcompris-qt)
-
 (define-public gotypist
   (let ((revision "0")
         (commit "03f8618f8e23acdaa94cda3bcf197da520db8dd4"))
