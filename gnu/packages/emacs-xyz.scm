@@ -225,6 +225,7 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages golang-apps)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphviz)
@@ -1154,6 +1155,42 @@ powered by @uref{https://agentclientprotocol.com/, Agent Client Protocol} (ACP).
     (description
      "This package adds support for the Guile Scheme implementation to Geiser,
 a generic Scheme interaction mode for the GNU Emacs editor.")
+    (license license:bsd-3)))
+
+(define-public emacs-geiser-hoot
+  (package
+    (name "emacs-geiser-hoot")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://codeberg.org/spritely/geiser-hoot")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1zhg4sv40gdcpynnk6rgqnq4di2pgx542xf80y12md1dllvfbg3i"))))
+    (build-system emacs-build-system)
+    (arguments
+     (list
+      #:include
+      #~(cons "^src/" %default-include)
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'patch-geiser-hoot-binary
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "geiser-hoot.el"
+                (("(geiser-hoot-binary) \"hoot\"" _ sym)
+                 (format #f "~a ~s"
+                         sym
+                         (search-input-file inputs "bin/hoot")))))))))
+    (inputs (list guile-hoot))
+    (propagated-inputs (list emacs-geiser))
+    (home-page "https://codeberg.org/spritely/geiser-hoot")
+    (synopsis "Hoot support for Geiser")
+    (description
+     "This package adds support for the Hoot Scheme implementation to
+Geiser, a generic Scheme interaction mode for the GNU Emacs editor.")
     (license license:bsd-3)))
 
 (define-public emacs-ac-geiser
