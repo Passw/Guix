@@ -1036,15 +1036,19 @@ symlinks to the files in a common directory such as /usr/local.")
 (define-public xstow
   (package
     (name "xstow")
-    (version "1.0.2")
+    (version "1.1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/xstow/xstow-" version
-                           ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/majorkingleo/xstow")
+             (commit version)
+             (recursive? #t)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1vy6lcswpkixh7h5mvsmq2wbcih6lpsmcva3m7v6f5npllciy13g"))))
+        (base32 "0rnxb28mipfvg7g5lbjcsa2352yxvipgkc2mjyh70drr3jv7xkvk"))))
     (build-system gnu-build-system)
+    (native-inputs (list autoconf automake))
     (synopsis "Replacement of GNU Stow written in C++")
     (description
      "XStow is a replacement of GNU Stow written in C++.  It supports all
