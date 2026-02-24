@@ -30605,42 +30605,28 @@ tools:
 tool."))))
 
 (define-public go-sixel
-  (package
-    (inherit go-github-com-mattn-go-sixel)
+  (package/inherit go-github-com-mattn-go-sixel
     (name "go-sixel")
     (arguments
-     (list
-      #:tests? #f ; tested in the library
-      #:install-source? #f
-      #:unpack-path "github.com/mattn/go-sixel"
-      #:phases
-      #~(modify-phases %standard-phases
-          (replace 'build
-            (lambda arguments
-              (for-each
-               (lambda (cmd)
-                 (apply (assoc-ref %standard-phases 'build)
-                        `(,@arguments #:import-path ,cmd)))
-               (list "github.com/mattn/go-sixel/cmd/goscat"
-                     "github.com/mattn/go-sixel/cmd/gosd"
-                     "github.com/mattn/go-sixel/cmd/gosgif"
-                     "github.com/mattn/go-sixel/cmd/gosl"
-                     "github.com/mattn/go-sixel/cmd/gosr"))))
-          (replace 'install
-            (lambda arguments
-              (for-each
-               (lambda (cmd)
-                 (apply (assoc-ref %standard-phases 'install)
-                        `(,@arguments #:import-path ,cmd)))
-               (list "github.com/mattn/go-sixel/cmd/goscat"
-                     "github.com/mattn/go-sixel/cmd/gosd"
-                     "github.com/mattn/go-sixel/cmd/gosgif"
-                     "github.com/mattn/go-sixel/cmd/gosl"
-                     "github.com/mattn/go-sixel/cmd/gosr")))))))
+     (substitute-keyword-arguments
+         (package-arguments go-github-com-mattn-go-sixel)
+       ((#:tests? _ #t) #f)
+       ((#:install-source? _ #t) #f)
+       ((#:import-path _) "github.com/mattn/go-sixel/cmd/...")
+       ((#:unpack-path _ "") "github.com/mattn/go-sixel")))
+    (native-inputs (package-propagated-inputs go-github-com-mattn-go-sixel))
+    (propagated-inputs '())
+    (inputs '())
     (description
      (string-append (package-description go-github-com-mattn-go-sixel)
-                    "  This package provides an command line interface (CLI)
-tools."))))
+                    "\nThe package provides the following commands:
+@itemize
+@item @command{gosr} Image renderer
+@item @command{gosd} Decoder to png
+@item @command{goscat} Render cats
+@item @command{gosgif} Render animation GIF
+@item @command{gosl} Run SL
+@end itemize"))))
 
 (define-public go-tengo
   (package/inherit go-github-com-d5-tengo-v2
