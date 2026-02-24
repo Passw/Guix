@@ -2005,7 +2005,7 @@ either a pure Python implementation, or the faster, but more resource intensive
 (define-public savane
   (package
     (name "savane")
-    (version "3.10")
+    (version "3.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2014,7 +2014,7 @@ either a pure Python implementation, or the faster, but more resource intensive
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10jg264wqmkc87nz0d8d2pq4hvradwqrvrpvgpz3h409y6c6v78z"))))
+                "05w12rc1qx10zg3i78v6q6sdhg19pml2jghfmlnnsxwjv0nrdv7n"))))
     (build-system gnu-build-system)
     (native-inputs
      (list autoconf
