@@ -2466,6 +2466,39 @@ lookups.  It implements looking up the following records:
 @end itemize")
     (license license:gpl3)))
 
+(define-public go-github-com-backblaze-blazer
+  (package
+    (name "go-github-com-backblaze-blazer")
+    (version "0.7.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Backblaze/blazer")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lg6dqqsjfwygnn9yr9qs6d2r0x6i5cn087b76x0qk8ndva9f131"))
+       (modules '((guix build utils)))
+       (snippet
+        #~(begin
+            ;; Submodules with their own go.mod files and packaged separately:
+            ;;
+            ;; - github.com/Backblaze/blazer/bin/b2keys
+            (delete-file-recursively "bin")))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:skip-build? #t
+      #:import-path "github.com/Backblaze/blazer"))
+    (home-page "https://github.com/Backblaze/blazer")
+    (synopsis "Golang client library for Backblaze B2 Cloud Object Storage")
+    (description
+     "Blazer is a Go client library for
+@url{https://www.backblaze.com/cloud-storage, Backblaze B2 Cloud Object
+Storage}.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-beevik-ntp
   (package
     (name "go-github-com-beevik-ntp")
