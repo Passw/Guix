@@ -1177,6 +1177,57 @@ Distance}.")
 http://tartarus.org/~martin/PorterStemmer/index.html.")
     (license license:expat)))
 
+(define-public go-github-com-ajstarks-deck
+  ;; XXX: No release and not published in <https://pkg.go.dev/>.
+  (let ((commit "d56fad59c3d50f77937e315a7141fb55213a7f25")
+        (revision "0"))
+    (package
+      (name "go-github-com-ajstarks-deck")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ajstarks/deck")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1np11if704xzyhsx9mqhz7djx23g6wnz62r1v9ra6xaz91yfic0n"))
+       (modules '((guix build utils)))
+       (snippet
+        #~(begin
+            ;; Submodules with their own go.mod files and packaged separately:
+            ;;
+            ;; - github.com/ajstarks/deck/generate
+            (delete-file-recursively "generate")
+            (delete-file-recursively "cmd/binaries")))))
+      (build-system go-build-system)
+      (arguments
+       (list
+        #:skip-build? #t
+        #:tests? #f
+        #:import-path "github.com/ajstarks/desk"))
+      (native-inputs
+       ;; XXX: All inputs to build commands in "cmd", and not required for
+       ;; deck Go library.
+       (list ;; go-codeberg-org-go-pdf-fpdf
+             ;; go-fyne-io-fyne-v2
+             ;; go-github-com-ajstarks-deck-generate
+             ;; go-github-com-ajstarks-fc
+             ;; go-github-com-ajstarks-openvg
+             ;; go-github-com-ajstarks-svgo
+             ;; go-github-com-disintegration-gift
+             ;; go-github-com-fogleman-gg
+             #;go-github-com-mandolyte-mdtopdf))
+      (home-page "https://github.com/ajstarks/deck")
+      (synopsis "Slide decks and information displays in Go")
+      (description
+       "Deck is a library for clients to make scalable presentations,
+using a standard markup language.  Clients read deck files into the Deck
+structure, and traverse the structure for display, publication, etc.  Clients
+may be interactive or produce standard formats such as SVG or PDF.")
+      (license license:cc-by3.0))))
+
 (define-public go-github-com-akamensky-argparse
   (package
     (name "go-github-com-akamensky-argparse")
