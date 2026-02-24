@@ -309,7 +309,6 @@ fundamental object types for C.")
            libxslt
            openssh ; for tests
            pkg-config
-           python-toolchain
            po4a
            softhsm ; for tests
            `(,util-linux "lib"))) ; for uuid.h, reqired for KCM
