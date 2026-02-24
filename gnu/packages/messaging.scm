@@ -2674,10 +2674,9 @@ asynchronicity.")
              (apply (assoc-ref gnu:%standard-phases 'check)
                     #:test-target "tests" args))))))
    (build-system cmake-build-system)
-   (native-inputs
-    (list googletest pkg-config))
-   (inputs
-    (list abseil-cpp boost-1.83 protobuf icedtea icu4c))
+   (native-inputs (list googletest pkg-config))
+   (inputs (list boost-1.83 protobuf icedtea icu4c))
+   (propagated-inputs (list abseil-cpp)) ;included in phonenumberutil.h
    (synopsis "Library for parsing and using phone numbers")
    (description
     "This package provides a C++ library for parsing, formatting, and
