@@ -2096,87 +2096,83 @@ client desktops.
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/checkpoint-restore/criu")
-             (commit (string-append "v" version))))
+              (url "https://github.com/checkpoint-restore/criu")
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0p46z5iclyvvg1arvqhl3bdg1g2mny0pxyz6pr5n87cnj7maqphg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:test-target "test"
-       #:tests? #f                      ; tests require mounting as root
-       #:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-             (string-append "LIBDIR=$(PREFIX)/lib")
-             ;; Upstream mistakenly puts binaries in /var.  Now, in practice no
-             ;; plugins are built, but the build system still fails otherwise.
-             (string-append "PLUGINDIR=$(LIBDIR)/criu")
-             (string-append "ASCIIDOC="
-                            (search-input-file %build-inputs
-                                               "/bin/asciidoc"))
-             (string-append "PYTHON=python3")
-             (string-append "XMLTO="
-                            (search-input-file %build-inputs
-                                               "/bin/xmlto")))
-       #:modules ((guix build gnu-build-system)
+     (list
+      #:test-target "test"
+      #:tests? #f                      ; tests require mounting as root
+      #:make-flags
+      #~(list (string-append "PREFIX=" #$output)
+              (string-append "LIBDIR=$(PREFIX)/lib")
+              ;; Upstream mistakenly puts binaries in /var.  Now, in practice
+              ;; no plugins are built, but the build system still fails
+              ;; otherwise.
+              (string-append "PLUGINDIR=$(LIBDIR)/criu")
+              (string-append "ASCIIDOC="
+                             (search-input-file %build-inputs "/bin/asciidoc"))
+              (string-append "PYTHON=python3")
+              (string-append "XMLTO="
+                             (search-input-file %build-inputs "/bin/xmlto")))
+      #:modules '((guix build gnu-build-system)
                   (guix build utils)
                   ((guix build pyproject-build-system) #:prefix py:))
-       #:imported-modules ,(append %default-gnu-imported-modules
-                                   %pyproject-build-system-modules)
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
-         (add-after 'unpack 'hardcode-variables
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Hardcode arm version detection
-             (substitute* "Makefile"
-               (("ARMV.*:=.*") "ARMV := 7\n")
-               (("^head-name :=.*")
-                (string-append "head-name := "
-                               ,(package-version this-package)
-                               "\n")))
-             ;; disable pip install
-             (substitute* "Makefile.install"
-               (("SKIP_PIP_INSTALL.*:=.*") "SKIP_PIP_INSTALL := 1\n"))
-             ;; Hard-code the correct PLUGINDIR above.
-             (substitute* "criu/include/plugin.h"
-               (("/var") (string-append (assoc-ref outputs "out"))))))
-         (add-after 'unpack 'ensure-no-mtimes-pre-1980
-           py:ensure-no-mtimes-pre-1980)
-         (add-before 'build 'fix-symlink
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The file 'images/google/protobuf/descriptor.proto' points to
-             ;; /usr/include/..., which obviously does not exist.
-             (let* ((file "google/protobuf/descriptor.proto")
-                    (target (string-append "images/" file))
-                    (source (search-input-file
-                             inputs
-                             (string-append "include/" file))))
-               (delete-file target)
-               (symlink source target))))
-         (add-after 'install 'wrap
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Make sure 'crit' runs with the correct PYTHONPATH.
-             (let* ((out  (assoc-ref outputs "out"))
-                    (site (py:site-packages inputs outputs))
-                    (path (getenv "GUIX_PYTHONPATH")))
-               ;; manually install stuff that was pip-installed
-               (for-each (lambda (dir)
-                          (with-directory-excursion dir
-                            (setenv "GUIX_PYTHONPATH"
-                              (string-append site ":" path))
-                            (invoke "python3" "setup.py" "install"
-                              (string-append "--prefix=" out)
-                              "--no-compile" "--root=/"
-                              "--single-version-externally-managed")))
-                         (list "lib" "crit"))
-               (wrap-program (string-append out "/bin/crit")
-                 `("GUIX_PYTHONPATH" ":" prefix (,site ,path))))))
-         (add-after 'install 'delete-static-libraries
-           ;; Not building/installing these at all doesn't seem to be supported.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (for-each delete-file (find-files out "\\.a$"))))))))
+      #:imported-modules (append %default-gnu-imported-modules
+                                 %pyproject-build-system-modules)
+      #:phases
+      #~(modify-phases %standard-phases
+          (delete 'configure)            ; no configure script
+          (add-after 'unpack 'hardcode-variables
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              ;; Hardcode arm version detection
+              (substitute* "Makefile"
+                (("ARMV.*:=.*") "ARMV := 7\n")
+                (("^head-name :=.*")
+                 (string-append "head-name := " #$version "\n")))
+              ;; disable pip install
+              (substitute* "Makefile.install"
+                (("SKIP_PIP_INSTALL.*:=.*") "SKIP_PIP_INSTALL := 1\n"))
+              ;; Hard-code the correct PLUGINDIR above.
+              (substitute* "criu/include/plugin.h"
+                (("/var") #$output))))
+          (add-after 'unpack 'ensure-no-mtimes-pre-1980
+            py:ensure-no-mtimes-pre-1980)
+          (add-before 'build 'fix-symlink
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; The file 'images/google/protobuf/descriptor.proto' points to
+              ;; /usr/include/..., which obviously does not exist.
+              (let* ((file "google/protobuf/descriptor.proto")
+                     (target (string-append "images/" file))
+                     (source (search-input-file
+                              inputs
+                              (string-append "include/" file))))
+                (delete-file target)
+                (symlink source target))))
+          (add-after 'install 'wrap
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              ;; Make sure 'crit' runs with the correct PYTHONPATH.
+              (let* ((site (py:site-packages inputs outputs))
+                     (path (getenv "GUIX_PYTHONPATH")))
+                ;; manually install stuff that was pip-installed
+                (for-each (lambda (dir)
+                            (with-directory-excursion dir
+                              (setenv "GUIX_PYTHONPATH"
+                                      (string-append site ":" path))
+                              (invoke "python3" "setup.py" "install"
+                                      (string-append "--prefix=" #$output)
+                                      "--no-compile" "--root=/"
+                                      "--single-version-externally-managed")))
+                          (list "lib" "crit"))
+                (wrap-program (string-append #$output "/bin/crit")
+                  `("GUIX_PYTHONPATH" ":" prefix (,site ,path))))))
+          (add-after 'install 'delete-static-libraries
+            ;; Not building/installing these at all doesn't seem to be supported.
+            (lambda* (#:key outputs #:allow-other-keys)
+              (for-each delete-file (find-files #$output "\\.a$")))))))
     (inputs
      (list bash-minimal
            protobuf
@@ -2195,8 +2191,8 @@ client desktops.
            xmlto
            docbook-xml
            docbook-xsl
-           python-setuptools
-           python-toolchain))
+           python-wrapper
+           python-setuptools))
     (propagated-inputs
      ;; included by 'rpc.pb-c.h'
      (list protobuf-c))
