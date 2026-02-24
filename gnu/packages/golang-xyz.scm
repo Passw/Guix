@@ -4427,6 +4427,26 @@ code is based on the Go-based PHaul implementation from the CRIU repository.")
                              "TestGetRestoreStats")
                        "|"))))))
 
+(define-public go-github-com-checkpoint-restore-go-criu-v8
+  (package
+    (inherit go-github-com-checkpoint-restore-go-criu-v7)
+    (name "go-github-com-checkpoint-restore-go-criu-v8")
+    (version "8.2.0")
+    (source
+     (origin
+       (inherit (package-source go-github-com-checkpoint-restore-go-criu-v7))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/checkpoint-restore/go-criu")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0kdm5rg87vd893g7l8w8xg3pp29f7dwsrmyyjjyzl9496kp08imn"))))
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments go-github-com-checkpoint-restore-go-criu-v7)
+       ((#:import-path _) "github.com/checkpoint-restore/go-criu/v8")))))
+
 (define-public go-github-com-cheggaaa-pb
   (package
     (name "go-github-com-cheggaaa-pb")
