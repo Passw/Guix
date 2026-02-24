@@ -34,7 +34,7 @@
 ;;; Copyright © 2022 Aleksandr Vityazev <avityazev@posteo.org>
 ;;; Copyright © 2022 Jai Vetrivelan <jaivetrivelan@gmail.com>
 ;;; Copyright © 2022 Jack Hill <jackhill@jackhill.us>
-;;; Copyright © 2022, 2023, 2025 Maxim Cournoyer <maxim@guixotic.coop>
+;;; Copyright © 2022, 2023, 2025-2026 Maxim Cournoyer <maxim@guixotic.coop>
 ;;; Copyright © 2022 Giovanni Biscuolo <g@xelera.eu>
 ;;; Copyright © 2023 Giacomo Leidi <therewasa@fishinthecalculator.me>
 ;;; Copyright © 2023 Yovan Naumovski <yovan@gorski.stream>
@@ -2149,6 +2149,29 @@ using ncurses and libmesode, inspired by Irssi.")
     (home-page "https://profanity-im.github.io")
     (properties `((release-monitoring-url . ,home-page)))
     (license license:gpl3+)))
+
+(define-public libcmatrix
+  (package
+    (name "libcmatrix")
+    (version "0.0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://source.puri.sm/Librem5/libcmatrix.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0g4r0hkrgk72civpzm0dcn3mzrs79zb1100d7jjkqs36wb2f0a1k"))))
+    (build-system meson-build-system)
+    (native-inputs (list `(,glib "bin") pkg-config))
+    (inputs (list glib json-glib libgcrypt libsecret libsoup olm))
+    (home-page "https://source.puri.sm/Librem5/libcmatrix/")
+    (synopsis "Matrix protocol library written in C using GObject")
+    (description "libcmatrix is a library for writing Matrix clients in C.  It
+handles transparently end-to-end encryption (E2EE), and stores messages/events
+in a local database.")
+    (license license:lgpl2.1+)))
 
 (define-public libircclient
   (package
