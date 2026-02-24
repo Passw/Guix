@@ -1885,6 +1885,15 @@ and more.")
               (("#define CONFIG_PATH .*")
                (string-append "#define CONFIG_PATH \"" (assoc-ref inputs "config")
                               "/ebusd-2.1.x/\"\n")))))
+         ;; If we don't set GIT_REVISION, then the build system will include the
+         ;; current date in the version string, making the build unreproducible.
+         ;;
+         ;; See:
+         ;;   * https://codeberg.org/guix/guix/issues/6638
+         ;;   * https://github.com/john30/ebusd/blob/v22.4/configure.ac#L159-L163
+         (add-after 'unpack 'set-version-info
+           (lambda _
+             (setenv "GIT_REVISION" ,version)))
          (add-after 'install 'install-config
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((config-destination
