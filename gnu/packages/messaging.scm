@@ -2704,31 +2704,35 @@ validating international phone numbers.")
 (define-public chatty
   (package
     (name "chatty")
-    (version "0.7.3")
+    (version "0.8.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://source.puri.sm/Librem5/chatty.git")
-                    (commit (string-append "v" version))
-                    ;; Fetch the required subprojects, notably libcmatrix
-                    ;; which has no releases and is developed in tandem.
-                    ;; Note: this also pulls in libgd, and embeds functionality
-                    ;; from it that is not part of the public API, making
-                    ;; unbundling difficult.
-                    (recursive? #true)))
+                    (url "https://gitlab.gnome.org/World/Chatty.git")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d6z0mgl1xx384ph5lw3p5rpg3w1ninzyxjjjas3z8i7fyk47inf"))))
+                "19x0wyp5285ysxka3hkmzsjx219a3abz8gdfxz3m4i6bi7inbdx4"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-updating-desktop-database
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
            (lambda _
              (substitute* "meson.build"
-               (("meson.add_install_script.*") ""))))
+               (("glib_compile_schemas: true")
+                "glib_compile_schemas: false")
+               (("gtk_update_icon_cache: true")
+                "gtk_update_icon_cache: false"))))
+         (add-after 'unpack 'disable-problematic-tests
+           (lambda _
+             (substitute* "tests/meson.build"
+               ;; This test fails with "libEGL warning: DRI3 error: Could not
+               ;; get DRI3 device".
+               ((".*'message-row',.*") ""))))
          (add-before 'check 'pre-check
            (lambda* (#:key tests? #:allow-other-keys)
              (when tests?
@@ -2736,10 +2740,12 @@ validating international phone numbers.")
                (system "Xvfb :1 &")
                (setenv "DISPLAY" ":1")
                ;; HOME must be writable for writing configuration files.
-               (setenv "HOME" "/tmp")))))))
+               (setenv "HOME" "/tmp")
+               (setenv "XDG_RUNTIME_DIR" "/tmp")))))))
     (native-inputs
      (list gettext-minimal
            `(,glib "bin")
+           gnupg
            itstool
            pkg-config
            protobuf
@@ -2750,12 +2756,16 @@ validating international phone numbers.")
            gnome-desktop
            gsettings-desktop-schemas
            gspell
+           gstreamer
+           gtksourceview
            json-glib
+           libadwaita
+           libcmatrix
            libgcrypt
            libgee
            libhandy
-           olm
            libphonenumber
+           olm
            modem-manager
            pidgin
            purple-mm-sms
@@ -2765,7 +2775,7 @@ validating international phone numbers.")
     (synopsis "Mobile client for XMPP and SMS messaging")
     (description "Chatty is a chat program for XMPP and SMS.  It works on mobile
 as well as on desktop platforms.  It's based on libpurple and ModemManager.")
-    (home-page "https://source.puri.sm/Librem5/chatty")
+    (home-page "https://gitlab.gnome.org/World/Chatty")
     (license license:gpl3+)))
 
 (define-public mosquitto
