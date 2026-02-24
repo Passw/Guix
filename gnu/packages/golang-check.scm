@@ -3738,20 +3738,26 @@ thoroughly
 tool."))))
 
 (define-public go-pgmockproxy
-  (package
-    (inherit go-github-com-jackc-pgmock)
+  (package/inherit go-github-com-jackc-pgmock
     (name "go-pgmockproxy")
     (arguments
-     (list
-      #:install-source? #f
-      #:import-path "github.com/jackc/pgmock/pgmockproxy"
-      #:unpack-path "github.com/jackc/pgmock"))
+     (substitute-keyword-arguments
+         (package-arguments go-github-com-jackc-pgmock)
+       ((#:tests? _ #t) #f)
+       ((#:install-source? _ #t) #f)
+       ((#:import-path _) "github.com/jackc/pgmock/pgmockproxy")
+       ((#:unpack-path _ "") "github.com/jackc/pgmock")))
+    (native-inputs
+     (append (package-native-inputs go-github-com-jackc-pgmock)
+             (package-propagated-inputs go-github-com-jackc-pgmock)))
+    (propagated-inputs '())
+    (inputs '())
     (description
-     "pgmockproxy is a PostgreSQL proxy that logs the messages back and forth
-between the PostgreSQL client and server.  This can aid in building a mocking
-script by running commands against a real server to observe the results.  It
-can also be used to debug applications that speak the PostgreSQL wire protocol
-without needing to use a tool like Wireshark.")))
+     "@code{pgmockproxy} is a PostgreSQL proxy that logs the messages back and
+forth between the PostgreSQL client and server.  This can aid in building a
+mocking script by running commands against a real server to observe the
+results.  It can also be used to debug applications that speak the PostgreSQL
+wire protocol without needing to use a tool like Wireshark.")))
 
 (define-public go-pprof
   (package
