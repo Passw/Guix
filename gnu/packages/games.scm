@@ -11988,11 +11988,11 @@ etc.  You can also play games on FICS or against an engine.")
     (license license:gpl2+)))
 
 (define-public stockfish
-  (let ((big-network-revision "1c0000000000")
+  (let ((big-network-revision "c288c895ea92")
         (small-network-revision "37f18f62d772")) ; also update hashes below
     (package
       (name "stockfish")
-      (version "17.1")
+      (version "18")
       (source
        (origin
          (method git-fetch)
@@ -12001,7 +12001,7 @@ etc.  You can also play games on FICS or against an engine.")
                (commit (string-append "sf_" version))))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0f03iki7xmpfr8qd5nmddapi1rk2ng2grk4f29vp2gpjpxvkbjkk"))))
+          (base32 "0smqw4xpyv3ffhvlgm0wl1g2cyb7wf9jf3v0sshn4ylljxy39l97"))))
       (build-system gnu-build-system)
       (inputs
        `(("neural-network-big"
@@ -12011,7 +12011,7 @@ etc.  You can also play games on FICS or against an engine.")
                                  big-network-revision ".nnue"))
              (sha256
               (base32
-               "1bg2kaplx3w6c82jvl9wwh64bxvkqg835ncrk5i7v9h00000000w"))))
+               "19z48cxrxrspgvzmkix4lgr007rw5dmz7qwjj3m2ji4jxaawi262"))))
          ("neural-network-small"
           ,(origin
              (method url-fetch)
