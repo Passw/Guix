@@ -29155,9 +29155,12 @@ Program Argument Syntax Conventions}.")
       ;; bits/math-vector.h since glibc 2.38.
       ;; See <https://gitlab.com/cznic/cc/-/issues/155>.
       #:test-flags
-      (if (target-aarch64?)
-          #~(list "-skip" "TestParse|TestTranslate|TestMake")
-          #~'())
+      #~(list
+         #$@(if (target-aarch64?)
+                #~("-skip" "TestParse|TestTranslate|TestMake")
+                #~())
+         ;; There are too many tests, so it may take more than 10 minutes.
+         "-short")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'copy-source-assets
