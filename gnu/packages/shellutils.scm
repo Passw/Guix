@@ -523,42 +523,30 @@ POSIX Shell}, @url{https://www.gnu.org/software/bash/, Bash}, and
     (arguments
      (list
       #:install-source? #f
+      #:modules
+      '((guix build cargo-build-system)
+        (guix build utils)
+        (ice-9 match))
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'install 'install-completions
-            (lambda* (#:key native-inputs outputs #:allow-other-keys)
-              (let* ((out (assoc-ref outputs "out"))
-                     (starship-bin
-                       (if #$(%current-target-system)
-                           (search-input-file native-inputs "/bin/starship")
-                           (string-append out "/bin/starship")))
-                     (share (string-append out "/share"))
-                     (bash-completion-dir
-                       (string-append out "/share/bash-completion/completions"))
-                     (zsh-completion-dir
-                       (string-append share "/zsh/site-functions/"))
-                     (fish-completion-dir
-                       (string-append share "/fish/vendor_completions.d/"))
-                     (elvish-completion-dir
-                       (string-append share "/elvish/lib")))
-                    ;; Make the directories
-                  (mkdir-p bash-completion-dir)
-                  (mkdir-p zsh-completion-dir)
-                  (mkdir-p fish-completion-dir)
-                  (mkdir-p elvish-completion-dir)
-                  ;; Use the built starship to generate the completions.
-                  (with-output-to-file
-                    (string-append bash-completion-dir "/starship")
-                    (lambda _ (invoke starship-bin "completions" "bash")))
-                  (with-output-to-file
-                    (string-append zsh-completion-dir "/_starship")
-                    (lambda _(invoke starship-bin "completions" "zsh")))
-                  (with-output-to-file
-                    (string-append fish-completion-dir "/starship.fish")
-                    (lambda _ (invoke starship-bin "completions" "fish")))
-                  (with-output-to-file
-                    (string-append elvish-completion-dir "/starship")
-                    (lambda _ (invoke starship-bin "completions" "elvish"))))))
+            (lambda* (#:key native-inputs #:allow-other-keys)
+              (for-each
+               (match-lambda
+                 ((shell . path)
+                  (mkdir-p (in-vicinity #$output (dirname path)))
+                  (let ((binary
+                         (if #$(%current-target-system)
+                             (search-input-file native-inputs "bin/starship")
+                             (in-vicinity #$output "bin/starship"))))
+                    (with-output-to-file (in-vicinity #$output path)
+                      (lambda _
+                        (invoke binary "completions" shell))))))
+               '(("bash"    . "share/bash-completion/completions/starship")
+                 ("elvish"  . "share/elvish/lib/starship")
+                 ("fish"    . "share/fish/vendor_completions.d/starship.fish")
+                 ("nushell" . "share/nushell/vendor/autoload/starship")
+                 ("zsh"     . "share/zsh/site-functions/_starship")))))
           ;; Some tests require a writable home directory
           (add-after 'unpack 'patch-test-shell
             (lambda* (#:key inputs #:allow-other-keys)
