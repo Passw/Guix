@@ -5789,7 +5789,7 @@ Transport Tycoon Deluxe.")
   (package
     (inherit openttd)
     (name "openttd-jgrpp")
-    (version "0.70.0")
+    (version "0.70.2")
     (source
      (origin
        (method git-fetch)
@@ -5798,7 +5798,7 @@ Transport Tycoon Deluxe.")
              (commit (string-append "jgrpp-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1akw41078mins4rmc993kali6njxqhlz1rzbq9mds5rbfa9qpy51"))))
+        (base32 "1jzzvribf2cqvjl9cympyx9qpplljvmhqrrlw7aq4ckzl92d87z3"))))
     (inputs (modify-inputs (package-inputs openttd)
               (append zstd harfbuzz)))
     (arguments
