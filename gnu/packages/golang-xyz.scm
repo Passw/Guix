@@ -23240,7 +23240,7 @@ a few advantages over using the standard log library alone.
 (define-public go-github-com-spf13-pflag
   (package
     (name "go-github-com-spf13-pflag")
-    (version "1.0.6")
+    (version "1.0.10")
     (source
      (origin
        (method git-fetch)
@@ -23249,7 +23249,7 @@ a few advantages over using the standard log library alone.
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ckdaa5q3afhgx5hi45czxn2pcc5fd0sz4axh4hqxyvgsjfjvmg0"))))
+        (base32 "1sjj0a8x1hshiix12y44kbz5lr1ifdcglvb5d5qyli68q46l3gx6"))))
     (build-system go-build-system)
     (arguments
      (list
