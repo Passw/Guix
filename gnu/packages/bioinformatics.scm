@@ -24922,11 +24922,17 @@ based on the pairwise alignment of hidden Markov models (HMMs).")
                   (("\\\\time -v") "time"))
                 ;; Build wfa2-lib.
                 (invoke "make" "-C" wfa2-lib
-                        #$(string-append "CC=" (cc-for-target)))))))))
+                        #$(string-append "CC=" (cc-for-target))))))
+          (add-after 'install 'install-scripts
+            (lambda _
+              (copy-file (string-append "../wfmash-v" #$version
+                                        "/scripts/split_approx_mappings_in_chunks.py")
+                         (string-append #$output "/bin/split_approx_mappings_in_chunks")))))))
     (inputs
      (list atomic-queue
            gsl
            htslib
+           python-wrapper
            libdeflate
            zlib))
     (native-inputs
