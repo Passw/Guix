@@ -101,7 +101,7 @@ the file and search through it.")
 (define-public fq
   (package
     (name "fq")
-    (version "0.15.1")
+    (version "0.16.0")
     (source
      (origin
        (method git-fetch)
@@ -110,7 +110,7 @@ the file and search through it.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0adi7d028f3nblvclq8qfnnzp7b52gc8x8zjb1j93x4alj0sw1gc"))))
+        (base32 "0pvvqax5cy024gmadps2giswhmli814qxhki45c1vl5krafk6vvg"))))
     (build-system go-build-system)
     (arguments
      (list
