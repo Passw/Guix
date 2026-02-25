@@ -3937,7 +3937,7 @@ matching.")
 (define-public git-lfs
   (package
     (name "git-lfs")
-    (version "3.7.0")
+    (version "3.7.1")
     (source
      (origin
        (method git-fetch)
@@ -3946,7 +3946,7 @@ matching.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1wxx7i29n4gk8s78xq4hacc1ylwi6bq4b6y2bjx8fs9p7z4awnqh"))))
+        (base32 "0zvawzaqk528rsnrkqif04b806348p4argmpcsg6ppl0gi7295rp"))))
     (build-system go-build-system)
     (arguments
      (list
