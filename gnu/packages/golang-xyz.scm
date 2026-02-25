@@ -16324,26 +16324,26 @@ and confirmation dialogs with customizable templates.")
     (license license:bsd-3)))
 
 (define-public go-github-com-marcinbor85-gohex
-    (package
-      (name "go-github-com-marcinbor85-gohex")
-      (version "0.1.0")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/marcinbor85/gohex")
-               (commit (string-append "v" version))))
-         (sha256
-          (base32 "13nxh0a9393w4xpm5fapsjw9hs8nr01s3rlg9h8midfg6zav21gm"))
-         (file-name (git-file-name name version))))
-      (build-system go-build-system)
-      (arguments
-       (list
-        #:import-path "github.com/marcinbor85/gohex"))
-      (home-page "https://pkg.go.dev/github.com/marcinbor85/gohex")
-      (synopsis "Parse Intel HEX files")
-      (description
-       "This package provides a Golang library for parsing Intel HEX files,
+  (package
+    (name "go-github-com-marcinbor85-gohex")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/marcinbor85/gohex")
+              (commit (string-append "v" version))))
+       (sha256
+        (base32 "13nxh0a9393w4xpm5fapsjw9hs8nr01s3rlg9h8midfg6zav21gm"))
+       (file-name (git-file-name name version))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/marcinbor85/gohex"))
+    (home-page "https://pkg.go.dev/github.com/marcinbor85/gohex")
+    (synopsis "Parse Intel HEX files")
+    (description
+     "This package provides a Golang library for parsing Intel HEX files,
 implementing features like:
 
 @itemize
@@ -16353,7 +16353,7 @@ implementing features like:
 @item trivial but powerful api (only the most commonly used functions)
 @item interface-based IO functions
 @end itemize")
-      (license license:expat)))
+    (license license:expat)))
 
 (define-public go-github-com-maruel-natural
   (package
