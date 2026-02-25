@@ -36,7 +36,7 @@
 ;;; Copyright © 2023, 2024 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2024 John Kehayias <john.kehayias@protonmail.com>
 ;;; Copyright © 2024 Timotej Lazar <timotej.lazar@araneo.si>
-;;; Copyright © 2024-2025 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2024-2026 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2024, 2025 Ashish SHUKLA <ashish.is@lostca.se>
 ;;; Copyright © 2024 Artyom V. Poptsov <poptsov.artyom@gmail.com>
 ;;; Copyright © 2025 John Khoo <johnkhootf@gmail.com>
@@ -1869,7 +1869,7 @@ JSON for post-processing
 (define-public miller
   (package
     (name "miller")
-    (version "6.15.0")
+    (version "6.17.0")
     (source
      (origin
        (method git-fetch)
@@ -1878,7 +1878,7 @@ JSON for post-processing
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00k4gxlbdpnmy9r0qyfa72p7f29qbzzvxniilira3yj85k5rmrxg"))))
+        (base32 "065izww0f0qb80z95zvzpbr4mmcs8vrzgv10rjwfqyry9kzknpkb"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -1906,6 +1906,8 @@ JSON for post-processing
            go-golang-org-x-sys
            go-golang-org-x-term
            go-golang-org-x-text
+           go-gopkg-in-yaml-v3
+           go-pault-ag-go-debian
            python-wrapper
            ruby))
     (home-page "https://miller.readthedocs.io/")
