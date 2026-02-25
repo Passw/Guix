@@ -7519,16 +7519,16 @@ projects like rclone.")
 (define-public go-github-com-hetznercloud-hcloud-go-v2
   (package
     (name "go-github-com-hetznercloud-hcloud-go-v2")
-    (version "2.17.1")
+    (version "2.36.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/hetznercloud/hcloud-go")
-             (commit (string-append "v" version))))
+              (url "https://github.com/hetznercloud/hcloud-go")
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rmrp100clcymz6j741dpvx217d6ljnfqn9qfndlmy9rwi64ih8h"))))
+        (base32 "1d9ihn1aqjqhmrbdr236z5ia1rq5bkza582cmfy7y6l1046mgsyr"))))
     (build-system go-build-system)
     (arguments
      (list
