@@ -955,7 +955,7 @@ written in Go with pluggable metric collectors.")
 (define-public prometheus-postgres-exporter
   (package
     (name "prometheus-postgres-exporter")
-    (version "0.17.1")
+    (version "0.19.1")
     (source
      (origin
        (method git-fetch)
@@ -964,7 +964,7 @@ written in Go with pluggable metric collectors.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "13ln3lf1arcpj39dz8syfngqyq1my1gs7qrwcng69gb4lg7wpf8p"))))
+        (base32 "10vjg5y5ycf921hn4sb8a0a5aibk09rwsp51ksix0cglhqnia5b7"))))
     (build-system go-build-system)
     (arguments
      (list
