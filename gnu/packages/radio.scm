@@ -3002,46 +3002,50 @@ voice formats.")
            sgp4
            zlib))
     (arguments
-     `(#:tests? #f  ; No test suite.
-       #:configure-flags
-       ,#~(list (string-append "-DAPT_DIR="
-                               #$(this-package-input "aptdec"))
-                (string-append "-DDAB_DIR="
-                               #$(this-package-input "libdab"))
-                (string-append "-DDSDCC_DIR="
-                               #$(this-package-input "dsdcc"))
-                (string-append "-DMBE_DIR="
-                               #$(this-package-input "mbelib"))
-                (string-append "-DSERIALDV_DIR="
-                               #$(this-package-input "serialdv"))
-                (string-append "-DSGP4_DIR="
-                               #$(this-package-input "sgp4"))
-                (string-append "-DSOAPYSDR_DIR="
-                               #$(this-package-input "soapysdr"))
-                (string-append "-DIIO_DIR="
-                               #$(this-package-input "libiio")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-unrecognized-compiler-option
-           (lambda _
-             (substitute* "cmake/Modules/CompilerOptions.cmake"
-               (("-Wno-inconsistent-missing-override")
-                "-fpermissive"))))
-         (add-after 'unpack 'fix-CPU-extension-detection
-           ;; ‘Fix’ in the static sense.  TODO: Make this -tune'able.
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("set\\(ARCH_OPT \"native\"")
-                "set(ARCH_OPT \"\""))
-             (let ((file "cmake/Modules/DetectArchitecture.cmake"))
-               ;; Disable all build-time CPU extension detection…
-               (substitute* file
-                 (("detect_extensions\\(.*") ""))
-               (when ,(target-x86-64?)
-                 ;; …but force extensions that are guaranteed to be available.
-                 (substitute* file
-                   ((".*cmake_pop_check_state" eof)
-                    (string-append "force_ext_available(SSE2)\n" eof))))))))))
+     (list
+      #:tests? #f ;No test suite.
+      #:configure-flags
+      #~(list (string-append "-DAPT_DIR="
+                             #$(this-package-input "aptdec"))
+              (string-append "-DDAB_DIR="
+                             #$(this-package-input "libdab"))
+              (string-append "-DDSDCC_DIR="
+                             #$(this-package-input "dsdcc"))
+              (string-append "-DMBE_DIR="
+                             #$(this-package-input "mbelib"))
+              (string-append "-DSERIALDV_DIR="
+                             #$(this-package-input "serialdv"))
+              (string-append "-DSGP4_DIR="
+                             #$(this-package-input "sgp4"))
+              (string-append "-DSOAPYSDR_DIR="
+                             #$(this-package-input "soapysdr"))
+              (string-append "-DIIO_DIR="
+                             #$(this-package-input "libiio")))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'fix-unrecognized-compiler-option
+            (lambda _
+              (substitute* "cmake/Modules/CompilerOptions.cmake"
+                (("-Wno-inconsistent-missing-override")
+                 "-fpermissive"))))
+          (add-after 'unpack 'fix-CPU-extension-detection
+            ;; ‘Fix’ in the static sense.  TODO: Make this -tune'able.
+            (lambda _
+              (substitute* "CMakeLists.txt"
+                (("set\\(ARCH_OPT \"native\"")
+                 "set(ARCH_OPT \"\""))
+              (let ((file "cmake/Modules/DetectArchitecture.cmake"))
+                ;; Disable all build-time CPU extension detection…
+                (substitute* file
+                  (("detect_extensions\\(.*") ""))
+                #$@(if (target-x86-64?)
+                       ;; …but force extensions that are guaranteed to be
+                       ;; available.
+                       #~((substitute* file
+                            ((".*cmake_pop_check_state" eof)
+                             (string-append "force_ext_available(SSE2)\n"
+                                            eof))))
+                       #~())))))))
     (home-page "https://github.com/f4exb/sdrangel/wiki")
     (synopsis "Software defined radio")
     (description
