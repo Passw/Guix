@@ -72,6 +72,7 @@
 ;;; Copyright © 2025 Alexandre Hannud Abdo <abdo@member.fsf.org>
 ;;; Copyright © 2026 Luis Guilherme Coelho <lgcoelho@disroot.org>
 ;;; Copyright © 2026 Carlos Durán Domínguez <wurt@wurt.eu>
+;;; Copyright © 2026 Joan Vilardaga Castro <codeberg-hn80@joanvc.cat>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1485,6 +1486,133 @@ for terminal emulators that require consistent character spacing.")
            license:unlicense
            license:asl2.0
            license:silofl1.1))))
+
+(define-public font-nerd-fantasque-sans
+  (package
+    (name "font-nerd-fantasque-sans")
+    (version "3.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ryanoasis/nerd-fonts")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0adash47a0pmvhhbqr9wzp3r287hzj50f28pswdxm30l0br6zgfa"))
+       (modules '((srfi srfi-26)
+                  (ice-9 ftw)
+                  (guix build utils)))
+       (snippet
+        ;; Remove fonts we don't use to save space and build time.
+        #~(begin
+            (delete-file-recursively "patched-fonts")
+            (with-directory-excursion "src/unpatched-fonts"
+              (let ((keep? (cut member <>
+                                '("." ".." "FantasqueSansMono"))))
+                (for-each delete-file-recursively
+                          (scandir "."
+                                   (negate keep?)))))))))
+    (build-system font-build-system)
+    (arguments
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'change-directory
+            (lambda _
+              (chdir "src/unpatched-fonts/FantasqueSansMono")))
+          (add-before 'install 'build
+            (lambda _
+              (for-each (lambda (font)
+                          ;; Patch every font variant with normal, mono and
+                          ;; proportional modes.
+                          ;; --complete: Include all icon sets.
+                          ;; --mono will generate the Mono variants.
+                          ;; --variable-width-glyphs will generate the
+                          ;; Proportional variants (used for graphical
+                          ;; environments).
+                          ;; If no flag is specified, the no-mono no-proportional
+                          ;; font will be built.
+                          ;; --ext ttf: Generate TrueType font.
+                          ;; --no-progressbars: Disable progress bars for clean build
+                          ;; output.
+                          (for-each (lambda (mode)
+                                      (apply invoke "fontforge" "-script"
+                                             "../../../font-patcher"
+                                             `("--complete" ,@(if mode
+                                                                  (list mode)
+                                                                  '())
+                                               "--ext"
+                                               "ttf"
+                                               "--no-progressbars"
+                                               "--outputdir"
+                                               "."
+                                               ,font)))
+                                    '(#nil "--mono" "--variable-width-glyphs")))
+                        '("Bold/FantasqueSansMono-Bold.ttf"
+                          "Regular/FantasqueSansMono-Regular.ttf"
+                          "Italic/FantasqueSansMono-Italic.ttf"
+                          "Bold-Italic/FantasqueSansMono-BoldItalic.ttf"))))
+          (add-after 'build 'check
+            (lambda* (#:key tests? #:allow-other-keys)
+              (when tests?
+                (for-each (lambda (font)
+                            ;; Use Python script with fontforge to validate the font.
+                            (invoke "python3" "-c"
+                                    (format #f
+                                     "import fontforge
+name = ~s
+font = fontforge.open(name)
+glyph_count = len([g for g in font.glyphs() if g.unicode > 0])
+print(f'Font has {glyph_count} glyphs with Unicode mapping')
+if glyph_count < 8000:
+    raise ValueError(f'Font has too few glyphs: {glyph_count}')
+print(f'✓ Font validation passed for {name}')
+font.close()~%"
+                                     font)))
+                          '("FantasqueSansMNerdFont-Bold.ttf"
+                            "FantasqueSansMNerdFont-Regular.ttf"
+                            "FantasqueSansMNerdFont-Italic.ttf"
+                            "FantasqueSansMNerdFont-BoldItalic.ttf"
+                            "FantasqueSansMNerdFontMono-Bold.ttf"
+                            "FantasqueSansMNerdFontMono-Regular.ttf"
+                            "FantasqueSansMNerdFontMono-Italic.ttf"
+                            "FantasqueSansMNerdFontMono-BoldItalic.ttf"
+                            "FantasqueSansMNerdFontPropo-Bold.ttf"
+                            "FantasqueSansMNerdFontPropo-Regular.ttf"
+                            "FantasqueSansMNerdFontPropo-Italic.ttf"
+                            "FantasqueSansMNerdFontPropo-BoldItalic.ttf"))))))))
+    (native-inputs (list fontforge python-minimal))
+    (home-page "https://www.nerdfonts.com/")
+    (synopsis "Fantasque Sans with an iconic font collection")
+    (description
+     "This package provides the Fantasque Sans Mono font with the extra
+glyphs from Nerd Fonts.
+
+@itemize
+@item Fantasque Sans
+@item Fantasque Sans Mono
+@end itemize
+
+These fonts include glyphs from multiple icon sets:
+
+@itemize
+@item Powerline with Extra Symbols
+@item Font Awesome and Font Awesome Extension
+@item Material Design Icons
+@item Weather Icons
+@item Devicons
+@item Octicons
+@item Font Logos (formerly Font Linux)
+@item Pomicons
+@item Codeicons
+@end itemize
+
+The monospaced variant ensures all glyphs have uniform width, which is essential
+for terminal emulators that require consistent character spacing.")
+    ;; https://github.com/ryanoasis/nerd-fonts/blob/master/license-audit.md
+    (license (list license:expat license:cc-by4.0 license:unlicense
+                   license:asl2.0 license:silofl1.1))))
 
 (define-public font-new-computer-modern
   (package
