@@ -592,7 +592,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "5.4.0")
+    (version "5.4.1")
     (source
      (origin
        (method url-fetch)
@@ -600,7 +600,7 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "05ivr9ma83k6zlkyklhrxs1kmq3ry428hgf3177layfjg3mbmw1b"))))
+        (base32 "1r25z2aw3sw31hk0fhvfjlzggnvf0w6lbj1imhpwva1qlf47rp5g"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -644,12 +644,12 @@ photographic equipment.")
     (inputs
      (list bash-minimal
            cairo
-           colord-gtk                   ;optional, for color profile support
-           cups                         ;optional, for printing support
+           colord-gtk                ;optional, for color profile support
+           cups                      ;optional, for printing support
            curl
            dbus-glib
            exiv2
-           gmic                         ;optional, for HaldcLUT support
+           gmic                      ;optional, for HaldcLUT support
            graphicsmagick
            gsettings-desktop-schemas
            gtk+
@@ -658,26 +658,26 @@ photographic equipment.")
            json-glib
            lcms
            lensfun                   ;optional, for the lens distortion plugin
-           libgphoto2                ;optional, for camera tethering
            libavif                   ;optional, for AVIF support
+           libgphoto2                ;optional, for camera tethering
+           libheif
            libjpeg-turbo
            libjxl                    ;optional, for JPEG-XL support
            libomp
            libpng
            libraw
+           libsecret                 ;optional, for storing passwords
+           libsoup-minimal-2         ;optional, for osm-gps-map
            (librsvg-for-system)
-           libsecret                    ;optional, for storing passwords
-           libsoup-minimal-2            ;optional, for osm-gps-map
            libtiff
-           libwebp                      ;optional, for WebP support
+           libwebp                   ;optional, for WebP support
            libxml2
            libxslt
-           libheif
-           lua-5.4                      ;optional, for plugins
-           openexr                      ;optional, for EXR import/export
-           openjpeg                     ;optional, for JPEG2000 export
-           osm-gps-map                  ;optional, for geotagging view
-           portmidi                 ;optional, for hardware MIDI input devices
+           lua-5.4                   ;optional, for plugins
+           openexr                   ;optional, for EXR import/export
+           openjpeg                  ;optional, for JPEG2000 export
+           osm-gps-map               ;optional, for geotagging view
+           portmidi                  ;optional, for hardware MIDI input devices
            pugixml
            python-jsonschema
            sdl2
