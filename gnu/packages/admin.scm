@@ -333,23 +333,24 @@ characters can be replaced as well, as can UTF-8 characters.")
 (define-public hetznercloud-cli
   (package
     (name "hetznercloud-cli")
-    (version "1.50.0")
+    (version "1.61.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/hetznercloud/cli")
-             (commit (string-append "v" version))))
+              (url "https://github.com/hetznercloud/cli")
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1d0k2g1s5x77kd8wrx8py2g3bqhaxqnm5kgm0dlmzypmfyavssg4"))))
+        (base32 "1mwiqy05s43faxqv1llk242nikmgb09wy5i7m1kjvkjg0zzjn20s"))))
     (build-system go-build-system)
     (arguments
      (list
-      #:tests? #f ; XXX: figure out hot to enable them
+      #:tests? #f
       #:install-source? #f
       #:import-path "github.com/hetznercloud/cli/cmd/hcloud"
-      #:unpack-path "github.com/hetznercloud/cli"))
+      #:unpack-path "github.com/hetznercloud/cli"
+      #:test-subdirs #~(list "../../...")))       ;test the whole libary
     (native-inputs
      (list go-github-com-burntsushi-toml
            go-github-com-cheggaaa-pb-v3
@@ -368,7 +369,10 @@ characters can be replaced as well, as can UTF-8 characters.")
            go-github-com-swaggest-assertjson
            go-go-uber-org-mock
            go-golang-org-x-crypto
-           go-golang-org-x-term))
+           go-golang-org-x-exp
+           go-golang-org-x-net
+           go-golang-org-x-term
+           go-golang-org-x-text))
     (home-page "https://github.com/hetznercloud/cli")
     (synopsis "Command-line interface for the Hetzner Cloud service")
     (description
