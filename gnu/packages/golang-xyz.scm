@@ -23178,26 +23178,24 @@ packages
 (define-public go-github-com-spf13-cobra
   (package
     (name "go-github-com-spf13-cobra")
-    (version "1.8.1")
+    (version "1.10.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/spf13/cobra")
-             (commit (string-append "v" version))))
+              (url "https://github.com/spf13/cobra")
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0brbyy5mc6n2j6m6q1xyswh907vxd3wdzvgaci45swgj0747lcf8"))))
+        (base32 "1scbqfd58kbbkpcj1rqg4dhapfwzzlp1xh5f52ijs243b1645d4x"))))
     (build-system go-build-system)
     (arguments
      (list
-      #:test-flags #~(list "-skip" "TestGenManSeeAlso")
       #:import-path "github.com/spf13/cobra"))
-    (native-inputs
-     (list go-gopkg-in-yaml-v3))
     (propagated-inputs
      (list go-github-com-cpuguy83-go-md2man-v2
-           go-github-com-spf13-pflag))
+           go-github-com-spf13-pflag
+           go-go-yaml-in-yaml-v3))
     (home-page "https://github.com/spf13/cobra")
     (synopsis "Go library for creating CLI applications")
     (description
