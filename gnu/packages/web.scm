@@ -1557,34 +1557,33 @@ project)
   (package
     (name "webhook")
     (version "2.8.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/adnanh/webhook")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "15cihbf49kbhgwavjsvl4qfcf3lyqa39vyqdxglmnkn603c3nk6w"))
-              (modules '((guix build utils)))
-              (snippet
-               #~(begin
-                   ;; Remove bundled dependencies.
-                   (delete-file-recursively "vendor")))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/adnanh/webhook")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15cihbf49kbhgwavjsvl4qfcf3lyqa39vyqdxglmnkn603c3nk6w"))
+       (modules '((guix build utils)))
+       (snippet
+        #~(begin
+            (delete-file-recursively "vendor")))))
     (build-system go-build-system)
     (arguments
-     (list 
-           #:import-path "github.com/adnanh/webhook"
-           #:phases
-           #~(modify-phases %standard-phases
-               (add-after 'unpack 'configure
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "src/github.com/adnanh/webhook/webhook_test.go"
-                     (("/bin/echo")
-                      (search-input-file inputs "bin/echo"))
-                     (("/bin/sh")
-                      (search-input-file inputs "bin/sh"))))))
-           #:test-flags #~(list "-vet=off")))
+     (list
+      #:import-path "github.com/adnanh/webhook"
+      #:test-flags #~(list "-vet=off")
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'configure
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "src/github.com/adnanh/webhook/webhook_test.go"
+                (("/bin/echo")
+                 (search-input-file inputs "bin/echo"))
+                (("/bin/sh")
+                 (search-input-file inputs "bin/sh"))))))))
     (native-inputs
      (list go-github-com-clbanning-mxj-v2
            go-github-com-coreos-go-systemd-v22
@@ -1597,7 +1596,8 @@ project)
            go-golang-org-x-sys))
     (home-page "https://github.com/adnanh/webhook")
     (synopsis "Lightweight incoming webhook server")
-    (description "webhook is a lightweight configurable tool to create HTTP
+    (description
+     "webhook is a lightweight configurable tool to create HTTP
 endpoints (hooks) which can execute configured commands.  Data from the HTTP
 request (such as headers, payload or query variables) can be passed on to the
 configured commands.  Hooks may also be configured to trigger only when
