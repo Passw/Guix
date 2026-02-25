@@ -4630,30 +4630,51 @@ serializing continuations or delimited continuations.")
 (define-public guile-hoot
   (package
     (name "guile-hoot")
-    (version "0.7.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://spritely.institute/files/releases"
-                                  "/guile-hoot/guile-hoot-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0f762mwz6lk5vwl1srjq9frqm3s2baa17gbn5pl70ri5x0iywyxi"))))
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://files.spritely.institute/releases"
+                           "/guile-hoot/guile-hoot-" version ".tar.gz"))
+       (sha256
+        (base32 "0swlwq2h6bibaqa28gqwi318izqagzaiw2jbb1afr4sb4chjb0p9"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
-    (native-inputs
-     (list autoconf automake node pkg-config texinfo))
-    (inputs
-     (list guile-next))
+     (list
+      #:make-flags
+      #~(list "GUILE_AUTO_COMPILE=0")
+      #:modules `(((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%default-gnu-modules)
+      #:imported-modules `((guix build guile-build-system)
+                           ,@%default-gnu-imported-modules)
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'wrap-program
+            (lambda _
+              (let* ((version (target-guile-effective-version))
+                     (scm (string-append "/share/guile/site/" version))
+                     (go (string-append "/lib/guile/" version "/site-ccache"))
+                     (deps (list #$output
+                                 #$guile-fibers
+                                 #$guile-gnutls
+                                 #$guile-websocket)))
+                (wrap-program (string-append #$output "/bin/hoot")
+                  `("GUILE_LOAD_PATH" prefix
+                    ,(map (lambda (dep) (string-append dep scm)) deps))
+                  `("GUILE_LOAD_COMPILED_PATH" prefix
+                    ,(map (lambda (dep) (string-append dep go)) deps)))))))))
+    (native-inputs (list autoconf automake pkg-config texinfo))
+    (inputs (list bash-minimal guile-next guile-fibers guile-gnutls
+                  guile-websocket node))
     (native-search-paths
      (list (search-path-specification
             (variable "HOOT_LOAD_PATH")
             (files (list "share/guile-hoot/site")))))
     (synopsis "WebAssembly compiler backend for Guile")
-    (description "Guile Hoot is a WebAssembly compiler backend for GNU Guile
-and standalone WASM toolchain.")
-    (home-page "https://spritely.institute/hoot")
+    (description "Hoot is a WebAssembly compiler backend for Guile Scheme and
+a standalone WebAssembly toolchain.")
+    (home-page "https://spritely.institute/hoot/")
     (license (list license:asl2.0 license:lgpl3+))))
 
 (define-public guile-file-names
