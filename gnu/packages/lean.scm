@@ -193,16 +193,16 @@ interactive and automated theorem proving.")
 (define-public python-mathlibtools
   (package
     (name "python-mathlibtools")
-    (version "1.1.1")
+    (version "1.3.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/leanprover-community/mathlib-tools")
-             (commit (string-append "v" version))))
+              (url "https://github.com/leanprover-community/mathlib-tools")
+              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1kllk99cd9vsbmb0ifi21gkhrg2w803z4y5xhx0a7hx3viyjb3cv"))))
+        (base32 "0vjz3f2lvkql9dz9x1d9mq8vczqs70v2ar88g7p4wm6qq7pgx7l3"))))
     (build-system pyproject-build-system)
     (arguments
      (list
