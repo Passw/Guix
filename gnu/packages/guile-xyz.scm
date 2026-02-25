@@ -6931,7 +6931,7 @@ JWT.  Supported algorithms: HS256, HS384, HS512.")
 (define-public guile-sodium
   (package
     (name "guile-sodium")
-    (version "0.1.0")
+    (version "0.3.0")
     (source
       (origin
         (method git-fetch)
@@ -6939,13 +6939,12 @@ JWT.  Supported algorithms: HS256, HS384, HS512.")
                (url "https://codeberg.org/eris/guile-sodium.git")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
-        (sha256 (base32 "189jsj87hycs57a54x0b9lifwvhr63nypb9vfxdrq7rwrpcvi5f8"))))
+        (sha256 (base32 "00bvxnvpv1kggvg4riri1w86gxkkfyp47xvjn6hdrvpdbzr1rqg5"))))
     (build-system gnu-build-system)
     (arguments `())
     (native-inputs
       (list autoconf automake pkg-config texinfo))
-    (inputs (list guile-3.0))
-    (propagated-inputs (list libsodium))
+    (inputs (list guile-3.0 libsodium))
     (synopsis "Guile bindings to the libsodium cryptographic library")
     (description
      "This package provides Guile bindings to the libsodium cryptographic library
