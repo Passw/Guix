@@ -101,7 +101,7 @@ value and call @code{t.Fatal()} if the assertion fails.")
 (define-public go-git-sr-ht-nelsam-correct
   (package
     (name "go-git-sr-ht-nelsam-correct")
-    (version "0.0.11")
+    (version "0.1.2")
     (source
      (origin
        (method git-fetch)
@@ -110,7 +110,7 @@ value and call @code{t.Fatal()} if the assertion fails.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vzbcc7df22sagq229bvqjw1v1glh9kxfz77jjyxxnjpwik2y5rj"))))
+        (base32 "0y8qzw99y8fq0l5dm7k8w2m1mrywybviyrc48b92jjq0w6ls57kf"))))
     (build-system go-build-system)
     (arguments
      (list
