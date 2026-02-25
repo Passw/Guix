@@ -12436,6 +12436,33 @@ way of specifying command line options.  It's an alternative fork of
 https://github.com/jessevdk/go-flags.")
     (license license:bsd-3)))
 
+(define-public go-github-com-itchyny-go-yaml
+  (package
+    (name "go-github-com-itchyny-go-yaml")
+    (version "0.0.0-20251001235044-fca9a0999f15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/itchyny/go-yaml")
+              (commit (go-version->git-ref version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1w7818f3p87lfv31igf8csmgxrirndd3wbid0sgxdz69hycbs4db"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/itchyny/go-yaml"
+      #:test-flags
+      ;; Test requires remote tests data.
+      #~(list "-skip" "TestYAMLSuite")))
+    (home-page "https://github.com/itchyny/go-yaml")
+    (synopsis "YAML Support for the Go Language")
+    (description
+     "This packages is an alternative fork of
+@url{https://github.com/yaml/go-yaml}.")
+    (license license:asl2.0)))
+
 (define-public go-github-com-itchyny-timefmt-go
   (package
     (name "go-github-com-itchyny-timefmt-go")
