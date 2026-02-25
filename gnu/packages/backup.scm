@@ -1202,15 +1202,15 @@ additional snapshots).")
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'extend-test-time-outs
-           ;; The defaults are far too low for busy boxes & spinning storage.
-           (lambda _
-             (substitute* (find-files "utest" "\\.c$")
-               (("(tcase_set_timeout\\(tc_core,)[ 0-9]*(\\);.*)$" _ prefix suffix)
-                (string-append prefix " 3600" suffix "\n")))
-             #t)))))
+     (list
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'check 'extend-test-time-outs
+            ;; The defaults are far too low for busy boxes & spinning storage.
+            (lambda _
+              (substitute* (find-files "utest" "\\.c$")
+                (("(tcase_set_timeout\\(tc_core,)[ 0-9]*(\\);.*)$" _ prefix suffix)
+                 (string-append prefix " 3600" suffix "\n"))))))))
     (inputs
      (list acl
            librsync
