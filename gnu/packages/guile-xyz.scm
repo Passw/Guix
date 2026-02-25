@@ -6555,7 +6555,7 @@ Relay Chat} (IRC).")
 (define-public guile-websocket
   (package
     (name "guile-websocket")
-    (version "0.2.1")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
@@ -6563,7 +6563,7 @@ Relay Chat} (IRC).")
                            "guile-websocket/guile-websocket-" version
                            ".tar.gz"))
        (sha256
-        (base32 "0mbxbwc5flrafh77sl0cbfclpk3vys0hh3fqmdl9v3nqyl0cbsij"))))
+        (base32 "1z43jjwpq5x73a4961fpl3z32fby8xbk406fb25sdx3ms78w19hv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
