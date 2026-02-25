@@ -25507,16 +25507,16 @@ programming language.")
   (hidden-package
    (package
      (name "go-github-com-wader-gojq")
-     (version "0.12.1-0.20250208151254-0aa7b87b2c2b")
+     (version "0.16.0")
      (source
       (origin
         (method git-fetch)
         (uri (git-reference
               (url "https://github.com/wader/gojq")
-              (commit (go-version->git-ref version))))
+              (commit (string-append "fq-v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1byil5r5nzs6fx0si3ipanq1c8vcqbsr0rhyd5380vp7zr5j9cxl"))))
+         (base32 "0yiallhhgc8z91jwi2qgmxbizn51pz0i3yd0m9f4q9mrkhbm2ig7"))))
      (build-system go-build-system)
      (arguments
       (list
@@ -25524,10 +25524,10 @@ programming language.")
      (native-inputs
       (list go-github-com-google-go-cmp))
      (propagated-inputs
-      (list go-github-com-itchyny-timefmt-go
+      (list go-github-com-itchyny-go-yaml
+            go-github-com-itchyny-timefmt-go
             go-github-com-mattn-go-isatty
-            go-github-com-mattn-go-runewidth
-            go-gopkg-in-yaml-v3))
+            go-github-com-mattn-go-runewidth))
      (home-page "https://github.com/wader/gojq")
      (synopsis "Pure Go implementation of jq")
      (description
