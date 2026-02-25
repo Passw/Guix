@@ -61,6 +61,7 @@
 ;;; Copyright © 2025 Evgenii Klimov <eugene.dev@lipklim.org>
 ;;; Copyright © 2026 Luis Guilherme Coelho <lgcoelho@disroot.org>
 ;;; Copyright © 2026 Noé Lopez <noelopez@free.fr>
+;;; Copyright © 2026 Carlos Durán Domínguez <wurt@wurt.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7639,6 +7640,20 @@ digital radio.")
     (home-page "https://www.rowetel.com/?page_id=452")
     (license license:lgpl2.1)))
 
+(define-public codec2-1
+  (package
+    (inherit codec2)
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/drowe67/codec2")
+             (commit version)))
+       (file-name (git-file-name "codec2" version))
+       (sha256
+        (base32 "00rx0p8b01ycb6lgp859cp1x165zf65qpnm72ry5z0fcipi2klzb"))))))
+
 (define-public mbelib
   ;; No release since 2016, use commit directly.
   (let ((commit "9a04ed5c78176a9965f3d43f7aa1b1f5330e771f")
@@ -7650,8 +7665,8 @@ digital radio.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/szechyjs/mbelib")
-               (commit commit)))
+                (url "https://github.com/szechyjs/mbelib")
+                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32 "0a7xmf87xnjzm5b437j2vnwv39x0ascja1j04c5wj6xs1529gw8h"))))
