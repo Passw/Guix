@@ -16324,20 +16324,17 @@ and confirmation dialogs with customizable templates.")
     (license license:bsd-3)))
 
 (define-public go-github-com-marcinbor85-gohex
-  ;; No release, see <https://github.com/marcinbor85/gohex/issues/5>.
-  (let ((commit "baab2527a9a2a4abb3dc06baabedfa5e0268b8d8")
-        (revision "0"))
     (package
       (name "go-github-com-marcinbor85-gohex")
-      (version (git-version "0.0.0" revision commit))
+      (version "0.1.0")
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/marcinbor85/gohex")
-               (commit commit)))
+               (commit (string-append "v" version))))
          (sha256
-          (base32 "06v4cc6ld6vvxd4xm9k6l49lhcd9ncq7xfx35mj5b9r96ih49fiz"))
+          (base32 "13nxh0a9393w4xpm5fapsjw9hs8nr01s3rlg9h8midfg6zav21gm"))
          (file-name (git-file-name name version))))
       (build-system go-build-system)
       (arguments
@@ -16356,7 +16353,7 @@ implementing features like:
 @item trivial but powerful api (only the most commonly used functions)
 @item interface-based IO functions
 @end itemize")
-      (license license:expat))))
+      (license license:expat)))
 
 (define-public go-github-com-maruel-natural
   (package
