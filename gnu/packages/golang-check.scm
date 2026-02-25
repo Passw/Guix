@@ -133,7 +133,7 @@ only some sub-packages of correct.")
 (define-public go-git-sr-ht-nelsam-hel
   (package
     (name "go-git-sr-ht-nelsam-hel")
-    (version "0.8.5")
+    (version "0.9.4")
     (source
      (origin
        (method git-fetch)
@@ -142,7 +142,7 @@ only some sub-packages of correct.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fb9j4iycqxrsbv8pjy23df7njrkw93hj0m88b89q88qj4p3hv2w"))))
+        (base32 "0i9m31s84abwg4whqfkjmbj3g72kc00ikfpplz80768wzcmgf8bh"))))
     (build-system go-build-system)
     (arguments
      (list
