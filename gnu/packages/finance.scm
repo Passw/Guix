@@ -2241,6 +2241,25 @@ from account statements and other documents and for managing documents.")
 software Beancount with a focus on features and usability.")
     (license license:expat)))
 
+(define-public fava-envelope-airmail
+  (package
+    (name "fava-envelope-airmail")
+    (version "2026.2.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "fava_envelope_airmail" version))
+       (sha256
+        (base32 "18kdic6rg9qizam6cgd2ljpapwiqh2dc3s6wsaz46kjc1yhhwjqy"))))
+    (build-system pyproject-build-system)
+    (propagated-inputs (list fava))
+    (native-inputs (list python-pdm-backend))
+    (home-page "https://github.com/stenius/fava-envelope-airmail")
+    (synopsis "Envelope budgeting for Fava/Beancount")
+    (description "Envelope budgeting for Fava/Beancount with stats, scheduled
+transactions, and color-coded UI.")
+    (license license:expat)))
+
 (define-public emacs-beancount
   (let ((commit "8a564f5a26e6245860188ebf71db0262dd78e068")
         (revision "0"))
