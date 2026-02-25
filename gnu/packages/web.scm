@@ -81,6 +81,7 @@
 ;;; Copyright © 2025 gemmaro <gemmaro.dev@gmail.com>
 ;;; Copyright © 2025 Igorj Gorjaĉev <igor@goryachev.org>
 ;;; Copyright © 2026 Rodion Goritskov <rodion@goritskov.com>
+;;; Copyright © 2026 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1556,7 +1557,7 @@ project)
 (define-public webhook
   (package
     (name "webhook")
-    (version "2.8.2")
+    (version "2.8.3")
     (source
      (origin
        (method git-fetch)
@@ -1565,7 +1566,7 @@ project)
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "15cihbf49kbhgwavjsvl4qfcf3lyqa39vyqdxglmnkn603c3nk6w"))
+        (base32 "14y68gdmy13d5jk2hlki0syrbksxs6anm5dmmpbm8chqzmb8psrz"))
        (modules '((guix build utils)))
        (snippet
         #~(begin
@@ -1573,6 +1574,7 @@ project)
     (build-system go-build-system)
     (arguments
      (list
+      #:install-source? #f
       #:import-path "github.com/adnanh/webhook"
       #:test-flags #~(list "-vet=off")
       #:phases
