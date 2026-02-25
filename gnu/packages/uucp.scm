@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2021 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2025 Artyom V. Poptsov <poptsov.artyom@gmail.com>
-;;; Copyright © 2025 Sharlatan Hellseher <sharlatanus@gmail.com>
+;;; Copyright © 2025-2026 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,7 +71,7 @@ between computers.")
 (define-public nncp
   (package
     (name "nncp")
-    (version "8.11.0")
+    (version "8.13.0")
     (source
      (origin
        (method url-fetch)
@@ -79,7 +79,7 @@ between computers.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1wmg6k1nprk9b7vnnly3m6xxyma2l0xamnrq3xwahjhqv6y18hgc"))
+         "1x057liwly7pk73l866nsbk3pcx9ndh1f0syjzc9hl80k076iqwc"))
        (modules '((ice-9 ftw)
                   (guix build utils)))
        (snippet
@@ -99,47 +99,18 @@ between computers.")
     (arguments
      (list
       #:install-source? #f
-      #:import-path "go.cypherpunks.su/nncp/v8"
+      #:import-path "go.cypherpunks.su/nncp/v8/cmd/..."
       #:unpack-path "go.cypherpunks.su/nncp"
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'fix-paths
-            (lambda* (#:key import-path #:allow-other-keys)
-              (with-directory-excursion (string-append "src/" import-path)
+            (lambda* (#:key inputs unpack-path #:allow-other-keys)
+              (with-directory-excursion (string-append "src/" unpack-path "/v8")
                 (substitute* (list "pipe.go" "toss_test.go")
-                  (("/bin/sh") (which "sh"))
-                  (("; cat") (format #f "; ~a" (which "cat")))))))
-          (replace 'build
-            (lambda arguments
-              (let ((path-prefix "go.cypherpunks.su/nncp/v8/cmd/"))
-                (for-each
-                 (lambda (cmd)
-                   (apply (assoc-ref %standard-phases 'build)
-                          `(,@arguments #:import-path
-                            ,(string-append path-prefix cmd))))
-                 (list "nncp-ack"
-                       "nncp-bundle"
-                       "nncp-call"
-                       "nncp-caller"
-                       "nncp-cfgdir"
-                       "nncp-cfgenc"
-                       "nncp-cfgmin"
-                       "nncp-cfgnew"
-                       "nncp-check"
-                       "nncp-cronexpr"
-                       "nncp-daemon"
-                       "nncp-exec"
-                       "nncp-file"
-                       "nncp-freq"
-                       "nncp-hash"
-                       "nncp-log"
-                       "nncp-pkt"
-                       "nncp-reass"
-                       "nncp-rm"
-                       "nncp-stat"
-                       "nncp-toss"
-                       "nncp-trns"
-                       "nncp-xfer"))))))))
+                  (("/bin/sh")
+                   (search-input-file inputs "/bin/sh"))
+                  (("; cat")
+                   (format #f "; ~a" (search-input-file inputs "/bin/cat"))))))))))
     (inputs
      (list go-github-com-arceliar-ironwood
            go-github-com-davecgh-go-xdr
