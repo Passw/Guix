@@ -1190,7 +1190,7 @@ additional snapshots).")
 (define-public burp
   (package
     (name "burp")
-    (version "2.3.38")
+    (version "3.2.0")
     (source
      (origin
        (method git-fetch)
@@ -1198,7 +1198,7 @@ additional snapshots).")
              (url "https://github.com/grke/burp")
              (commit version)))
        (sha256
-        (base32 "0m0s6rrgxn3l6bad45vyhks6iz6bwvd0f3rzdsc7l28gar79wsj6"))
+        (base32 "0wxn59h6685swmr410l08k8baxsc0f2r6djixxddcbyxmlgap54d"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -1213,6 +1213,8 @@ additional snapshots).")
                  (string-append prefix " 3600" suffix "\n"))))))))
     (inputs
      (list acl
+           libxcrypt ; it is needed to pass utest/server/test_auth.c:53 and
+                     ; utest/builders/build_asfd_mock.c:54
            librsync
            ncurses ; for the live status monitor
            openssl
