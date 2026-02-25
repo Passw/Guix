@@ -30006,6 +30006,44 @@ artifacts across OCI-compliant registries, local file systems, and in-memory
 stores.")
     (license license:asl2.0)))
 
+(define-public go-pault-ag-go-debian
+  (package
+    (name "go-pault-ag-go-debian")
+    (version "0.19.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/paultag/go-debian")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "03c7dlak7m97zb2yvc91fr52kr2xkg5pcskya3z2lfxzwazfx5p4"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:skip-build? #t
+      #:import-path "pault.ag/go/debian"
+      #:test-subdirs
+      #~(list "changelog"
+              "control"
+              "dependency"
+              "version")))
+    (propagated-inputs
+     ;; XXX: Source is gone, https://pkg.go.dev/github.com/kjk/lzma
+     (list ;; go-github-com-kjk-lzma
+           go-github-com-klauspost-compress
+           go-github-com-xi2-xz
+           go-golang-org-x-crypto
+           go-pault-ag-go-topsort))
+    (home-page "https://github.com/paultag/go-debian")
+    (synopsis "Debian Golang support library")
+    (description
+     "@code{go-debian} is a Debian Toolbelt for Go hackers!  This package
+contains a bunch of helpful routines to help work with fun bits of Debian
+data.")
+    (license license:expat)))
+
 (define-public go-pault-ag-go-topsort
   (package
     (name "go-pault-ag-go-topsort")
