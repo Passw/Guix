@@ -30006,6 +30006,30 @@ artifacts across OCI-compliant registries, local file systems, and in-memory
 stores.")
     (license license:asl2.0)))
 
+(define-public go-pault-ag-go-topsort
+  (package
+    (name "go-pault-ag-go-topsort")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/paultag/go-topsort")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xsi5apvvs576p1ybkab46xkwg9pc3zjpaw5q84yb39x4mlvwz2z"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "pault.ag/go/topsort"))
+    (home-page "https://github.com/paultag/go-topsort")
+    (synopsis "Interface to do a topological sort")
+    (description
+     "This package provides a handy interface to do a topological sort of some
+data in a pretty lightweight way.")
+    (license license:expat)))
+
 (define-public go-resenje-org-singleflight
   (package
     (name "go-resenje-org-singleflight")
