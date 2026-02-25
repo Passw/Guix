@@ -2943,7 +2943,7 @@ voice formats.")
 (define-public sdrangel
   (package
     (name "sdrangel")
-    (version "7.22.4")
+    (version "7.23.2")
     (source
      (origin
        (method git-fetch)
@@ -2952,7 +2952,7 @@ voice formats.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11vg1y2w0mf2md59i5nw1rc8dspmjn5abv8w5xrlzjkabia3dfzv"))))
+        (base32 "1jib6jy1bvyb1kzplqx8fn3cbzr2jn7p65y09x8bjpsbg29rnjnp"))))
     (build-system qt-build-system)
     (native-inputs
      (list doxygen graphviz pkg-config))
@@ -2964,7 +2964,7 @@ voice formats.")
            bladerf
            boost
            cm256cc
-           codec2
+           codec2-1
            dsdcc
            faad2
            ffmpeg
@@ -2981,21 +2981,19 @@ voice formats.")
            opencv
            opus
            pulseaudio
-           qtbase-5
-           qtcharts-5
-           qtdeclarative-5
-           qtgamepad-5
-           qtgraphicaleffects
-           qtlocation-5
-           qtmultimedia-5
-           qtquickcontrols2-5
-           qtserialport-5
-           qtspeech-5
-           qtsvg-5
-           qtwayland-5
-           qtwebchannel-5
-           qtwebengine-5
-           qtwebsockets-5
+           qtbase
+           qtcharts
+           qtdeclarative
+           qtlocation
+           qtmultimedia
+           qtpositioning
+           qtserialport
+           qtspeech
+           qtscxml
+           qtsvg
+           qtwayland
+           qtwebengine
+           qtwebsockets
            rtl-sdr
            serialdv
            soapysdr
@@ -3004,6 +3002,7 @@ voice formats.")
     (arguments
      (list
       #:tests? #f ;No test suite.
+      #:qtbase qtbase
       #:configure-flags
       #~(list (string-append "-DAPT_DIR="
                              #$(this-package-input "aptdec"))
@@ -3020,7 +3019,8 @@ voice formats.")
               (string-append "-DSOAPYSDR_DIR="
                              #$(this-package-input "soapysdr"))
               (string-append "-DIIO_DIR="
-                             #$(this-package-input "libiio")))
+                             #$(this-package-input "libiio"))
+              "-DENABLE_QT6=ON")
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'fix-unrecognized-compiler-option
