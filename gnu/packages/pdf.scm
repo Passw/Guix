@@ -1873,27 +1873,32 @@ presentation.  The input files processed by pdfpc are PDF documents.")
     (license license:gpl3+)))
 
 (define-public paps
-  (package
-    (name "paps")
-    (version "0.7.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dov/paps/releases/download/v"
-                           version "/paps-" version ".tar.gz"))
-       (sha256
-        (base32 "1z1w1fg2bvb8p92n1jlpqp3n9mq42szb2mqhh4xqmmnmfcdkpi9s"))))
-    (build-system gnu-build-system)
-    (inputs
-     (list pango))
-    (native-inputs
-     (list intltool pkg-config))
-    (home-page "https://github.com/dov/paps")
-    (synopsis "Pango to PostScript converter")
-    (description
-     "Paps reads a UTF-8 encoded file and generates a PostScript language
+  ;; Fails to build in lastest release.
+  (let ((commit "199b478ca3884df4c0786948aae09c7928c6498f")
+        (revision "0"))
+    (package
+      (name "paps")
+      (version (git-version "0.8.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+                (url "https://github.com/dov/paps")
+                (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1p0sa36h98jkq54hzqax7c97cxvx0f2sslrvccp3f1m6sp5f165k"))))
+      (build-system meson-build-system)
+      (inputs
+       (list libpaper pango))
+      (native-inputs
+       (list fmt gettext-minimal pkg-config))
+      (home-page "https://github.com/dov/paps")
+      (synopsis "Pango to PostScript converter")
+      (description
+       "Paps reads a UTF-8 encoded file and generates a PostScript language
 rendering of the file through the Pango Cairo back end.")
-    (license license:lgpl2.0+)))
+      (license license:lgpl2.0+))))
 
 (define-public stapler
   (let ((commit "23eb07270dd3362a78064e721474b17951daeb88")
