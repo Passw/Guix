@@ -17110,10 +17110,11 @@ accessing slash commands.")
 
 (define-public emacs-claude-code-ide
   ;; Upstream does not make versioned releases.
-  (let ((commit "c5e2de1a343bc6c0444789e0a99ad822cd56cfbe"))
+  (let ((commit "5f12e60c6d2d1802c8c1b7944bbdf935d5db1364")
+        (revision "1"))
     (package
       (name "emacs-claude-code-ide")
-      (version "0.2.5")
+      (version (git-version "0.2.6" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -17122,7 +17123,7 @@ accessing slash commands.")
                 (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "17rha7rvv72r75lpa2hz65mphrjrzkfn4pz3xf9lfvivg7fc7n0d"))))
+          (base32 "148xcrqff6khpwf8nnadcyvz8h6mk45xz1498k0wbzy80yzd2axn"))))
       (build-system emacs-build-system)
       (arguments
        (list
