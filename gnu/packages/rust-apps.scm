@@ -3069,14 +3069,14 @@ blanks grouped by language.")
 (define-public typst
   (package
     (name "typst")
-    (version "0.14.0")
+    (version "0.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "typst-cli" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0dzl7q637mhlkd026aknjk566hzkyr6ivg7qcwxivf1img24fvb3"))))
+        (base32 "176gnwxzs5ddwpsx6a1ayvwr4da0k14mqgd4z0vksy3fpfhrvy9h"))))
     (build-system cargo-build-system)
     (arguments
      (list
