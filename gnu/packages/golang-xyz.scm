@@ -26251,6 +26251,32 @@ with a valid relative path / alias path, it will return you with a string of
 its real absolute path in the system.")
       (license license:expat))))
 
+(define-public go-github-com-yosida95-uritemplate-v3
+  (package
+    (name "go-github-com-yosida95-uritemplate-v3")
+    (version "3.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/yosida95/uritemplate")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0csrdr64hjhwxlkcbb8y7bz1ccnyzl9c87fva00gr078nw52qxff"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/yosida95/uritemplate/v3"))
+    (home-page "https://github.com/yosida95/uritemplate")
+    (synopsis "URI Template (RFC6570) Implementation in Go")
+    (description
+     "@code{uritemplate} is a Go implementation of URI Template
+@url{https://tools.ietf.org/html/rfc6570, RFC6570} with full functionality of
+URI Template Level 4.  It can also generate a regexp that matches expansion of
+the URI Template from a URI Template.")
+    (license license:bsd-3)))
+
 ;; XXX: The latest release v0.1.1 was in 2014, master branch has more changes
 ;; since that time, use the latest commit.
 (define-public go-github-com-yosuke-furukawa-json5
