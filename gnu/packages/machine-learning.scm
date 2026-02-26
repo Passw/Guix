@@ -227,6 +227,8 @@ representations and sentence classification.")
       #~(list #$(string-append "-DGGML_BUILD_NUMBER=" version)
               "-DBUILD_SHARED_LIBS_DEFAULT=ON"
               "-DGGML_BACKEND_DL=ON"
+              (string-append "-DGGML_BACKEND_DIR="
+                               #$output "/lib/backends")
               "-DGGML_VULKAN=ON"
               "-DGGML_BUILD_TESTS=ON"
               "-DGGML_OPENCL=ON"
