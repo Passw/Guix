@@ -41,6 +41,7 @@
 ;;; Copyright © 2024 Sharlatan Hellseher <sharlatanus@gmail.com>
 ;;; Copyright © 2025-2026 Hennadii Stepanov <hebasto@gmail.com>
 ;;; Copyright © 2025 James Smith <jsubuntuxp@disroot.org>
+;;; Copyright © 2026 Robin Templeton <robin@guixotic.coop>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,6 +99,7 @@
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -128,6 +130,7 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages nss)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
@@ -2285,6 +2288,60 @@ transactions, and color-coded UI.")
       (description
        "Emacs-beancount is an Emacs mode for the Beancount accounting tool.")
       (license license:gpl3+))))
+
+(define-public ledger2beancount
+  (package
+    (name "ledger2beancount")
+    (version "2.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/beancount/ledger2beancount")
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mklxlfba3b6yhqkh6178pwlp4gn3zibjdirq8077m6ab3g0zcnq"))))
+    (build-system copy-build-system)
+    (arguments
+     (list
+      #:install-plan
+      ''(("bin/ledger2beancount" "bin/")
+         ("bin/ledger2beancount-ledger-config" "bin/")
+         ("docs/ledger2beancount.1" "share/man/man1/")
+         ("docs/ledger2beancount.5" "share/man/man5/")
+         ("ledger2beancount.yaml" "share/doc/"))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-before 'install 'build-man-pages
+            (lambda _
+              (invoke "make" "man")))
+          (add-after 'install 'wrap
+            (lambda _
+              (for-each
+               (lambda (program)
+                 (wrap-program (format #f "~A/~A" #$output program)
+                   `("PERL5LIB" = (,(getenv "PERL5LIB")))))
+               (list "bin/ledger2beancount"
+                     "bin/ledger2beancount-ledger-config")))))))
+    (native-inputs (list scdoc))
+    (inputs
+     (list bash-minimal
+           perl
+           perl-date-calc
+           perl-datetime-format-strptime
+           perl-enum
+           perl-file-basedir
+           perl-getopt-long-descriptive
+           perl-list-moreutils
+           perl-regexp-common
+           perl-string-interpolate
+           perl-yaml-libyaml))
+    (home-page "https://github.com/beancount/ledger2beancount")
+    (synopsis "Ledger to Beancount converter")
+    (description "@code{ledger2beancount} automatically converts Ledger-based
+textual ledgers to Beancount files.")
+    (license license:gpl3+)))
 
 (define-public hledger-web
   (package
