@@ -1301,18 +1301,17 @@ defaults for 80% of the use cases.")
 (define-public gitoxide
   (package
     (name "gitoxide")
-    (version "0.42.0")
+    (version "0.51.0")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "gitoxide" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "19nrari83270csawjiyc88dm6s0h7lk0x9p8clbg7y8wj08g6rag"))))
+        (base32 "11w522h0hgj45089f7nj7vymzy7lz40g22a2351hkazym2y7mmja"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:features '("gix-features/zlib-stock")
-       #:install-source? #f
+     `(#:install-source? #f
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'install-extras
@@ -1368,7 +1367,7 @@ defaults for 80% of the use cases.")
        (if (%current-target-system)
            (list this-package)
            '())
-       (list cmake-minimal pkg-config)))
+       (list pkg-config)))
     (inputs (cons* curl openssl sqlite zlib (cargo-inputs 'gitoxide)))
     (home-page "https://github.com/GitoxideLabs/gitoxide")
     (synopsis "command-line application for interacting with git repositories")
