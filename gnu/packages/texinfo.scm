@@ -209,9 +209,9 @@ is on expressing the content semantically, avoiding physical markup commands.")
                         (invoke "make" "-C" "tools/gnulib/lib")
                         #t)))
                   '()))))
-      (if (or (target-hurd64?) (%current-target-system))
-          (list #:configure-flags ''("CFLAGS=-Wno-error=incompatible-pointer-types"))
-          '())))))
+      ;; Ignore that size_t* and int* are used interchangeably.
+      (list #:configure-flags
+            '(list "CFLAGS=-Wno-error=incompatible-pointer-types"))))))
 
 (define-public info-reader
   ;; The idea of this package is to have the standalone Info reader without
