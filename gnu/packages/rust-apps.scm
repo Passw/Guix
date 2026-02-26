@@ -3081,10 +3081,11 @@ blanks grouped by language.")
     (arguments
      (list
       #:install-source? #f
+      #:imported-modules (append %copy-build-system-modules
+                                 %cargo-build-system-modules)
       #:modules '((guix build cargo-build-system)
-                  (guix build utils)
-                  (ice-9 match)
-                  (srfi srfi-26))
+                  ((guix build copy-build-system) #:prefix copy:)
+                  (guix build utils))
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'set-version-string
@@ -3095,20 +3096,20 @@ blanks grouped by language.")
               (mkdir "artifacts")
               (setenv "GEN_ARTIFACTS" "artifacts")))
           (add-after 'install 'install-artifacts
-            (lambda _
-              (with-directory-excursion "artifacts"
-                (for-each (cut install-file <>
-                               (string-append #$output "/share/man/man1"))
-                          (find-files "." "\\.1$"))
-                (rename-file "typst.bash" "typst")
-                (map
-                 (match-lambda
-                   ((file . loc)
-                    (install-file file (string-append #$output "/share" loc))))
-                 '(("typst" . "/bash-completion/completions")
-                   ("_typst" . "/zsh/site-functions")
-                   ("typst.elv" . "/elvish/lib")
-                   ("typst.fish" . "/fish/vendor_completions.d")))))))))
+            (lambda args
+               (apply (assoc-ref copy:%standard-phases 'install)
+                      #:install-plan
+                      '(("artifacts/typst.bash"
+                         "share/bash-completion/completions/typst")
+                        ("artifacts/typst.elv"
+                         "share//elvish/lib/typst")
+                        ("artifacts/typst.fish"
+                         "share/fish/vendor_completions.d/")
+                        ("artifacts/_typst"
+                         "share/zsh/site-functions/")
+                        ("artifacts/" "share/man/man1/"
+                         #:include-regexp ("\\.1$")))
+                      args))))))
     (inputs (cons* openssl (cargo-inputs 'typst)))
     (native-search-paths
      (list (search-path-specification
