@@ -182,7 +182,7 @@ definitions in Go programs.")
 (define-public gomacro
   (package
     (name "gomacro")
-    (version "0.0.0-20250712144029-20095acfbf18")
+    (version "0.0.0-20251011163654-53dd3d49f67b")
     (source
      (origin
        (method git-fetch)
@@ -191,7 +191,7 @@ definitions in Go programs.")
              (commit (go-version->git-ref version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1w7gcrympnxwrscmhwahx3anm2yp1ali8xqh1s23q93gyznzcpj5"))))
+        (base32 "0sr7ybqbynihq9h4pknywg2na15j4l9x11jfrd45dw52rqp2mlnw"))))
     (build-system go-build-system)
     (arguments
      (list
@@ -213,8 +213,10 @@ definitions in Go programs.")
               (for-each delete-file
                         (find-files "src/github.com/cosmos72/gomacro/go/types"
                                     "_test\\.go(\\.off)?$")))))))
-    (inputs (list go-golang-org-x-tools go-github-com-peterh-liner
-                  go-github-com-mattn-go-runewidth))
+    (native-inputs
+     (list go-golang-org-x-tools
+           go-github-com-peterh-liner
+           go-github-com-mattn-go-runewidth))
     (home-page "https://github.com/cosmos72/gomacro")
     (synopsis
      "Interactive Go interpreter and debugger with generics and macros")
