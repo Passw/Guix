@@ -45,8 +45,8 @@
      (git-reference
       (url "https://github.com/nim-lang/atlas.git")
       ;; referenced in koch.nim
-      (commit "2aa62121b40d580aa2fb27920a37b938d36c5f57")))
-    (sha256 (base32 "1vzy2aask25snbh178x3d7392cd1zs8mzrjma9isp61ilddchgig"))))
+      (commit "ff1f4289482dce94ba9f95b3b0ae16d16e21eb3d")))
+    (sha256 (base32 "09bmm8as7y0r5ds4c5nlp3ix6v3zah03k8bmaf1qil0r1fzwyjar"))))
 
 (define sat
   (origin
@@ -56,20 +56,20 @@
      (git-reference
       (url "https://github.com/nim-lang/sat.git")
       ;; referenced in koch.nim
-      (commit "faf1617f44d7632ee9601ebc13887644925dcc01")))
-    (sha256 (base32 "1dxbc41wbvkpdp6q3qz1r38lpn32447qkkgyh2s12ym6bx4ynni4"))))
+      (commit "e63eaea8baf00bed8bcd5a29ffd8823abb265b39")))
+    (sha256 (base32 "0wrd8lgn7ym6fl9jvgmyyyfn997lgn1hvx6vxmpijm070pmksr1m"))))
 
 (define-public nim
   (package
     (name "nim")
-    (version "2.2.6")
+    (version "2.2.8")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://nim-lang.org/download/"
                           name "-" version ".tar.xz"))
       (sha256
-       (base32 "12sjhlbla7i6zmhfycdd5kcv4md77w9aczx8s9482y7gblyhwyv5"))))
+       (base32 "1z4c1fy3ir4fcqbk0b2fy37l49glwkdqikp5rffhbic3l2pr2h8i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f          ; TODO: Investigate tests failures.
