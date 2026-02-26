@@ -10870,6 +10870,35 @@ It also contains some convenience functions for colors, SSH to and from
 termios translations, readCh, reading passwords, etc.")
     (license license:bsd-3)))
 
+(define-public go-github-com-google-jsonschema-go
+  (package
+    (name "go-github-com-google-jsonschema-go")
+    (version "0.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/google/jsonschema-go")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sbhlwxg4fgyv3l0rnymw6is590n55qva9ylxsv29y08y19k3lch"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:skip-build? #t
+      #:import-path "github.com/google/jsonschema-go"))
+    (native-inputs
+     (list go-github-com-google-go-cmp))
+    (home-page "https://github.com/google/jsonschema-go")
+    (synopsis "JSON Schema for Go")
+    (description
+     "This package implements the @url{https://json-schema.org/, JSON Schema}
+specification.  It supports creating schemas, validating JSON values against a
+schema, and inferring a schema from a Go struct.  See the package
+documentation for usage.")
+    (license license:expat)))
+
 (define-public go-github-com-google-s2a-go
   (package
     (name "go-github-com-google-s2a-go")
