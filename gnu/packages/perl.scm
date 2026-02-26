@@ -12037,6 +12037,26 @@ routines.  It supports named or positional formatting, custom conversions,
 fixed string interpolation, and simple width-matching.")
     (license license:gpl2)))
 
+(define-public perl-string-interpolate
+  (package
+    (name "perl-string-interpolate")
+    (version "0.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/N/NE/NEILB/String-Interpolate-" version
+             ".tar.gz"))
+       (sha256
+        (base32 "04y454qmhhmlqj3xxq0xinin8p1gcfh76vd9vbvimlq7i69x0zm8"))))
+    (build-system perl-build-system)
+    (propagated-inputs (list perl-padwalker perl-safe-hole))
+    (home-page "https://metacpan.org/release/String-Interpolate")
+    (synopsis "Wrapper for the built-in Perl interpolation engine")
+    (description "This module provides an interface for invoking the Perl
+string interpolation engine on a string contained in a scalar variable.")
+    (license license:perl-license)))
+
 (define-public perl-string-rewriteprefix
   (package
     (name "perl-string-rewriteprefix")
