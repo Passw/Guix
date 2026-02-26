@@ -1311,57 +1311,46 @@ defaults for 80% of the use cases.")
         (base32 "11w522h0hgj45089f7nj7vymzy7lz40g22a2351hkazym2y7mmja"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:install-source? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-extras
-           (lambda* (#:key native-inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (share (string-append out "/share"))
-                    (man1 (string-append share "/man/man1"))
-                    (bash-completions-dir
-                     (string-append out "/etc/bash_completion.d/"))
-                    (zsh-completions-dir
-                     (string-append share "/zsh/site-functions"))
-                    (fish-completions-dir
-                     (string-append share "/fish/vendor_completions.d"))
-                    (elvish-completions-dir
-                     (string-append share "/elvish/lib"))
-                    (gix (if ,(%current-target-system)
-                             (search-input-file native-inputs "/bin/gix")
-                             (string-append out "/bin/gix")))
-                    (ein (if ,(%current-target-system)
-                             (search-input-file native-inputs "/bin/ein")
-                             (string-append out "/bin/ein"))))
-               (for-each mkdir-p
-                         (list bash-completions-dir
-                               zsh-completions-dir
-                               fish-completions-dir
-                               elvish-completions-dir))
-               (with-output-to-file
-                 (string-append bash-completions-dir "/gix")
-                 (lambda _ (invoke gix "completions" "--shell" "bash")))
-               (with-output-to-file
-                 (string-append bash-completions-dir "/ein")
-                 (lambda _ (invoke ein "completions" "--shell" "bash")))
-               (with-output-to-file
-                 (string-append zsh-completions-dir "/_gix")
-                 (lambda _ (invoke gix "completions" "--shell" "zsh")))
-               (with-output-to-file
-                 (string-append zsh-completions-dir "/_ein")
-                 (lambda _ (invoke ein "completions" "--shell" "zsh")))
-               (with-output-to-file
-                 (string-append fish-completions-dir "/gix.fish")
-                 (lambda _ (invoke gix "completions" "--shell" "fish")))
-               (with-output-to-file
-                 (string-append fish-completions-dir "/ein.fish")
-                 (lambda _ (invoke ein "completions" "--shell" "fish")))
-               (with-output-to-file
-                 (string-append elvish-completions-dir "/gix")
-                 (lambda _ (invoke gix "completions" "--shell" "elvish")))
-               (with-output-to-file
-                 (string-append elvish-completions-dir "/ein")
-                 (lambda _ (invoke ein "completions" "--shell" "elvish")))))))))
+     (list
+      #:install-source? #f
+      #:modules
+      '((guix build cargo-build-system)
+        (guix build utils)
+        (ice-9 match))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'install-extras
+            (lambda* (#:key native-inputs #:allow-other-keys)
+              (for-each
+               (match-lambda
+                 ((shell . path)
+                  (mkdir-p (in-vicinity #$output (dirname path)))
+                  (let ((binary
+                         (if #$(%current-target-system)
+                             (search-input-file native-inputs "bin/gix")
+                             (in-vicinity #$output "bin/gix"))))
+                    (with-output-to-file (in-vicinity #$output path)
+                      (lambda _
+                        (invoke binary "completions" "--shell" shell))))))
+               '(("bash"   . "share/bash-completion/completions/gix")
+                 ("elvish" . "share/elvish/lib/gix")
+                 ("fish"   . "share/fish/vendor_completions.d/gix.fish")
+                 ("zsh"    . "share/zsh/site-functions/_gix")))
+              (for-each
+               (match-lambda
+                 ((shell . path)
+                  (mkdir-p (in-vicinity #$output (dirname path)))
+                  (let ((binary
+                         (if #$(%current-target-system)
+                             (search-input-file native-inputs "bin/ein")
+                             (in-vicinity #$output "bin/ein"))))
+                    (with-output-to-file (in-vicinity #$output path)
+                      (lambda _
+                        (invoke binary "completions" "--shell" shell))))))
+               '(("bash"   . "share/bash-completion/completions/ein")
+                 ("elvish" . "share/elvish/lib/ein")
+                 ("fish"   . "share/fish/vendor_completions.d/ein.fish")
+                 ("zsh"    . "share/zsh/site-functions/_ein"))))))))
     (native-inputs
      (append
        (if (%current-target-system)
