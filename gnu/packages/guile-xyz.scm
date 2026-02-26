@@ -6589,7 +6589,8 @@ Relay Chat} (IRC).")
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (native-inputs (list autoconf automake pkg-config))
-    (inputs (list guile-3.0 guile-gnutls))
+    (inputs (list guile-3.0))
+    (propagated-inputs (list guile-gnutls))
     (synopsis "Websocket server/client for Guile")
     (description "Guile-websocket provides an implementation of the
 WebSocket protocol as defined by RFC 6455.")
