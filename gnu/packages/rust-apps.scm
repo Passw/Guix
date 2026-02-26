@@ -4215,7 +4215,7 @@ and users are in full control of their data and workflow.")
 (define-public rust-xremap
   (package
     (name "rust-xremap")
-    (version "0.10.10")
+    (version "0.10.17")
     (source
      (origin
        (method url-fetch)
@@ -4223,7 +4223,7 @@ and users are in full control of their data and workflow.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "00wi8xygkgj7niq4vky7jpg8yr02yrqlkvrhgnc6vbw87n7h5fmi"))))
+         "07hva0dy1d88bcrddm5jg54jlspf1cgbpxb1v9za6crk7bks3c9p"))))
     (build-system cargo-build-system)
     (arguments
      `(#:features '()
@@ -4252,7 +4252,7 @@ and users are in full control of their data and workflow.")
                  (string-append share "/elvish/lib/xremap")
                  (lambda _ (invoke xremap "--completions" "elvish")))))))))
     (inputs (cargo-inputs 'rust-xremap))
-    (home-page "https://github.com/k0kubun/xremap")
+    (home-page "https://github.com/xremap/xremap")
     (synopsis "Dynamic key remapper for X and Wayland")
     (description "This package provides dynamic key remapper for X and Wayland.")
     (license license:expat)))
@@ -4265,6 +4265,14 @@ and users are in full control of their data and workflow.")
      (substitute-keyword-arguments (package-arguments rust-xremap)
        ((#:features _) '(list "gnome"))))))
 
+(define-public xremap-hyprland
+  (package
+    (inherit rust-xremap)
+    (name "xremap-hyprland")
+    (arguments
+     (substitute-keyword-arguments (package-arguments rust-xremap)
+       ((#:features _) '(list "hypr"))))))
+
 (define-public xremap-kde
   (package
     (inherit rust-xremap)
@@ -4273,6 +4281,14 @@ and users are in full control of their data and workflow.")
      (substitute-keyword-arguments (package-arguments rust-xremap)
        ((#:features _) '(list "kde"))))))
 
+(define-public xremap-niri
+  (package
+    (inherit rust-xremap)
+    (name "xremap-niri")
+    (arguments
+     (substitute-keyword-arguments (package-arguments rust-xremap)
+       ((#:features _) '(list "niri"))))))
+
 (define-public xremap-wlroots
   (package
     (inherit rust-xremap)
@@ -4280,14 +4296,6 @@ and users are in full control of their data and workflow.")
     (arguments
      (substitute-keyword-arguments (package-arguments rust-xremap)
        ((#:features _) '(list "wlroots"))))))
-
-(define-public xremap-hyprland
-  (package
-    (inherit rust-xremap)
-    (name "xremap-hyprland")
-    (arguments
-     (substitute-keyword-arguments (package-arguments rust-xremap)
-       ((#:features _) '(list "hyprland"))))))
 
 (define-deprecated-package xremap-sway
   xremap-wlroots)
