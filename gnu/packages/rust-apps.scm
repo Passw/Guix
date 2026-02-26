@@ -4226,32 +4226,36 @@ and users are in full control of their data and workflow.")
          "07hva0dy1d88bcrddm5jg54jlspf1cgbpxb1v9za6crk7bks3c9p"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:features '()
-       #:install-source? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-completions
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (share (string-append out "/share"))
-                    (xremap (string-append out "/bin/xremap")))
-               (mkdir-p (string-append out "/etc/bash_completion.d"))
-               (with-output-to-file
-                 (string-append out "/etc/bash_completion.d/xremap")
-                 (lambda _ (invoke xremap "--completions" "bash")))
-               (mkdir-p (string-append share "/fish/vendor_completions.d"))
-               (with-output-to-file
-                 (string-append share "/fish/vendor_completions.d/xremap.fish")
-                 (lambda _ (invoke xremap "--completions" "fish")))
-               (mkdir-p (string-append share "/zsh/site-functions"))
-               (with-output-to-file
-                 (string-append share "/zsh/site-functions/_xremap")
-                 (lambda _ (invoke xremap "--completions" "zsh")))
-               (mkdir-p (string-append share "/elvish/lib"))
-               (with-output-to-file
-                 (string-append share "/elvish/lib/xremap")
-                 (lambda _ (invoke xremap "--completions" "elvish")))))))))
+     (list
+      #:install-source? #f
+      #:modules
+      '((guix build cargo-build-system)
+        (guix build utils)
+        (ice-9 match))
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'install 'install-completions
+            (lambda* (#:key native-inputs #:allow-other-keys)
+              (for-each
+               (match-lambda
+                 ((shell . path)
+                  (mkdir-p (in-vicinity #$output (dirname path)))
+                  (let ((binary
+                         (if #$(%current-target-system)
+                             (search-input-file native-inputs "bin/xremap")
+                             (in-vicinity #$output "bin/xremap"))))
+                    (with-output-to-file (in-vicinity #$output path)
+                      (lambda _
+                        (invoke binary "--completions" shell))))))
+               '(("bash"   . "share/bash-completion/completions/xremap")
+                 ("elvish" . "share/elvish/lib/xremap")
+                 ("fish"   . "share/fish/vendor_completions.d/xremap.fish")
+                 ("zsh"    . "share/zsh/site-functions/_xremap"))))))))
     (inputs (cargo-inputs 'rust-xremap))
+    (native-inputs
+     (if (%current-target-system)
+         (list this-package)
+         '()))
     (home-page "https://github.com/xremap/xremap")
     (synopsis "Dynamic key remapper for X and Wayland")
     (description "This package provides dynamic key remapper for X and Wayland.")
