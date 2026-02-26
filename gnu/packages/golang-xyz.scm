@@ -17935,6 +17935,46 @@ running in a Linux user namespace.")
 terminal (state, sizes).")
     (license license:asl2.0)))
 
+(define-public go-github-com-modelcontextprotocol-go-sdk
+  (package
+    (name "go-github-com-modelcontextprotocol-go-sdk")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/modelcontextprotocol/go-sdk")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lpk2zc6km2d3aadgc9yr2dj8z0zky8vdj63iip1wg7aagl0cyx8"))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:skip-build? #t
+      #:import-path "github.com/modelcontextprotocol/go-sdk"
+      #:phases
+      #~(modify-phases %standard-phases
+          (add-after 'unpack 'remove-examples
+            (lambda* (#:key import-path #:allow-other-keys)
+              (delete-file-recursively
+               (string-append "src/" import-path "/examples")))))))
+    (native-inputs
+     (list go-github-com-google-go-cmp
+           go-golang-org-x-tools))
+    (propagated-inputs
+     (list go-github-com-golang-jwt-jwt-v5
+           go-github-com-google-jsonschema-go
+           go-github-com-segmentio-encoding
+           go-github-com-yosida95-uritemplate-v3
+           go-golang-org-x-oauth2))
+    (home-page "https://github.com/modelcontextprotocol/go-sdk")
+    (synopsis "MCP Go SDK")
+    (description
+     "This packages provides an implementation of the official Go software
+development kit (SDK) for the Model Context Protocol (MCP).")
+    (license license:expat)))
+
 (define-public go-github-com-modern-go-concurrent
   (package
     (name "go-github-com-modern-go-concurrent")
