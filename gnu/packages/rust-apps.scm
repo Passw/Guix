@@ -671,7 +671,7 @@ through tools like `gdb`.")
 (define-public codeberg-cli
   (package
     (name "codeberg-cli")
-    (version "0.5.4")
+    (version "0.5.5")
     (source
      (origin
        (method git-fetch)
@@ -680,7 +680,7 @@ through tools like `gdb`.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rbbf0f2zcgn3mw31s3763sbx4bmbp12ab2zap9cj6l3jbs5zqm3"))))
+        (base32 "0xmbxaqagpscxzb4f4r819ik2nz638c0w7rgnf87pxpfhhpq0dfa"))))
     (build-system cargo-build-system)
     (arguments
      (list
