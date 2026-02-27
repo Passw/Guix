@@ -2,7 +2,7 @@
 # Modified by Ludovic Courtès <ludo@gnu.org> for the GNU Guix manual.
 # Further modified by Tomas Volf <~@wolfsden.cz>.
 
-htmlxrefversion=2026-02-09.17; # UTC
+htmlxrefversion=2026-02-23.07; # UTC
 
 # Override URLs of manuals provided by the Documentation Center.
 
@@ -26,6 +26,8 @@ gdb              mono ${DOCUMENTATION_CENTER}/gdb/latest/en/gdb.html
 gdb              node ${DOCUMENTATION_CENTER}/gdb/latest/en/html_node
 geiser           mono ${DOCUMENTATION_CENTER}/geiser/latest/en/geiser.html
 geiser           node ${DOCUMENTATION_CENTER}/geiser/latest/en/html_node
+grub             mono ${DOCUMENTATION_CENTER}/grub/latest/en/grub.html
+grub             node ${DOCUMENTATION_CENTER}/grub/latest/en/html_node
 guile-avahi      mono ${DOCUMENTATION_CENTER}/guile-avahi/latest/en/guile-avahi.html
 guile-avahi      node ${DOCUMENTATION_CENTER}/guile-avahi/latest/en/html_node
 guile-gcrypt     mono ${DOCUMENTATION_CENTER}/guile-gcrypt/latest/en/guile-gcrypt.html
@@ -40,12 +42,16 @@ guile-netlink    node ${DOCUMENTATION_CENTER}/guile-netlink/latest/en/html_node
 guile            node ${DOCUMENTATION_CENTER}/guile/latest/en/html_node
 guile-ssh        mono ${DOCUMENTATION_CENTER}/guile-ssh/latest/en/guile-ssh.html
 guile-ssh        node ${DOCUMENTATION_CENTER}/guile-ssh/latest/en/html_node
+inetutils        mono ${DOCUMENTATION_CENTER}/inetutils/latest/en/inetutils.html
+inetutils        node ${DOCUMENTATION_CENTER}/inetutils/latest/en/html_node
 libc             mono ${DOCUMENTATION_CENTER}/libc/latest/en/libc.html
 libc             node ${DOCUMENTATION_CENTER}/libc/latest/en/html_node
 mes              mono ${DOCUMENTATION_CENTER}/mes/latest/en/mes.html
 mes              node ${DOCUMENTATION_CENTER}/mes/latest/en/html_node
 r5rs             mono ${DOCUMENTATION_CENTER}/r5rs/latest/en/r5rs.html
 r5rs             node ${DOCUMENTATION_CENTER}/r5rs/latest/en/html_node
+recutils         mono ${DOCUMENTATION_CENTER}/recutils/latest/en/recutils.html
+recutils         node ${DOCUMENTATION_CENTER}/recutils/latest/en/html_node
 shepherd         mono ${DOCUMENTATION_CENTER}/shepherd/latest/en/shepherd.html
 shepherd         node ${DOCUMENTATION_CENTER}/shepherd/latest/en/html_node
 
