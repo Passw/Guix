@@ -28,6 +28,7 @@
 ;;; Copyright © 2024 Zheng Junjie <873216071@qq.com>
 ;;; Copyright © 2024 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2024, 2025 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2026 jgart <jgart@dismail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages geo)
+  #:use-module (gnu packages golang-build)
   #:use-module (gnu packages golang-xyz)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages perl)
@@ -864,7 +866,7 @@ calls.")
 (define-public tz
   (package
     (name "tz")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
      (origin
        (method git-fetch)
@@ -873,16 +875,20 @@ calls.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1zf5w6338y0s0pf0jlpbqzlbxbx39s93z0bmdaa0cxkxs8cz8xij"))))
+        (base32 "0pnfz88pbb5jmr1p6m53447d9r8mn9s0f6qd8dpmn0i844lfv5rs"))))
     (build-system go-build-system)
     (arguments
      (list
-      #:install-source? #f
-      #:import-path "github.com/oz/tz"))
+      #:import-path "github.com/oz/tz"
+      #:test-flags #~(list "-vet=off")))
     (inputs
      (list go-github-com-charmbracelet-bubbletea
+           go-github-com-mattn-go-isatty
            go-github-com-muesli-termenv
-           go-github-com-tkuchiki-go-timezone))
+           go-github-com-pelletier-go-toml-v2
+           go-github-com-tkuchiki-go-timezone
+           go-golang-org-x-term
+           go-golang-org-x-tools))
     (home-page "https://github.com/oz/tz")
     (synopsis "TUI time zone helper")
     (description
