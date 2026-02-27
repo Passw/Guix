@@ -4,7 +4,7 @@
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2021, 2022, 2024 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2022, 2024 Maxim Cournoyer <maxim@guixotic.coop>
+;;; Copyright © 2022, 2024, 2026 Maxim Cournoyer <maxim@guixotic.coop>
 ;;; Copyright © 2022 Mehmet Tekman <mtekman89@gmail.com>
 ;;; Copyright @ 2022, Kitzman <kitzman@disroot.org>
 ;;;
@@ -176,12 +176,13 @@ RDP, VNC, SPICE, NX, XDMCP, SSH and EXEC network protocols are supported.")
 (define-public turbovnc
   (package
     (name "turbovnc")
-    (version "3.0.1")
+    (version "3.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/turbovnc/" version
-                           "/turbovnc-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/TurboVNC/turbovnc")
+              (commit version)))
        (modules '((guix build utils)
                   (ice-9 ftw)
                   (srfi srfi-26)))
@@ -206,13 +207,10 @@ RDP, VNC, SPICE, NX, XDMCP, SSH and EXEC network protocols are supported.")
             (delete-all-but "unix/Xvnc/include" "tvnc_version.h.in")
             ;; This 243 lines of code C library is used by
             ;; unix/Xvnc/programs/Xserver/os/xsha1.c.
-            (delete-all-but "unix/Xvnc/lib" "CMakeLists.txt" "libsha1")
-            (delete-file-recursively "unix/Xvnc/extras")))
+            (delete-all-but "unix/Xvnc/lib" "CMakeLists.txt" "libsha1")))
        (sha256
         (base32
-         "182amp471qvr2cn2rbw97zpbkh9q7mf92w1r25cg4apx5k26m7c3"))
-       (patches (search-patches "turbovnc-find-system-packages.patch"
-                                "turbovnc-custom-paths.patch"))))
+         "0q53r9j2sy77hgfbm4af1nbixwlhpdh5zz6as3wkk8wv1f27xqdk"))))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -244,7 +242,8 @@ RDP, VNC, SPICE, NX, XDMCP, SSH and EXEC network protocols are supported.")
               "-DXKB_DFLT_RULES=base"
               ;; Mimic xorg-server's "--with-xkb-output=/tmp" configuration.
               "-DCOMPILEDDEFAULTFONTPATH=/tmp"
-              "-DTVNC_STATIC_XORG_PATHS=ON")
+              "-DTVNC_STATIC_XORG_PATHS=ON"
+              "-DTVNC_ZLIBNG=OFF")     ;avoid using the bundled zlib-ng source
       #:phases
       #~(modify-phases %standard-phases
           (add-after 'unpack 'patch-vncviewer

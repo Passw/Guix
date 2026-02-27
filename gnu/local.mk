@@ -2498,8 +2498,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/transcode-ffmpeg.patch	\
   %D%/packages/patches/trytond-add-guix_trytond_path.patch	\
   %D%/packages/patches/ttf2eot-cstddef.patch			\
-  %D%/packages/patches/turbovnc-custom-paths.patch		\
-  %D%/packages/patches/turbovnc-find-system-packages.patch	\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/tvm_fix_cpptest_build.patch              \
   %D%/packages/patches/twinkle-bcg729.patch			\
