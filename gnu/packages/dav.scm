@@ -153,7 +153,7 @@ if __name__ == '__main__':
     (propagated-inputs
      (list python-aiohttp
            python-defusedxml
-           python-dulwich
+           python-dulwich-0.24
            python-icalendar
            python-jinja2
            python-multidict
