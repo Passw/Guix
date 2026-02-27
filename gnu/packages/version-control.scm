@@ -310,14 +310,14 @@ Python 3.3 and later, rather than on Python 2.")
 (define-public git-minimal
   (package
     (name "git-minimal")
-    (version "2.53.0")
+    (version "2.52.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ly6335f4qd5qkzk3xwib6h1i26w17b37968zsyvnqdhh1yvs62q"))
+                "1ifpkrr64g8b0vv13155gz876s2f4vcqrvhgc75lkab9dzlgxn1w"))
               (patches (search-patches "git-clar-path-max.patch"))))
     (build-system gnu-build-system)
     (arguments
