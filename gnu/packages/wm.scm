@@ -76,7 +76,7 @@
 ;;; Copyright © 2024 bigbug <bigbookofbug@proton.me>
 ;;; Copyright © 2024 dan <i@dan.games>
 ;;; Copyright © 2024 Wamm K. D. <jaft.r@outlook.com>
-;;; Copyright © 2024, 2025 Ashish SHUKLA <ashish.is@lostca.se>
+;;; Copyright © 2024-2026 Ashish SHUKLA <ashish.is@lostca.se>
 ;;; Copyright © 2024 Josep Bigorra <jjbigorra@gmail.com>
 ;;; Copyright © 2024 Jakob Kirsch <jakob.kirsch@web.de>
 ;;; Copyright © 2025 Tomáš Čech <sleep_walker@gnu.org>
@@ -4322,7 +4322,7 @@ read and write, and compatible with JSON.")
 (define-public labwc
   (package
     (name "labwc")
-    (version "0.9.3")
+    (version "0.9.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4331,7 +4331,7 @@ read and write, and compatible with JSON.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1r3gbi0ayxps1bnvsdfjyq12q2isagbd49gryfdnb6a7zkbbbyqb"))))
+                "0h2bfk9wkj64n2j2m9jdzxziri15vbqaqm7264kj2fx0hd7f06rb"))))
     (build-system meson-build-system)
     (native-inputs
      (list pkg-config gettext-minimal scdoc))
