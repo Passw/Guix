@@ -850,14 +850,7 @@ NumPy @code{dtype} extensions used in machine learning libraries, including:
        (list
         #:configure-flags
         #~(list "-DBUILD_SHARED_LIBS=ON"
-                (string-append "-DBLAS_INCLUDE_DIRS="
-                               #$(this-package-input "openblas")
-                               "/include")
-                (string-append "-DBLAS_LIBRARIES="
-                               #$(this-package-input "openblas")
-                               "/lib/libopenblas.so")
                 "-DLLAMA_USE_SYSTEM_GGML=ON")
-
         #:modules '((ice-9 textual-ports)
                     (guix build utils)
                     ((guix build python-build-system) #:prefix python:)
@@ -924,7 +917,7 @@ NumPy @code{dtype} extensions used in machine learning libraries, including:
                                                       "/bin")
                                        "^test-")))))))
       (inputs
-       (list curl ggml glslang python-gguf python-minimal openblas spirv-headers
+       (list curl ggml glslang python-gguf python-minimal spirv-headers
              spirv-tools vulkan-headers vulkan-loader openssl))
       (native-inputs
        (list bash-minimal pkg-config python-minimal-wrapper shaderc))
