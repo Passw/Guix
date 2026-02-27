@@ -129,7 +129,6 @@ data in motion, or as a file format for data at rest.")
        (file-name (git-file-name name version))
        (sha256
         (base32 "1rdxm75bqwjj4qd3hz4vlydra6bw5dq391kwln2q0pjfx9gbrjhk"))))
-    (outputs (list "out" "static"))
     (build-system cmake-build-system)
     (arguments
      (list
@@ -159,19 +158,7 @@ data in motion, or as a file format for data at rest.")
                 ;; https://github.com/protocolbuffers/protobuf/issues/8082.
                 (disable-tests
                  "src/google/protobuf/io/zero_copy_stream_unittest.cc"
-                 "LargeOutput"))))
-          (add-after 'install 'move-static-libraries
-            (lambda* (#:key outputs #:allow-other-keys)
-              ;; Move static libraries to the "static" output.
-              (let* ((out    (assoc-ref outputs "out"))
-                     (lib    (string-append out "/lib"))
-                     (static (assoc-ref outputs "static"))
-                     (slib   (string-append static "/lib")))
-                (mkdir-p slib)
-                (for-each (lambda (file)
-                            (install-file file slib)
-                            (delete-file file))
-                          (find-files lib "\\.a$"))))))))
+                 "LargeOutput")))))))
     (native-inputs (list googletest python-minimal-wrapper ruby))
     (inputs (list abseil-cpp jsoncpp zlib))
     (home-page "https://protobuf.dev")
