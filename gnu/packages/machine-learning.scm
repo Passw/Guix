@@ -932,83 +932,86 @@ independently to be able to run a LLaMA model.")
       (license license:expat))))
 
 (define-public whisper-cpp
-  (package
-    (name "whisper-cpp")
-    (version "1.8.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/ggml-org/whisper.cpp")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1x8m43myi1npgwwyw24dpza3vi95695vnya391fnn7nrf876ckir"))))
-    (build-system cmake-build-system)
-    (arguments
-     (list
-      #:configure-flags
-      #~(list "-DWHISPER_STANDALONE=TRUE"
-              "-DWHISPER_SDL2=TRUE"
-              "-DWHISPER_BUILD_TESTS=TRUE"
-              "-DWHISPER_FFMPEG=TRUE"
-              "-DBUILD_SHARED_LIBS=ON"
-              "-DGGML_BLAS=ON"
-              "-DGGML_BLAS_VENDOR=OpenBLAS"
-              (string-append "-DBLAS_INCLUDE_DIRS="
-                             #$(this-package-input "openblas")
-                             "/include")
-              (string-append "-DBLAS_LIBRARIES="
-                             #$(this-package-input "openblas")
-                             "/lib/libopenblas.so")
-              "-DGGML_NATIVE=OFF" ;no '-march=native'
-              "-DGGML_FMA=OFF"    ;and no '-mfma', etc.
-              "-DGGML_AVX2=OFF"
-              "-DGGML_AVX512=OFF"
-              "-DGGML_AVX512_VBMI=OFF"
-              "-DGGML_AVX512_VNNI=OFF"
-              "-DGGML_VULKAN=ON")
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'patch-paths
-            (lambda* (#:key inputs #:allow-other-keys)
-              (substitute*
-                  "ggml/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp"
-                (("\"/bin/sh\"")
-                 (string-append
-                  "\"" (search-input-file inputs "/bin/sh") "\"")))))
-          #$@(if (target-32bit?)
-                 '((add-after 'unpack 'skip-failing-tests
-                     (lambda _
-                       ;; 32-bit system
-                       ;; large model does not fit in RAM in 32-bit system,
-                       ;; disable large model test
-                       (substitute* "tests/CMakeLists.txt"
-                         (("LABELS \"large\"")
-                          "DISABLED true")))))
-                 '())
-          (add-after 'unpack 'skip-failing-vad-tests
-            (lambda _
-              (substitute* "tests/CMakeLists.txt"
-                ;; error: failed to read audio data as wav (Unknown error)
-                (("\\$\\{VAD_TEST\\} PROPERTIES LABELS \"unit\"")
-                 "${VAD_TEST} PROPERTIES DISABLED true")
-                ;; error: failed to read audio data as wav (Unknown error)
-                (("\\$\\{VAD_TEST\\} PROPERTIES LABELS \"base;en\"")
-                 "${VAD_TEST} PROPERTIES DISABLED true")))))))
-    (native-inputs
-     (list git pkg-config shaderc))
-    (inputs
-     (list ffmpeg
-           openblas
-           sdl2
-           spirv-headers
-           spirv-tools
-           vulkan-headers
-           vulkan-loader))
-    (synopsis "OpenAI's Whisper model in C/C++")
-    (description
-     "This package is a high-performance inference of OpenAI's
+  ;; Keep in sync with ggml/scripts/sync-whisper.last
+  (let ((commit "364c77f4ca2737e3287652e0e8a8c6dce3231bba")
+        (revision "0"))
+    (package
+      (name "whisper-cpp")
+      (version (git-version "1.8.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/ggml-org/whisper.cpp")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1q2x3m3v54x7y10k8n558jc36vcy41rvz2n9arjki4almcs6kyxl"))))
+      (build-system cmake-build-system)
+      (arguments
+       (list
+        #:configure-flags
+        #~(list "-DWHISPER_STANDALONE=TRUE"
+                "-DWHISPER_SDL2=TRUE"
+                "-DWHISPER_BUILD_TESTS=TRUE"
+                "-DWHISPER_FFMPEG=TRUE"
+                "-DBUILD_SHARED_LIBS=ON"
+                "-DGGML_BLAS=ON"
+                "-DGGML_BLAS_VENDOR=OpenBLAS"
+                (string-append "-DBLAS_INCLUDE_DIRS="
+                               #$(this-package-input "openblas")
+                               "/include")
+                (string-append "-DBLAS_LIBRARIES="
+                               #$(this-package-input "openblas")
+                               "/lib/libopenblas.so")
+                "-DGGML_NATIVE=OFF" ;no '-march=native'
+                "-DGGML_FMA=OFF"    ;and no '-mfma', etc.
+                "-DGGML_AVX2=OFF"
+                "-DGGML_AVX512=OFF"
+                "-DGGML_AVX512_VBMI=OFF"
+                "-DGGML_AVX512_VNNI=OFF"
+                "-DGGML_VULKAN=ON")
+        #:phases
+        #~(modify-phases %standard-phases
+            (add-after 'unpack 'patch-paths
+              (lambda* (#:key inputs #:allow-other-keys)
+                (substitute*
+                    "ggml/src/ggml-vulkan/vulkan-shaders/vulkan-shaders-gen.cpp"
+                  (("\"/bin/sh\"")
+                   (string-append
+                    "\"" (search-input-file inputs "/bin/sh") "\"")))))
+            #$@(if (target-32bit?)
+                   '((add-after 'unpack 'skip-failing-tests
+                       (lambda _
+                         ;; 32-bit system
+                         ;; large model does not fit in RAM in 32-bit system,
+                         ;; disable large model test
+                         (substitute* "tests/CMakeLists.txt"
+                           (("LABELS \"large\"")
+                            "DISABLED true")))))
+                   '())
+            (add-after 'unpack 'skip-failing-vad-tests
+              (lambda _
+                (substitute* "tests/CMakeLists.txt"
+                  ;; error: failed to read audio data as wav (Unknown error)
+                  (("\\$\\{VAD_TEST\\} PROPERTIES LABELS \"unit\"")
+                   "${VAD_TEST} PROPERTIES DISABLED true")
+                  ;; error: failed to read audio data as wav (Unknown error)
+                  (("\\$\\{VAD_TEST\\} PROPERTIES LABELS \"base;en\"")
+                   "${VAD_TEST} PROPERTIES DISABLED true")))))))
+      (native-inputs
+       (list git pkg-config shaderc))
+      (inputs
+       (list ffmpeg
+             openblas
+             sdl2
+             spirv-headers
+             spirv-tools
+             vulkan-headers
+             vulkan-loader))
+      (synopsis "OpenAI's Whisper model in C/C++")
+      (description
+       "This package is a high-performance inference of OpenAI's
 Whisper automatic speech recognition (ASR) model, implemented in plain C/C++
 without dependencies, with
 @itemize
@@ -1024,7 +1027,7 @@ without dependencies, with
 @end itemize")
     (properties '((tunable? . #true))) ;use AVX512, FMA, etc. when available
     (home-page "https://github.com/ggml-org/whisper.cpp/")
-    (license license:expat)))
+    (license license:expat))))
 
 (define-public mcl
   (package
