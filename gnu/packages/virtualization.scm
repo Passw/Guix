@@ -1938,7 +1938,7 @@ domains, their live performance and resource utilization statistics.")
 (define-public vmware-open-vm-tools
   (package
     (name "vmware-open-vm-tools")
-    (version "13.0.0")
+    (version "13.0.10")
     (source
      (origin
        (method git-fetch)
@@ -1947,7 +1947,7 @@ domains, their live performance and resource utilization statistics.")
              (commit (string-append "stable-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19zqfkd4rxajgghjc4czssvqxxw1q6mc6mnp50j7lnqaviwvb5fm"))))
+        (base32 "0rjqrmypfv6llqsc4bzjw7fl8i8bslis4ki15r9ikzn8w7l4wmcl"))))
     (build-system gnu-build-system)
     (arguments
      (list
@@ -2019,7 +2019,7 @@ domains, their live performance and resource utilization statistics.")
      (list eudev
            fuse
            glib
-           xmlsec
+           xmlsec-openssl
            libmspack
            ;; libdnet ; Not packed
            libtirpc
@@ -2030,8 +2030,7 @@ domains, their live performance and resource utilization statistics.")
            procps
            rpcsvc-proto
            shepherd     ;for 'halt' and 'reboot', invoked from VMWare host.
-           util-linux
-           xmlsec))
+           util-linux))
     (home-page "https://github.com/vmware/open-vm-tools")
     (synopsis "Tools for VMWare guest VM to enhance host-guest integration")
     (description
