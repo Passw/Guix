@@ -5124,7 +5124,7 @@ form, numpad.
 (define-public rizin
   (package
     (name "rizin")
-    (version "0.8.1")                   ;keep in sync with cutter
+    (version "0.8.2")                   ;keep in sync with cutter
     (source
      (origin
        (method url-fetch)
@@ -5133,7 +5133,7 @@ form, numpad.
              version "/rizin-src-v" version ".tar.xz"))
        (sha256
         (base32
-         "1hjf180q4ba0cs5ys7vwy5xs1k6195kransj8fn3dp6p4mjiwazg"))))
+         "159ddi96mlqdynixy3h831dip59gr2gnj85jgvrjyvz8p99clc0n"))))
     (build-system meson-build-system)
     (arguments
      (list
