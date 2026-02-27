@@ -17331,40 +17331,6 @@ functions.")
      "Package squirrel provides a fluent SQL generator.")
     (license license:expat)))
 
-(define-public go-github-com-matryer-try
-  (package
-    (name "go-github-com-matryer-try")
-    (version "0.0.0-20161228173917-9ac251b645a2")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/matryer/try")
-             (commit (go-version->git-ref version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "19fnqmpl3p54vmxgm1hmqvdc87brqx754wf3cdhq1bj04fcbb5h9"))))
-    (build-system go-build-system)
-    (arguments
-     (list
-      #:import-path "github.com/matryer/try"
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-after 'unpack 'fix-tests
-            (lambda* (#:key import-path #:allow-other-keys)
-              (substitute* (string-append "src/" import-path
-                                          "/try_test.go")
-                (("var value string")
-                 "")
-                (("value, err = SomeFunction\\(\\)")
-                 "_, err = SomeFunction()")))))))
-    (native-inputs
-     (list go-github-com-cheekybits-is))
-    (home-page "https://github.com/matryer/try")
-    (synopsis "Simple idiomatic retry package for Go")
-    (description "This package provides an idiomatic Go retry module.")
-    (license license:expat)))
-
 (define-public go-github-com-mattn-go-colorable
   (package
     (name "go-github-com-mattn-go-colorable")
