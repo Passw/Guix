@@ -472,7 +472,7 @@ seen in a terminal.")
                          (invoke "make" "install-gui"
                                  (string-append "PREFIX=" gui))))))))
     (inputs (list lua boost perl qtbase-5))
-    (native-inputs (list pkg-config swig))
+    (native-inputs (list pkg-config swig-4.0))
     (home-page "http://www.andre-simon.de/doku/highlight/en/highlight.html")
     (synopsis "Convert code to documents with syntax highlighting")
     (description

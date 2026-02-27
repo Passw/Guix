@@ -378,7 +378,7 @@ Design spec without sacrificing ease of use or application performance.")
                 (("\\$\\{SoQt_INCLUDE_DIRS}")
                  "${Coin_INCLUDE_DIR};${SoQt_INCLUDE_DIRS}")))))))
     (native-inputs
-      (list cmake-minimal swig))
+      (list cmake-minimal swig-4.0))
     (inputs
       (list python-wrapper
             qtbase-5

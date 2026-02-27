@@ -194,7 +194,7 @@ protocol.")
                                                  "python-wrapper")))
                         "/site-packages"))))
     (native-inputs
-     (list doxygen perl perl-devel-checklib pkg-config swig))
+     (list doxygen perl perl-devel-checklib pkg-config swig-4.0))
     (inputs
      (list libpcap openssl python-wrapper))
     (synopsis "DNS library that facilitates DNS tool programming")
@@ -600,7 +600,7 @@ to result in system-wide compromise.")
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs
-     (list flex pkg-config swig python-wrapper))
+     (list flex pkg-config swig-4.0 python-wrapper))
     (inputs
      (list expat
            libevent

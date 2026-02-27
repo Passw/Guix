@@ -1549,7 +1549,7 @@ part of this module.")
     (inputs
      (list libftdi python))
     (native-inputs
-     (list pkg-config swig which))
+     (list pkg-config swig-4.0 which))
     (arguments
      `(#:tests? #f ; No tests exist.
        #:parallel-build? #f  ; Would be buggy.

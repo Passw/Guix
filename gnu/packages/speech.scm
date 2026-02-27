@@ -674,7 +674,7 @@ It can also speak English through eSpeak or Festival.")
      (list pkg-config
            perl                         ;for tests
            python
-           swig))
+           swig-4.0))
     (inputs
      (list alsa-lib
            ffmpeg

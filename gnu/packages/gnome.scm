@@ -13161,7 +13161,7 @@ It uses pandoc as back-end for parsing Markdown.")
                #t))))))
     (native-inputs
      (append
-       (list check pkg-config swig)
+       (list check pkg-config swig-4.0)
        (if (member (%current-system) (package-supported-systems valgrind/pinned))
          (list valgrind/pinned)
          '())))

@@ -966,7 +966,7 @@ and based on PDF specification 1.7.")
      (list pkg-config
            python-3
            python-clang-13
-           swig-next))
+           swig-4.4))
     (arguments
      (list
       #:tests? #f                       ;no check target
@@ -1135,7 +1135,7 @@ Noto Sans, Space Mono and Ubuntu families.")
                          python-pylint
                          python-pytest
                          python-setuptools
-                         swig-next))
+                         swig-4.4))
     (home-page "https://github.com/pymupdf/PyMuPDF")
     (synopsis "Python bindings for the PDF toolkit and renderer MuPDF")
     (description "PyMuPDF is a set of Python bindings for MuPDF,

@@ -93,7 +93,7 @@
            perl
            python-minimal
            ruby
-           swig
+           swig-4.0
            which))
     (home-page "https://apparmor.net")
     (synopsis "Linux kernel security module")

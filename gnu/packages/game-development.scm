@@ -611,7 +611,7 @@ files) into @file{.grf} and/or @file{.nfo} files.")
          (add-before 'build 'build-ext
            (lambda _
              (invoke "python" "setup.py" "build_ext" "--inplace"))))))
-    (native-inputs (list swig python-setuptools python-wheel))
+    (native-inputs (list swig-4.0 python-setuptools python-wheel))
     (home-page "https://github.com/pybox2d/pybox2d")
     (synopsis "2D game physics for Python")
     (description

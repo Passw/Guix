@@ -183,7 +183,7 @@ module into a binary representation.")
      (list python-wrapper))
     ;; These inputs are only needed for the pywrap phase.
     (native-inputs
-     (list pkg-config swig))
+     (list pkg-config swig-4.0))
     (synopsis "SELinux core libraries and utilities")
     (description
      "The libselinux library provides an API for SELinux applications to get
@@ -225,7 +225,7 @@ the core SELinux management utilities.")
     (inputs
      (list audit libsepol libselinux python-wrapper))
     (native-inputs
-     (list bison flex pkg-config swig))
+     (list bison flex pkg-config swig-4.0))
     (synopsis "SELinux policy management libraries")
     (description
      "The libsemanage library provides an API for the manipulation of SELinux
@@ -342,7 +342,7 @@ based on required access.")
      (list bison
            flex
            python-cython-0
-           swig
+           swig-4.0
            python-pytest
            python-pytest-qt
            python-setuptools))

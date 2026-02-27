@@ -1540,7 +1540,7 @@ libraries designed for computer vision research and implementation.")
              git-minimal
              pkg-config
              python-numpy               ;for phase 'python-sanity-check
-             swig-next
+             swig-4.4
              which
              (origin
                (method git-fetch)
@@ -1984,7 +1984,7 @@ and Scan Tailor Enhanced versions as well as including many more bug fixes.")
            python-pip
            python-setuptools
            python-wheel
-           swig-next
+           swig-4.4
            (origin
              (method url-fetch)
              (uri (string-append

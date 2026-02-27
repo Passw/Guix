@@ -610,7 +610,7 @@ interface (FFI) of Guile.")
     (inputs
      (list gpgme))
     (native-inputs
-     (list swig python-setuptools))
+     (list swig-4.0 python-setuptools))
     (home-page (package-home-page gpgme))
     (synopsis "Python bindings for GPGME GnuPG cryptography library")
     (description "This package provides Python bindings to the GPGME GnuPG

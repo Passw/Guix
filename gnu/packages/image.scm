@@ -2902,7 +2902,7 @@ GIF, TIFF, WEBP, BMP, PNG, XPM formats.")
     (native-inputs
      (list pkg-config
            gobject-introspection
-           swig
+           swig-4.0
            gettext-minimal))
     (inputs
      (list bash-minimal

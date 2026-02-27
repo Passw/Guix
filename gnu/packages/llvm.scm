@@ -1850,7 +1850,7 @@ misuse of libraries outside of the store.")))
            (lambda _
              (chdir "lldb"))))))
     (native-inputs
-     (list pkg-config swig))
+     (list pkg-config swig-4.0))
     (inputs
      (list clang-21
            llvm-21

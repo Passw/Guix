@@ -4783,7 +4783,7 @@ Widgets, and allows users to create more.")
                                              "-" (package-version this-package)))
                      (invoke "python3" "run_tests.py" "-a")))))))
     (native-inputs
-     (list python swig xorg-server-for-tests))
+     (list python swig-4.0 xorg-server-for-tests))
     (inputs
      (list sdl2
            sdl2-image
@@ -4795,7 +4795,7 @@ Widgets, and allows users to create more.")
            libvorbis
            boost-1.83
            fifechan
-           swig
+           swig-4.0
            python))
     (propagated-inputs
      (list python-future))
@@ -7861,7 +7861,7 @@ over 100 user-created campaigns.")
                                       sdl-image)))
        ("python" ,python-2)))
     (native-inputs
-     (list swig))
+     (list swig-4.0))
     (home-page "https://kiki.sourceforge.net/")
     (synopsis "3D puzzle game")
     (description "Kiki the nano bot is a 3D puzzle game.  It is basically a

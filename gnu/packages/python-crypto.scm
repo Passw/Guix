@@ -1148,7 +1148,7 @@ provides drop-in compatibility with PyCrypto.")))
        ;; certificates.
        #:tests? #f))
     (inputs (list openssl))
-    (native-inputs (list swig python-setuptools python-wheel))
+    (native-inputs (list swig-4.0 python-setuptools python-wheel))
     (home-page "https://gitlab.com/m2crypto/m2crypto")
     (synopsis "Python crypto and TLS toolkit")
     (description "@code{M2Crypto} is a complete Python wrapper for OpenSSL

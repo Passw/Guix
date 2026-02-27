@@ -1790,7 +1790,7 @@ vector data.")
            qhull
            shapelib
            sqlite
-           swig
+           swig-4.0
            zlib
            zstd))
     (native-inputs
@@ -3709,7 +3709,7 @@ visualization.")
             "HPDF_PROJECTING_SQUARE_END")))))
     (build-system cmake-build-system)
     (native-inputs
-     (list pkg-config swig))
+     (list pkg-config swig-4.0))
     (inputs
      (list curl
            fftw

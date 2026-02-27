@@ -8907,7 +8907,7 @@ HMMs).")
            python-pytest
            python-scipy
            python-setuptools
-           swig))
+           swig-4.0))
     (home-page "https://github.com/htseq")
     (synopsis "Framework for analyzing high-throughput sequencing data")
     (description
@@ -16153,7 +16153,7 @@ dispersal.  Its output can be processed by treeannotator (from the
                   "-E" (format #f "'(~a)'" (string-join disabled-tests "|")))
             ";"))))))
     (native-inputs
-     (list python-wrapper swig))
+     (list python-wrapper swig-4.0))
     (inputs
      (list boost-for-mysql
            cereal
@@ -23158,7 +23158,7 @@ The output is in SAM format.")
     (propagated-inputs
      (list libxml2))
     (native-inputs
-     (list check swig))
+     (list check swig-4.0))
     (home-page "https://sbml.org/Software/libSBML")
     (synopsis "Process SBML files and data streams")
     (description "LibSBML is a library to help you read, write, manipulate,

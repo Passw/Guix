@@ -6439,7 +6439,7 @@ over, or update a value in arbitrary data structures.")
     (native-inputs
      (list pkg-config
            lzip
-           swig))
+           swig-4.0))
     (propagated-inputs
      (list guile-lib))
     (home-page "https://guile-xapian.systemreboot.net")

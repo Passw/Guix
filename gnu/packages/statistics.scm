@@ -1600,7 +1600,7 @@ inference for statistical models.")
            python-numpydoc
            python-sphinx
            ;; python-sphinx-gallery ;; Currently broken
-           swig))
+           swig-4.0))
     (inputs
      (list openblas                ; the only required dependency
            ;; The dependecies below are all optional.
@@ -2482,7 +2482,7 @@ character vector.")
     (native-inputs
      (list hevea
            perl
-           swig
+           swig-4.0
            (texlive-local-tree
             (list texlive-aeguill texlive-jknapltx))))
     (propagated-inputs

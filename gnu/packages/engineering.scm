@@ -1221,7 +1221,7 @@ Emacs).")
                          desktop-file-utils
                          gettext-minimal
                          pkg-config
-                         swig
+                         swig-4.0
                          unixodbc
                          zlib))
     (inputs (list bash-minimal
@@ -1835,7 +1835,7 @@ for scientific simulations.")
     (native-inputs
      `(("fortran" ,gfortran)
        ("pkg-config" ,pkg-config)
-       ("swig" ,swig)))
+       ("swig" ,swig-4.0)))
     (inputs
      `(("fftw" ,fftw)
        ("gsl" ,gsl)
@@ -1876,7 +1876,7 @@ fully-vectorial and three-dimensional methods.")
     (native-inputs
      (list gfortran
            pkg-config
-           swig))
+           swig-4.0))
     (inputs
      (list fftw
            gsl
@@ -3287,7 +3287,7 @@ dynamics is used by FreeCAD 1.0.0 for its new Assembly workbench.")
            graphviz
            qttools
            pkg-config
-           swig))
+           swig-4.0))
     (inputs
      (list bash-minimal
            boost-1.83

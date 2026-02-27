@@ -2661,7 +2661,7 @@ with the provided training tools.")
                                        ,(format #f "~a/lib/guile/3.0/extensions/" out))))))
                (setenv "NLOPT_UNINSTALLED" "1")))))))
     (inputs (list guile-3.0 octave python))
-    (native-inputs (list pkg-config swig))
+    (native-inputs (list pkg-config swig-4.0))
     (home-page "http://ab-initio.mit.edu/wiki/")
     (synopsis "Library for nonlinear optimization")
     (description "NLopt is a library for nonlinear optimization, providing a

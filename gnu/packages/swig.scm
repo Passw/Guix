@@ -23,6 +23,7 @@
 
 (define-module (gnu packages swig)
   #:use-module (guix packages)
+  #:use-module (guix deprecation)
   #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix build-system gnu)
@@ -34,7 +35,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
 
-(define-public swig
+(define-public swig-4.0
   (package
     (name "swig")
     (version "4.0.2")
@@ -72,12 +73,12 @@ you tailor the wrapping process to suit your application.")
     ;; See http://www.swig.org/Release/LICENSE for details.
     (license gpl3+)))
 
-(define-public swig-next
-  ;; a number of packages using swig do not build with this version
-  ;; so we need to keep swig 4.0.2 above and place the current release
-  ;; as swig-next
+;; XXX: Deprecated on <2026-02-27>.
+(define-deprecated-package swig swig-4.0)
+
+(define-public swig-4.4
   (package
-    (inherit swig)
+    (inherit swig-4.0)
     (name "swig")
     (version "4.4.1")
     (source (origin
@@ -94,3 +95,6 @@ you tailor the wrapping process to suit your application.")
                          guile-3.0
                          perl))
     (inputs (list pcre2))))
+
+;; XXX: Deprecated on <2026-02-27>.
+(define-deprecated-package swig-next swig-4.4)

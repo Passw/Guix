@@ -129,7 +129,7 @@
             pkg-config
             python-3
             python-sphinx
-            swig
+            swig-4.0
             xmltoman)
       (list autoconf
             automake
@@ -466,7 +466,7 @@ to ring buffers shared with a consumer daemon.")
             perl
             libpfm4
             python-3
-            swig
+            swig-4.0
             procps
             which
             flex

@@ -115,7 +115,7 @@
     (native-inputs
      (list bison
            pkg-config
-           swig))
+           swig-4.0))
     (outputs '("out" "doc"))            ;5 MiB of html + pdfs
     (home-page "https://www.graphviz.org/")
     (synopsis "Graph visualization software")

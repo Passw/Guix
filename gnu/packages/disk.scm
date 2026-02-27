@@ -1201,7 +1201,7 @@ and its highly optimized now for efficient performance.")
                 "16rhfz6sjwxlmss1plb2wv2i3jq6wza02rmz1d2jrlnsq67p98vc"))))
     (build-system gnu-build-system)
     (native-inputs
-     (list pkg-config swig python-3))           ; used to generate the Python bindings
+     (list pkg-config swig-4.0 python-3))           ; used to generate the Python bindings
     (inputs
      (append
       (cons cryptsetup-minimal (libcryptsetup-propagated-inputs))

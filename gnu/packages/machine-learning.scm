@@ -1167,7 +1167,7 @@ algorithm.")
     (propagated-inputs
      (list python-numpy))
     (native-inputs
-     (list doxygen gfortran opencl-headers python-cython swig))
+     (list doxygen gfortran opencl-headers python-cython swig-4.0))
     (home-page "https://github.com/openmm/openmm/")
     (synopsis "Toolkit for molecular simulation")
     (description
@@ -3814,7 +3814,7 @@ find_library(ML_DTYPES_LIBRARIES
            pybind11
            python-setuptools
            python-wrapper               ;for its /bin
-           swig
+           swig-4.0
            (origin
              (method git-fetch)
              (uri (git-reference

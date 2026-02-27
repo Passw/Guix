@@ -384,7 +384,7 @@ of your system.")
                ;; Some programs look for libstfl.so.0.
                (symlink "libstfl.so" (string-append lib "/libstfl.so.0"))))))))
     (inputs (list ncurses))
-    (native-inputs (list ncurses swig))
+    (native-inputs (list ncurses swig-4.0))
     (home-page (string-append "https://web.archive.org/web/20211113222004/"
                               "http://www.clifford.at/stfl/"))
     (synopsis "Structured terminal forms library")

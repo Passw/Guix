@@ -832,7 +832,7 @@ The SUBDIR argument defaults to \"efi/Guix\", as it is also the case for
             pkg-config
             python
             python-setuptools-scm
-            swig
+            swig-4.0
             which)
       (if (member (%current-system) (package-supported-systems valgrind/pinned))
           (list valgrind/pinned)
@@ -884,7 +884,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
            python-pyelftools
            python-setuptools
            python-wheel
-           swig
+           swig-4.0
            (list util-linux "lib")))
     (home-page "https://www.denx.de/wiki/U-Boot/")
     (synopsis "ARM bootloader")

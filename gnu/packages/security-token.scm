@@ -618,7 +618,7 @@ retrieve a YubiKey's serial number, and so forth.")
     (native-inputs
      (list python-pytest
            python-setuptools
-           swig))
+           swig-4.0))
     (home-page "https://github.com/LudovicRousseau/pyscard")
     (synopsis "Smart card library for Python")
     (description
@@ -884,7 +884,7 @@ implementing a Relying Party.")
      (list python-makefun
            python-poetry-core
            python-pytest
-           swig))
+           swig-4.0))
     (home-page "https://developers.yubico.com/yubikey-manager/")
     (synopsis "Command line tool and library for configuring a YubiKey")
     (description

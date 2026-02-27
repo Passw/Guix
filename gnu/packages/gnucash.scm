@@ -186,7 +186,7 @@
            intltool
            (libc-utf8-locales-for-target)
            pkg-config
-           swig))
+           swig-4.0))
     (inputs
      (list aqbanking
            bash-minimal

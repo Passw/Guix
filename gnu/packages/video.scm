@@ -4125,7 +4125,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
            sox
            vidstab))
     (native-inputs
-     (list pkg-config python-minimal swig))
+     (list pkg-config python-minimal swig-4.0))
     (home-page "https://www.mltframework.org/")
     (synopsis "Author, manage, and run multitrack audio/video compositions")
     (description
@@ -4270,7 +4270,7 @@ be used for realtime video capture via Linux-specific APIs.")
             (separator #f)                         ;single entry
             (files '("share/obs/obs-plugins")))))
     (native-inputs
-     (list cmocka pkg-config swig extra-cmake-modules))
+     (list cmocka pkg-config swig-4.0 extra-cmake-modules))
     (inputs
      (list
       alsa-lib
@@ -6334,7 +6334,7 @@ create smoother and stable videos.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)
-       ("swig" ,swig)
+       ("swig" ,swig-4.0)
        ("unittest++" ,unittest-cpp)))
     (inputs
      (list alsa-lib zlib))

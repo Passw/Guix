@@ -249,7 +249,7 @@ and more.")
             (lambda* (#:key tests? #:allow-other-keys)
               (when tests?
                 (invoke "ctest" "-R" "python_test" "--output-on-failure")))))))
-    (native-inputs (list swig python-minimal))
+    (native-inputs (list swig-4.0 python-minimal))
     (inputs (list onetbb))
     (synopsis "Python bindings for the oneTBB parallel library")
     (description

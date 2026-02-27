@@ -1967,7 +1967,7 @@ The following features are currently available:
            (string-append "-DCUDD_DIR=" #$(this-package-input "cudd"))
            (string-append "-DBUILD_SHARED_LIBS=YES")
            "-B./build")))
-      (native-inputs (list bison flex swig))
+      (native-inputs (list bison flex swig-4.0))
       (inputs (list cudd eigen tcl tcllib zlib))
       (synopsis "Parallax Static Timing Analyzer")
       (description
@@ -3537,7 +3537,7 @@ using different abstraction levels.")
           " -DUHDM_USE_HOST_GTEST=On")
          (string-append "PREFIX=" #$output))))
     (native-inputs
-     (list cmake-minimal googletest pkg-config python-wrapper swig))
+     (list cmake-minimal googletest pkg-config python-wrapper swig-4.0))
     (inputs
      (list capnproto openssl python-orderedmultidict zlib))
     (home-page "https://github.com/chipsalliance/UHDM/")
@@ -3616,7 +3616,7 @@ VPI Interface, Elaborator, Serialization, Visitor and Listener.")
               "-DTPL_ENABLE_BLAS=ON"
               "-DTPL_ENABLE_LAPACK=ON"
               "-DTPL_ENABLE_DLlib:BOOL=OFF")))
-    (native-inputs (list gfortran perl python-minimal-wrapper swig tcsh))
+    (native-inputs (list gfortran perl python-minimal-wrapper swig-4.0 tcsh))
     (inputs (list boost lapack openblas suitesparse-amd))
     (home-page "https://trilinos.github.io/")
     (synopsis "Engineering and scientific problems algorithms")

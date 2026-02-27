@@ -4636,7 +4636,7 @@ transparently through a bridge.")
      `(("bison" ,bison)
        ("flex" ,flex)
        ("pkg-config" ,pkg-config)
-       ("swig" ,swig)
+       ("swig" ,swig-4.0)
        ("libnl3-doc"
         ,(origin
            (method url-fetch)

@@ -164,7 +164,7 @@ interface to this library is not guaranteed to be stable.")
                   rdma-core
                   opensm
                   perl))
-    (native-inputs (list swig))
+    (native-inputs (list swig-4.0))
     (arguments
      (list #:configure-flags
            #~(list (string-append "--with-osm="

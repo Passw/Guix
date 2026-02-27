@@ -424,7 +424,7 @@ secondary errors.")
            libdvdread/kodi
            libtool
            pkg-config
-           swig
+           swig-4.0
            yasm))
     (inputs
      (list alsa-lib

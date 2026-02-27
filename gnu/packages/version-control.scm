@@ -2983,7 +2983,7 @@ following features:
     (native-inputs
      (list pkg-config
            ;; For the Perl bindings.
-           swig))
+           swig-4.0))
     (inputs
      (list apr
            apr-util
