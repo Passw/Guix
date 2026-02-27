@@ -2149,7 +2149,7 @@ bootloader in Espressif ESP8266 & ESP32 series chips.")
 (define-public radare2
   (package
     (name "radare2")
-    (version "6.0.8")
+    (version "6.1.0")                   ;keep in sync with iaito
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2157,7 +2157,7 @@ bootloader in Espressif ESP8266 & ESP32 series chips.")
                     (commit version)))
               (sha256
                (base32
-                "1fxrwlgliizxz71svdsvkd03yanxif88cxhiaw5i8znf7f97nh4v"))
+                "0949q61l9c5b1f62ilvqs3lh4c98my7wkj43di2x7wrs4rz0qv1q"))
               (file-name (git-file-name name version))
               (patches
                (search-patches "radare2-fix-meson-build-to-use-sys-sdb.patch"
@@ -2166,12 +2166,7 @@ bootloader in Espressif ESP8266 & ESP32 series chips.")
     (arguments
      (list
       #:configure-flags
-      ;; XXX: 6.0.8 fails to build when use_libuv=true
-      ;; this is because some functions in libr/core/rtr.c
-      ;; are in an #if HAVE_LIBUV block and were being removed by the preprocessor
-      ;; https://github.com/radareorg/radare2/issues/25156
-      ;; Re-evaluate this setting in future updates
-      #~(list "-Duse_libuv=false"
+      #~(list "-Duse_libuv=true"
               "-Duse_ssl=true"
               "-Duse_sys_capstone=true"
               "-Duse_sys_lz4=true"
