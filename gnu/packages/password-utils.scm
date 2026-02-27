@@ -2126,7 +2126,7 @@ data inside a GPG encrypted file, which we'll call a coffin.")
 (define-public xkcdpass
   (package
     (name "xkcdpass")
-    (version "1.20.0")
+    (version "1.30.0")
     (source
      (origin
        (method git-fetch)
@@ -2136,13 +2136,16 @@ data inside a GPG encrypted file, which we'll call a coffin.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "11imgiiwd9ggkw7235hsdj9xm0rpv8s46v087mgb3ad0d8v48fqf"))))
+         "1i2z2bsw7gylg97ls452i92159jq57x9iyjj4j7g46l3z4hmfs8b"))))
     (build-system pyproject-build-system)
     (arguments
      (list
       #:test-backend #~'unittest
       #:phases
       #~(modify-phases %standard-phases
+          (add-before 'check 'cd-tests
+            (lambda _
+              (chdir "tests")))
           (add-after 'install 'install-manpage
             (lambda _
               (install-file
