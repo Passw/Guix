@@ -951,26 +951,10 @@ independently to be able to run a LLaMA model.")
       (arguments
        (list
         #:configure-flags
-        #~(list "-DWHISPER_STANDALONE=TRUE"
+        #~(list "-DBUILD_SHARED_LIBS=ON"
                 "-DWHISPER_SDL2=TRUE"
-                "-DWHISPER_BUILD_TESTS=TRUE"
                 "-DWHISPER_FFMPEG=TRUE"
-                "-DBUILD_SHARED_LIBS=ON"
-                "-DGGML_BLAS=ON"
-                "-DGGML_BLAS_VENDOR=OpenBLAS"
-                (string-append "-DBLAS_INCLUDE_DIRS="
-                               #$(this-package-input "openblas")
-                               "/include")
-                (string-append "-DBLAS_LIBRARIES="
-                               #$(this-package-input "openblas")
-                               "/lib/libopenblas.so")
-                "-DGGML_NATIVE=OFF" ;no '-march=native'
-                "-DGGML_FMA=OFF"    ;and no '-mfma', etc.
-                "-DGGML_AVX2=OFF"
-                "-DGGML_AVX512=OFF"
-                "-DGGML_AVX512_VBMI=OFF"
-                "-DGGML_AVX512_VNNI=OFF"
-                "-DGGML_VULKAN=ON")
+                "-DWHISPER_USE_SYSTEM_GGML=ON")
         #:phases
         #~(modify-phases %standard-phases
             (add-after 'unpack 'patch-paths
@@ -1003,7 +987,7 @@ independently to be able to run a LLaMA model.")
        (list git pkg-config shaderc))
       (inputs
        (list ffmpeg
-             openblas
+             ggml
              sdl2
              spirv-headers
              spirv-tools
