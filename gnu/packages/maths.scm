@@ -10635,15 +10635,18 @@ embedded into other programs via a C++ class library.")
       #~(list "-DPAPILO=OFF"
               "-DZIMPL=OFF"
               "-DAMPL=ON"
+              "-DLAPACK=ON"
               "-DIPOPT=OFF"
               (string-append
                "-DSOPLEX_DIR=" #$(this-package-input "soplex")))))
     (inputs (list boost
                   gmp
+                  lapack
                   mpfr
                   readline
                   soplex
                   zlib))
+    (native-inputs (list perl python-minimal-wrapper))
     (home-page "https://www.scipopt.org/")
     (synopsis "Solving constraint integer programs")
     (description
