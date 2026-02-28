@@ -24183,17 +24183,6 @@ and lambdas.")
        (sha256
         (base32 "103fzmadgd93x1y0c6xsdjx70z0jkwpvj0xnkybdancxz4ba8p9l"))))
     (build-system emacs-build-system)
-    (arguments
-     (list
-      #:phases
-      #~(modify-phases %standard-phases
-          (add-before 'build 'fix-byte-compilation
-            ;; XXX: The fix below was integrated upstream and can be removed
-            ;; in next release.
-            (lambda _
-              (substitute* "org2web-el2org.el"
-                (("(define-obsolete-function-alias .*)\\)" _ lead)
-                 (string-append lead " \"0.1\")"))))))))
     (propagated-inputs
      (list emacs-dash
            emacs-el2org
