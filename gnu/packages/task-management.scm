@@ -732,7 +732,7 @@ projects, tagging and reports.")
 (define-public zk
   (package
     (name "zk")
-    (version "0.15.1")
+    (version "0.15.2")
     (source
      (origin
        (method git-fetch)
@@ -741,7 +741,7 @@ projects, tagging and reports.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jm18qp4sgfb92c420jc8ylfjwc6shv29fb1jc4z2g03dqcbg2l7"))
+        (base32 "0g77sd8aw3mqcc4wqvrv5ir524i3x3qmpavqsl7f2hci7j4j2v2r"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove the sqlite database tests as they require a dependency on
@@ -773,11 +773,11 @@ projects, tagging and reports.")
                  (format #f "~s" (search-input-file inputs "/bin/fzf")))))))))
     (native-inputs
      (list go-github-com-alecaivazis-survey-v2
-           go-github-com-alecaivazis-survey-v2
            go-github-com-alecthomas-kong-for-zk
            go-github-com-aymerick-raymond
            go-github-com-bmatcuk-doublestar-v4
            go-github-com-fatih-color-for-zk
+           go-github-com-go-testfixtures-testfixtures-v3
            go-github-com-google-go-cmp
            go-github-com-gosimple-slug
            go-github-com-kballard-go-shellquote
