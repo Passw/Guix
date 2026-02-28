@@ -106,9 +106,8 @@
             (lambda _
               (setenv "HOME" "/tmp"))))))
     (native-inputs
-     (list git))
-    (propagated-inputs
-     (list go-github-com-anthropics-anthropic-sdk-go
+     (list git-minimal/pinned
+           go-github-com-anthropics-anthropic-sdk-go
            go-github-com-fatih-color
            go-github-com-spf13-cobra
            go-github-com-spf13-viper
