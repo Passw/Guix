@@ -1163,6 +1163,45 @@ reflect.DeepEqual but returns a list of differences.  This is helpful
 when comparing complex types like structures and maps.")
     (license license:expat)))
 
+(define-public go-github-com-go-testfixtures-testfixtures-v3
+  (package
+    (name "go-github-com-go-testfixtures-testfixtures-v3")
+    (version "3.19.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/go-testfixtures/testfixtures")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "104nfwnv61cvidnvbddvaanwc9pd5a1iybdras4rrrpsdvnksrzs"))
+       (modules '((guix build utils)))
+       (snippet
+        #~(begin
+            ;; Submodules with their own go.mod files and packaged separately:
+            ;;
+            ;; - github.com/go-testfixtures/testfixtures/cmd/testfixtures/v3
+            ;; - github.com/go-testfixtures/testfixtures/dbtests/v3
+            (delete-file-recursively "cmd")
+            (delete-file-recursively "dbtests")))))
+    (build-system go-build-system)
+    (arguments
+     (list
+      #:import-path "github.com/go-testfixtures/testfixtures/v3"))
+    (propagated-inputs
+     (list go-github-com-goccy-go-yaml
+           go-golang-org-x-sync))
+    (home-page "https://github.com/go-testfixtures/testfixtures")
+    (synopsis "Ruby on Rails like test fixtures for Go")
+    (description
+     "Ths package mimics the
+@url{http://guides.rubyonrails.org/testing.html#the-test-database, Ruby on
+Rails' way} of writing tests for database applications, where sample data is
+kept in fixtures files.  Before the execution of every test, the test database
+is cleaned and the fixture data is loaded into the database.")
+    (license license:expat)))
+
 ;; XXX: This repository has been archived by the owner
 ;; on May 9, 2021. It is now read-only. It's only used
 ;; by go-github-com-golang-gddo. Consider to remove when nothing
